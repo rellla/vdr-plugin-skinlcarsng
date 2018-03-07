@@ -4,7 +4,7 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: skinlcars.c 3.6 2013/11/16 13:20:19 kls Exp $
+ * $Id: skinlcars.c 3.8 2014/06/12 08:48:15 kls Exp $
  */
 
 // "Star Trek: The Next Generation"(R) is a registered trademark of Paramount Pictures,
@@ -491,7 +491,7 @@ cLCARSNGDisplayChannel::~cLCARSNGDisplayChannel()
 void cLCARSNGDisplayChannel::DrawDate(void)
 {
   cString s = DayDateTime();
-  if (initial || strcmp(s, lastDate)) {
+  if (initial || !*lastDate || strcmp(s, lastDate)) {
      osd->DrawText(xc12, yc00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), cFont::GetFont(fontOsd), xc13 - xc12, lineHeight, taRight | taBorder);
      lastDate = s;
      }
@@ -1160,7 +1160,7 @@ void cLCARSNGDisplayMenu::DrawMenuFrame(void)
 void cLCARSNGDisplayMenu::DrawDate(void)
 {
   cString s = DayDateTime();
-  if (initial || strcmp(s, lastDate)) {
+  if (initial || !*lastDate || strcmp(s, lastDate)) {
      const cFont *font = cFont::GetFont(fontOsd);
      tColor ColorFg = Theme.Color(clrDateFg);
      tColor ColorBg = Theme.Color(clrDateBg);
