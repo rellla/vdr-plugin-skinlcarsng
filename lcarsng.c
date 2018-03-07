@@ -27,7 +27,9 @@
 #include <vdr/font.h>
 #include <vdr/menu.h>
 #include <vdr/osd.h>
+#if APIVERSNUM > 20101
 #include <vdr/positioner.h>
+#endif
 #include <vdr/themes.h>
 #include <vdr/videodir.h>
 
@@ -302,6 +304,7 @@ static void DrawDeviceSignal(cOsd *Osd, const cDevice *Device, int x0, int y0, i
      }
 }
 
+#if APIVERSNUM > 20101
 static void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0, int x1, int y1, int &LastCurrent)
 {
   int HorizonLeft = Positioner->HorizonLongitude(cPositioner::pdLeft);
@@ -339,6 +342,7 @@ static void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0,
   Osd->DrawEllipse(t, y0, t + d, y1 - 1, ColorMove, 5);
   LastCurrent = c;
 }
+#endif
 
 // --- cLCARSNGDisplayChannel ----------------------------------------------
 
@@ -378,7 +382,9 @@ public:
   virtual void SetChannel(const cChannel *Channel, int Number);
   virtual void SetEvents(const cEvent *Present, const cEvent *Following);
   virtual void SetMessage(eMessageType Type, const char *Text);
+#if APIVERSNUM > 20101
   virtual void SetPositioner(const cPositioner *Positioner);
+#endif
   virtual void Flush(void);
   };
 
@@ -643,6 +649,7 @@ void cLCARSNGDisplayChannel::SetMessage(eMessageType Type, const char *Text)
      }
 }
 
+#if APIVERSNUM > 20101
 void cLCARSNGDisplayChannel::SetPositioner(const cPositioner *Positioner)
 {
   if (Positioner) {
@@ -656,6 +663,7 @@ void cLCARSNGDisplayChannel::SetPositioner(const cPositioner *Positioner)
      }
   return;
 }
+#endif
 
 void cLCARSNGDisplayChannel::Flush(void)
 {
@@ -960,13 +968,6 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   yd03 = yd04 - Gap;
   yd02 = yd03 - r; //0.85 * r; // Button in der Mitte
   yd01 = yd02 - Gap;
-
-//  yi00 = yt02;
-//  yi01 = yb13;
-//  xi00 = xa03;
-//  xi01 = xa07;
-//  xi02 = xa08;
-//  xi03 = xa09;
 
   xs = 0;
 
@@ -1850,9 +1851,15 @@ const cFont *cLCARSNGDisplayMenu::GetTextAreaFont(bool FixedFont) const
 void cLCARSNGDisplayMenu::Flush(void)
 {
 
-  int xrand = (1920 - xa09) / 2;
-  int yrand = (1080 - yb15) / 2;
+  int Width;
+  int Height;
+  double Aspect;
+//  int xrand = (1920 - xa09) / 2;
+//  int yrand = (1080 - yb15) / 2;
   cDevice *Device = cDevice::PrimaryDevice();
+  cDevice::PrimaryDevice()->GetOsdSize(Width, Height, Aspect);
+  int xrand = (Width - xa09) / 2;
+  int yrand = (Height - yb15) / 2;
 //  cRect videoWindowRect( 0.575 * xa09, lineHeight, 0.44 * xa09, yc06 - lineHeight / 2);
   cRect videoWindowRect( xs00 + xrand, yrand + Gap, xs11 - xs00, yc05 - yrand / 2);
   DrawFrameDisplay();
