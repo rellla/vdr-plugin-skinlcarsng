@@ -990,11 +990,11 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
 //  xd07 = xa09;
   xd07 = xm05 - Gap;
   xd06 = xd07 - r;
-  xd05 = xd06 - 5 * r;
+  xd05 = xd06 - 6 * r;
   xd04 = xd05 - r;
   xd03 = xd04 - Gap;
   xd02 = xd03 - r;
-  xd01 = xd02 - 5 * r;
+  xd01 = xd02 - 6 * r;
   xd00 = xd01 - r;
   yd00 = yt00;
   yd05 = yc04 - 3 * Gap;
@@ -1157,7 +1157,8 @@ void cLCARSNGDisplayMenu::DrawMainButton(const char *Text, int x0, int x1, int x
 {
   int h = y1 - y0;
   osd->DrawEllipse(x0, y0, x1 - 1, y1 - 1, ColorBg, 7);
-  osd->DrawText(x1, y0, Text, ColorFg, ColorBg, Font, x2 - x1, h, taBottom | taRight);
+//  osd->DrawText(x1, y0, Text, ColorFg, ColorBg, Font, x2 - x1, h, taBottom | taRight);
+  osd->DrawText(x1, y0, Text, ColorFg, ColorBg, Font, x2 - x1, h, taCenter);
   osd->DrawEllipse(x2, y0, x3 - 1, y1 - 1, ColorBg, 5);
 }
 
