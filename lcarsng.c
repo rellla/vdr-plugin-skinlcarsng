@@ -1448,7 +1448,7 @@ void cLCARSNGDisplayMenu::DrawLiveIndicator(void)
   if (initial || y != lastLiveIndicatorY || Transferring != lastLiveIndicatorTransferring) {
      if (lastLiveIndicatorY >= 0)
         osd->DrawRectangle(xs12, lastLiveIndicatorY, xs13 - 1, lastLiveIndicatorY + lineHeight - 1, Theme.Color(clrBackground));
-     if (y >= 0) {
+     if (y > 0) {
         tColor ColorBg = Theme.Color(clrChannelFrameBg);
         osd->DrawRectangle(xs12, y, xs12 + lineHeight / 2 - 1, y + lineHeight - 1, ColorBg);
         osd->DrawEllipse  (xs12 + lineHeight / 2, y, xs13 - 1, y + lineHeight - 1, ColorBg, 5);
