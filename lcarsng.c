@@ -1917,6 +1917,7 @@ private:
   int lastTotalWidth;
   cString lastDate;
   tTrackId lastTrackId;
+  static cBitmap bmTeletext, bmRadio, bmAudio, bmDolbyDigital, bmEncrypted, bmRecording;
   void DrawDate(void);
   void DrawTrack(void);
 public:
@@ -1932,6 +1933,13 @@ public:
   virtual void SetMessage(eMessageType Type, const char *Text);
   virtual void Flush(void);
   };
+
+cBitmap cLCARSNGDisplayReplay::bmTeletext(teletext_xpm);
+cBitmap cLCARSNGDisplayReplay::bmRadio(radio_xpm);
+cBitmap cLCARSNGDisplayReplay::bmAudio(audio_xpm);
+cBitmap cLCARSNGDisplayReplay::bmDolbyDigital(dolbydigital_xpm);
+cBitmap cLCARSNGDisplayReplay::bmEncrypted(encrypted_xpm);
+cBitmap cLCARSNGDisplayReplay::bmRecording(recording_xpm);
 
 cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly)
 {
@@ -2025,6 +2033,19 @@ void cLCARSNGDisplayReplay::DrawTrack(void)
 void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
 {
   const cRecordingInfo *RecordingInfo = Recording->Info();
+  int x = xp13;
+  int xi = x - SymbolSpacing -
+           bmRecording.Width() - SymbolSpacing -
+           bmEncrypted.Width() - SymbolSpacing -
+           bmDolbyDigital.Width() - SymbolSpacing -
+           bmAudio.Width() - SymbolSpacing -
+           max(bmTeletext.Width(), bmRadio.Width()) - SymbolSpacing;
+
+  osd->DrawRectangle(xp12, yp08, xp13 - 1, yp09 - 1, frameColor);
+  bool rec = cRecordControls::Active();
+  x -= bmRecording.Width() + SymbolSpacing;
+  osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOff), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
+ 
   SetTitle(RecordingInfo->Title());
   osd->DrawText(xp03, yp01 - lineHeight, RecordingInfo->ShortText(), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xp13 - xp03);
   osd->DrawText(xp00, yp00, ShortDateString(Recording->Start()), Theme.Color(clrReplayFrameFg), frameColor, cFont::GetFont(fontOsd), xp02 - xp00, 0, taTop | taRight | taBorder);
