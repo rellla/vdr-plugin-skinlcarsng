@@ -1826,8 +1826,12 @@ const cFont *cLCARSNGDisplayMenu::GetTextAreaFont(bool FixedFont) const
 void cLCARSNGDisplayMenu::Flush(void)
 {
 
+  int xrand = (1920 - xa09) / 2;
+  int yrand = (1080 - yb15) / 2;
   cDevice *Device = cDevice::PrimaryDevice();
-  cRect videoWindowRect( 0.575 * xa09, lineHeight, 0.44 * xa09, yc06 - lineHeight / 2);
+//  cRect videoWindowRect( 0.575 * xa09, lineHeight, 0.44 * xa09, yc06 - lineHeight / 2);
+//  cRect videoWindowRect((1920 - xa09) / 2 + xs00, lineHeight, xs11 - xs00, yc06 - lineHeight / 2);
+  cRect videoWindowRect( xs00 + xrand, lineHeight, xs11 - xs00, yc06 - lineHeight / 2);
   DrawFrameDisplay();
   switch (MenuCategory()) {
      case mcMain:
