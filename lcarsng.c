@@ -1397,6 +1397,10 @@ void cLCARSNGDisplayMenu::DrawTimer(const cTimer *Timer, int y, bool MultiRec)
      }
   if (Timer->Flags() & tfVps)
      Date = cString::sprintf("VPS %s", *Date);
+#ifdef USE_SWITCHONLY
+  if (Timer->Flags() & tfSwitchOnly)
+     Date = cString::sprintf("UST %s", *Date);
+#endif
   const cChannel *Channel = Timer->Channel();
   const cEvent *Event = Timer->Event();
   int d = max(TextFrame / 2, 1);
