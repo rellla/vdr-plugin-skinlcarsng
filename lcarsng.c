@@ -376,6 +376,8 @@ private:
   void DrawSeen(int Current, int Total);
   void DrawDevice(void);
   void DrawSignal(void);
+  void DrawBlinkingRec(void);
+  uint64_t Blink = cTimeMs::Now();
 public:
   cLCARSNGDisplayChannel(bool WithInfo);
   virtual ~cLCARSNGDisplayChannel();
@@ -546,6 +548,24 @@ void cLCARSNGDisplayChannel::DrawSignal(void)
      }
 }
 
+void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
+{
+  bool rec = cRecordControls::Active();
+  bool On;
+  int x = xc13;
+  if (rec) {
+     if (cTimeMs::Now() - Blink > 1000) {
+        On = false;
+           if (cTimeMs::Now() - Blink > 2000)
+              Blink = cTimeMs::Now();
+        }
+     else
+        On = true;
+     x -= bmRecording.Width() + SymbolSpacing;
+     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
+     }
+}
+ 
 void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 {
   int x = xc13;
@@ -673,6 +693,7 @@ void cLCARSNGDisplayChannel::Flush(void)
         DrawTrack();
         DrawDevice();
         DrawSignal();
+        DrawBlinkingRec();
         int Current = 0;
         int Total = 0;
         if (present) {
@@ -1978,6 +1999,8 @@ private:
   static cBitmap bmTeletext, bmRadio, bmAudio, bmDolbyDigital, bmEncrypted, bmRecording;
   void DrawDate(void);
   void DrawTrack(void);
+  void DrawBlinkingRec(void);
+  uint64_t Blink = cTimeMs::Now();
 public:
   cLCARSNGDisplayReplay(bool ModeOnly);
   virtual ~cLCARSNGDisplayReplay();
@@ -2088,16 +2111,28 @@ void cLCARSNGDisplayReplay::DrawTrack(void)
      }
 }
 
+void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
+{ 
+  bool rec = cRecordControls::Active();
+  bool On;
+  int x = xp13;
+  if (rec) {
+     if (cTimeMs::Now() - Blink > 1000) {
+        On = false;
+           if (cTimeMs::Now() - Blink > 2000)
+              Blink = cTimeMs::Now();
+        }
+     else
+        On = true;
+     x -= bmRecording.Width() + SymbolSpacing;
+     osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
+     }
+}
+
 void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
 {
   const cRecordingInfo *RecordingInfo = Recording->Info();
   int x = xp13;
-  int xi = x - SymbolSpacing -
-           bmRecording.Width() - SymbolSpacing -
-           bmEncrypted.Width() - SymbolSpacing -
-           bmDolbyDigital.Width() - SymbolSpacing -
-           bmAudio.Width() - SymbolSpacing -
-           max(bmTeletext.Width(), bmRadio.Width()) - SymbolSpacing;
 
   osd->DrawRectangle(xp12, yp08, xp13 - 1, yp09 - 1, frameColor);
   bool rec = cRecordControls::Active();
@@ -2171,6 +2206,7 @@ void cLCARSNGDisplayReplay::Flush(void)
   if (!modeOnly) {
      DrawDate();
      DrawTrack();
+     DrawBlinkingRec();
      }
   osd->Flush();
 //  cDevice::PrimaryDevice()->ScaleVideo(videoWindowRect);
