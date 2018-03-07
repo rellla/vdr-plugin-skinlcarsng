@@ -975,6 +975,7 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
         case mcMain:
         case mcSetup:
         case mcCommand:
+           osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, 0x00000000);
            yi00 = ym03;
            yi01 = ym04;
            xi00 = xm00;
@@ -1004,6 +1005,7 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
         case mcRecordingInfo:
         case mcTimer:
         case mcTimerEdit:
+           osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, 0x00000000);
            yi00 = ym00;
            yi01 = ym07;
            xi00 = xa03;
@@ -1028,15 +1030,19 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
 void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color)
 {
   // Top left rectangles:
-  osd->DrawRectangle(xa00, yt00, xa02 - 1, yt02 - 1, Color);
-  osd->DrawRectangle(xa00, yt04, xa02 - 1, yt06 - 1, Color);
-  osd->DrawRectangle(xa00, yt07, xa02 - 1, yt08 - 1, Color);
+//  osd->DrawRectangle(xa00, yt00, xa02 - 1, yt02 - 1, Color);
+  osd->DrawRectangle(xa00, yt00, xa02 - 1, yt06 - 1, Color);
+//  osd->DrawRectangle(xa00, yt04, xa02 - 1, yt06 - 1, Color);
+//  osd->DrawRectangle(xa00, yt07, xa02 - 1, yt08 - 1, Color);
+  osd->DrawRectangle(xa00, yt02, xa02 - 1, yt04 - 1, Theme.Color(clrBackground));
+  osd->DrawRectangle(xa00, yt06, xa02 - 1, yt07 - 1, Theme.Color(clrBackground));
   // Upper elbow:
   osd->DrawRectangle(xa00, yc00, xa01 - 1, yc01 - 1, Color);
   osd->DrawEllipse  (xa00, yc01, xa01 - 1, yc05 - 1, Color, 3);
   osd->DrawRectangle(xa01, yc00, xa02 - 1, yc05 - 1, Color);
   osd->DrawEllipse  (xa02, yc02, xa04 - 1, yc04 - 1, Color, -3);
   osd->DrawRectangle(xa02, yc04, xa05 - 1, yc05 - 1, Color);
+  osd->DrawRectangle(xa00, yc00 + 2 * lineHeight, xa02 - 1, yc00 + 2 * lineHeight + Gap, Theme.Color(clrBackground));
   // Upper delimiter:
   osd->DrawRectangle(xa06, yc04 + lineHeight / 2, xm03 - 1, yc05 - 1, Color);
   osd->DrawRectangle(xm03 + Gap, yc04 + lineHeight / 2, xm07 - 1, yc05 - 1, Color);
@@ -1481,7 +1487,8 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      osd->DrawText(xa00, yt04, itoa(Channel->Number()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), tallFont, xa02 - xa00, yt06 - yt04, taTop | taRight | taBorder);
      osd->DrawText(xa03, yt04, Channel->Name(), Theme.Color(clrChannelName), Theme.Color(clrBackground), tallFont, xd07 - xa03, yt06 - yt04, taTop | taLeft);
      int x = xa00 + (yc03 - yc02); // compensate for the arc
-     osd->DrawText(x, yc00, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - x, yc03 - yc00, taTop | taRight | taBorder);
+//     osd->DrawText(x, yc00, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - x, yc03 - yc00, taTop | taRight | taBorder);
+     osd->DrawText(x, yc00, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - x, 2 * lineHeight, taTop | taRight | taBorder);
      lastChannel = Channel;
      DrawSeen(0, 0);
      }
@@ -1830,8 +1837,7 @@ void cLCARSNGDisplayMenu::Flush(void)
   int yrand = (1080 - yb15) / 2;
   cDevice *Device = cDevice::PrimaryDevice();
 //  cRect videoWindowRect( 0.575 * xa09, lineHeight, 0.44 * xa09, yc06 - lineHeight / 2);
-//  cRect videoWindowRect((1920 - xa09) / 2 + xs00, lineHeight, xs11 - xs00, yc06 - lineHeight / 2);
-  cRect videoWindowRect( xs00 + xrand, lineHeight, xs11 - xs00, yc06 - lineHeight / 2);
+  cRect videoWindowRect( xs00 + xrand, yrand + Gap, xs11 - xs00, yc05 - yrand / 2);
   DrawFrameDisplay();
   switch (MenuCategory()) {
      case mcMain:
@@ -1850,15 +1856,13 @@ void cLCARSNGDisplayMenu::Flush(void)
      case mcRecordingInfo:
      case mcTimer:
      case mcTimerEdit:
-//        cDevice *Device = cDevice::PrimaryDevice();
         if (!Device->Replaying() || Device->Transferring()) {
            const cChannel *Channel = Channels.GetByNumber(cDevice::PrimaryDevice()->CurrentChannel());
            DrawLive(Channel);
            }
         else if (cControl *Control = cControl::Control(true))
            DrawPlay(Control);
-        osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, 0x00000000);
-//        cRect videoWindowRect( 0.575 * xa09, lineHeight, 0.44 * xa09, yc06 - lineHeight / 2);
+//        osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, 0x00000000);
         if (initial) {
            availableRect = cDevice::PrimaryDevice()->CanScaleVideo(videoWindowRect);
            osd->Flush();
