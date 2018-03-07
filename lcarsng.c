@@ -551,19 +551,20 @@ void cLCARSNGDisplayChannel::DrawSignal(void)
 void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
 {
   bool rec = cRecordControls::Active();
-  bool On;
+  bool On = false;
   int x = xc13;
+  int bt = 800;
+  x -= bmRecording.Width() + SymbolSpacing;
   if (rec) {
-     if (cTimeMs::Now() - Blink > 1000) {
+     if (cTimeMs::Now() - Blink > bt) {
         On = false;
-           if (cTimeMs::Now() - Blink > 2000)
+           if ((cTimeMs::Now() - Blink) / 2 > bt)
               Blink = cTimeMs::Now();
         }
      else
         On = true;
-     x -= bmRecording.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
      }
+  osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
 }
  
 void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
@@ -579,7 +580,7 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
   if (Channel && !Channel->GroupSep()) {
      bool rec = cRecordControls::Active();
      x -= bmRecording.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOff), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
+//     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOff), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
      x -= bmEncrypted.Width() + SymbolSpacing;
      osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmEncrypted.Height()) / 2, bmEncrypted, Theme.Color(Channel->Ca() ? clrChannelSymbolOn : clrChannelSymbolOff), frameColor);
      x -= bmDolbyDigital.Width() + SymbolSpacing;
