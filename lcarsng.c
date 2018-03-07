@@ -849,7 +849,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   yb02 = yb01 + Gap;
   yb03 = yb02 + 2 * lineHeight;
   yb04 = yb03 + Gap; // Load
-  yb05 = yb04 + 1 * lineHeight; // Load %
+  yb05 = yb04 + 2 * lineHeight; // Load %
   yb06 = yb05 + Gap;
   yb07 = yb06 + 2 * lineHeight;
   yb08 = yb07 + Gap;
@@ -872,7 +872,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
      yb05 = yb09;
      yb08 = 0; // drop "LCARSNG" display
      }
-  if (yb05 - yb04 < 1 * lineHeight) {
+  if (yb05 - yb04 < 2 * lineHeight) {
      yb03 = yb09;
      yb04 = 0; // drop "LOAD" display
      }
