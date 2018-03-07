@@ -994,7 +994,7 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
         case mcMain:
         case mcSetup:
         case mcCommand:
-           osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, 0x00000000);
+           osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, clrTransparent);
            yi00 = ym03;
            yi01 = ym04;
            xi00 = xm00;
@@ -1007,7 +1007,7 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
            DrawStatusElbows();
            break;
         case mcChannel:
-           osd->DrawRectangle(xa00, yt00, xa09 - 1, yb15 - 1, 0x00000000);
+           osd->DrawRectangle(xa00, yt00, xa09 - 1, yb15 - 1, clrTransparent);
            yi00 = yt04 + lineHeight;
            yi01 = ym04;
            xi00 = xm00;
@@ -1025,7 +1025,7 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
         case mcRecordingInfo:
         case mcTimer:
         case mcTimerEdit:
-           osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, 0x00000000);
+           osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, clrTransparent);
            yi00 = ym00;
            yi01 = ym07;
            xi00 = xa03;
@@ -1102,8 +1102,9 @@ void cLCARSNGDisplayMenu::DrawMainFrameChannel(void)
   osd->DrawRectangle(xa01, yt00, xa02 - 1, yt06 - 1, frameColor);
   osd->DrawEllipse  (xa02, yt01, xa04 - 1, yt03 - 1, frameColor, -2);
   osd->DrawRectangle(xa02, yt00, xa05 - 1, yt01 - 1, frameColor);
-  osd->DrawRectangle(xm04, yt00, xm08 - 1, yt01 - 1, frameColor);
-//  osd->DrawEllipse  (xa08 + lineHeight / 2, yt00, xa09 - 1, yt01 - 1, frameColor, 5);
+  osd->DrawRectangle(xm04, yt00, xm07 - Gap - 1, yt01 - 1, frameColor);
+  osd->DrawRectangle(xm07, yt00, xm07 + lineHeight / 2 -1, yt01 - 1, frameColor);
+  osd->DrawEllipse  (xm07 + lineHeight / 2, yt00, xm08 - 1, yt01 - 1, frameColor, 5);
   // Center part:
   osd->DrawRectangle(xa00, yt06 + Gap, xa02 - 1, yc00 - 1 - Gap, frameColor);
   osd->DrawRectangle(xa00, yc00, xa02 - 1, yc11 - 1, frameColor);
@@ -1241,8 +1242,8 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
   if (MenuCategory() == mcChannel)
      osd->DrawText(xm02, yt00, tr("Channels"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
   if (MenuCategory() != mcMain && MenuCategory() != mcSchedule && MenuCategory() != mcScheduleNow && MenuCategory() != mcScheduleNext && MenuCategory() != mcEvent && MenuCategory() != mcRecording && MenuCategory() != mcRecordingInfo && MenuCategory() != mcTimer && MenuCategory() != mcTimerEdit) {
-     osd->DrawRectangle(xm04 - Gap, y0, xm04, ym01 - 1, 0x00000000);
-     osd->DrawRectangle(xm04 - Gap, ym06, xm04, ym07 - 1, 0x00000000);
+     osd->DrawRectangle(xm04 - Gap, y0, xm04, ym01 - 1, clrTransparent);
+     osd->DrawRectangle(xm04 - Gap, ym06, xm04, ym07 - 1, clrTransparent);
      }
 }
 
@@ -1782,7 +1783,7 @@ void cLCARSNGDisplayMenu::SetItem(const char *Text, int Index, bool Current, boo
   else {
      ColorFg = Theme.Color(Selectable ? clrMenuItemSelectable : clrMenuItemNonSelectable);
      ColorBg = Theme.Color(clrBackground);
-     if (currentIndex == Index)
+//     if (currentIndex == Index)
         osd->DrawRectangle(xi00, y, xi03 - 1, y + lineHeight - 1, Theme.Color(clrBackground));
      }
   const cFont *font = cFont::GetFont(fontOsd);
@@ -1915,13 +1916,10 @@ void cLCARSNGDisplayMenu::Flush(void)
   int Width;
   int Height;
   double Aspect;
-//  int xrand = (1920 - xa09) / 2;
-//  int yrand = (1080 - yb15) / 2;
   cDevice *Device = cDevice::PrimaryDevice();
   cDevice::PrimaryDevice()->GetOsdSize(Width, Height, Aspect);
   int xrand = (Width - xa09) / 2;
   int yrand = (Height - yb15) / 2;
-//  cRect videoWindowRect( 0.575 * xa09, lineHeight, 0.44 * xa09, yc06 - lineHeight / 2);
   cRect videoWindowRect( xs00 + xrand, yrand + Gap, xs11 - xs00, yc05 - yrand / 2);
   DrawFrameDisplay();
   switch (MenuCategory()) {
@@ -1947,7 +1945,6 @@ void cLCARSNGDisplayMenu::Flush(void)
            }
         else if (cControl *Control = cControl::Control(true))
            DrawPlay(Control);
-//        osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, 0x00000000);
         if (initial) {
            availableRect = cDevice::PrimaryDevice()->CanScaleVideo(videoWindowRect);
            osd->Flush();
