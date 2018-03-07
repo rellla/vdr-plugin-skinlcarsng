@@ -258,8 +258,12 @@ static bool DrawDeviceData(cOsd *Osd, const cDevice *Device, int x0, int y0, int
      LastDeviceType = DeviceType;
      // CAM:
      if (CamSlot) {
+#if APIVERSNUM > 20302
+        cString s = cString::sprintf("CAM %d", CamSlot->MasterSlotNumber());
+#else
         cString s = cString::sprintf("CAM %d", CamSlot->SlotNumber());
-        Osd->DrawText(x, y1 - TinyFont->Height(), s, ColorFg, ColorBg, TinyFont);
+#endif
+	Osd->DrawText(x, y1 - TinyFont->Height(), s, ColorFg, ColorBg, TinyFont);
         xs = max(xs, x + TinyFont->Width(s));
         }
      LastCamSlot = CamSlot;
