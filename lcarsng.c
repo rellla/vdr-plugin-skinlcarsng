@@ -4,7 +4,7 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: skinlcars.c 3.8 2014/06/12 08:48:15 kls Exp $
+ * $Id: skinlcars.c 4.1 2015/09/01 10:07:07 kls Exp $
  */
 
 // "Star Trek: The Next Generation"(R) is a registered trademark of Paramount Pictures,
@@ -748,7 +748,11 @@ private:
   int lastDiskUsageState;
   bool lastDiskAlert;
   double lastSystemLoad;
+#if APIVERSNUM > 20300
+  cStateKey timersStateKey;
+#else
   int lastTimersState;
+#endif
   time_t lastSignalDisplay;
   int lastLiveIndicatorY;
   bool lastLiveIndicatorTransferring;
@@ -814,7 +818,9 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   lastEvent = NULL;
   lastRecording = NULL;
   lastSeen = -1;
+#if APIVERSNUM < 20301
   lastTimersState = -1;
+#endif
   lastSignalDisplay = 0;
   lastLiveIndicatorY = -1;
   lastLiveIndicatorTransferring = false;
@@ -1023,7 +1029,11 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
            xi01 = xm03;
            xi02 = xm04;
            xi03 = xm05;
+#if APIVERSNUM < 20301
            lastTimersState = -1;
+#else
+           timersStateKey.Reset();
+#endif
            DrawMainFrameLower();
            DrawMainBracket();
            DrawStatusElbows();
@@ -1390,19 +1400,40 @@ void cLCARSNGDisplayMenu::DrawTimer(const cTimer *Timer, int y, bool MultiRec)
      }
   if (Event)
      osd->DrawText(xs00 + d, y + lineHeight - tinyFont->Height(), Event->Title(), ColorFg, ColorBg, tinyFont, xs03 - xs00 - 2 * d);
+#if APIVERSNUM > 20300
+  // The remote timer indicator:
+  if (Timer->Remote())
+     osd->DrawRectangle(xs00 - (lineHeight - Gap) / 2, y, xs00 - Gap - 1, y + lineHeight - 1, Timer->Recording() ? Theme.Color(clrMenuTimerRecording) : ColorBg);
+#endif
   // The timer recording indicator:
+#if APIVERSNUM > 20300
+  else if (Timer->Recording())
+#else
   if (Timer->Recording())
+#endif
      osd->DrawRectangle(xs03 + Gap, y - (MultiRec ? Gap : 0), xs04 - Gap / 2 - 1, y + lineHeight - 1, Theme.Color(clrMenuTimerRecording));
 }
 
 void cLCARSNGDisplayMenu::DrawTimers(void)
 {
+#if APIVERSNUM > 20300
+  if (const cTimers *Timers = cTimers::GetTimersRead(timersStateKey)) {
+#else
   if (Timers.Modified(lastTimersState)) {
+#endif
      deviceRecording.Clear();
      const cFont *font = cFont::GetFont(fontOsd);
+#if APIVERSNUM > 20300
+     osd->DrawRectangle(xs00 - (lineHeight - Gap) / 2, ys04, xs04 - 1, ys05 - 1, Theme.Color(clrBackground));
+#else
      osd->DrawRectangle(xs00, ys04, xs04 - 1, ys05 - 1, Theme.Color(clrBackground));
+#endif
      osd->DrawRectangle(xs07, ys04, xs13 - 1, ys05 - 1, Theme.Color(clrBackground));
+#if APIVERSNUM > 20300
+     cSortedTimers SortedTimers(Timers);
+#else
      cSortedTimers SortedTimers;
+#endif
      cVector<int> FreeDeviceSlots;
      int NumDevices = 0;
      int y = ys04;
@@ -1415,7 +1446,18 @@ void cLCARSNGDisplayMenu::DrawTimers(void)
                   break;
                if (const cTimer *Timer = SortedTimers[i]) {
                   if (Timer->Recording()) {
+#if APIVERSNUM > 20300
+                     if (Timer->Remote()) {
+                        if (!Device && Timer->HasFlags(tfActive)) {
+                           DrawTimer(Timer, y, false);
+                           FreeDeviceSlots.Append(y);
+                           y += lineHeight + Gap;
+                           }
+                        }
+                     else if (cRecordControl *RecordControl = cRecordControls::GetRecordControl(Timer)) {
+#else
                      if (cRecordControl *RecordControl = cRecordControls::GetRecordControl(Timer)) {
+#endif
                         if (!Device || Device == RecordControl->Device()) {
                            DrawTimer(Timer, y, NumTimers > 0);
                            NumTimers++;
@@ -1466,7 +1508,11 @@ void cLCARSNGDisplayMenu::DrawTimers(void)
          }
      // Total number of active timers:
      int NumTimers = 0;
+#if APIVERSNUM > 20300
+     for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
+#else
      for (cTimer *Timer = Timers.First(); Timer; Timer = Timers.Next(Timer)) {
+#endif
          if (Timer->HasFlags(tfActive))
             NumTimers++;
          }
@@ -1474,6 +1520,9 @@ void cLCARSNGDisplayMenu::DrawTimers(void)
      osd->DrawText(xs08, ys00, itoa(NumDevices), Theme.Color(clrMenuFrameFg), frameColor, font, xs09 - xs08, ys01 - ys00, taBottom | taRight | taBorder);
      lastSignalDisplay = 0;
      initial = true; // forces redrawing of devices
+#if APIVERSNUM > 20300
+     timersStateKey.Remove();
+#endif
      }
 }
 
@@ -1577,6 +1626,25 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      DrawSeen(0, 0);
      }
   // The current programme:
+#if APIVERSNUM > 20300
+  LOCK_SCHEDULES_READ;
+  if (const cSchedule *Schedule = Schedules->GetSchedule(Channel)) {
+     const cEvent *Event = Schedule->GetPresentEvent();
+     if (initial || Event != lastEvent) {
+        DrawInfo(Event, true);
+        lastEvent = Event;
+        lastSeen = -1;
+        }
+     int Current = 0;
+     int Total = 0;
+     if (Event) {
+        time_t t = time(NULL);
+        if (t > Event->StartTime())
+           Current = t - Event->StartTime();
+        Total = Event->Duration();
+        }
+     DrawSeen(Current, Total);
+#else
   cSchedulesLock SchedulesLock;
   if (const cSchedules *Schedules = cSchedules::Schedules(SchedulesLock)) {
      if (const cSchedule *Schedule = Schedules->GetSchedule(Channel)) {
@@ -1596,6 +1664,7 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
            }
         DrawSeen(Current, Total);
         }
+#endif
      }
 }
 
@@ -1733,7 +1802,12 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
         osd->DrawText(xs00, ys00, Title, Theme.Color(clrMenuFrameFg), frameColor, font, xs11 - xs00, lineHeight, taBottom | taRight | taBorder);
         osd->DrawRectangle(xs12, ys00, xs13 - 1, ys01 - 1, frameColor);
         int NumTimers = 0;
+#if APIVERSNUM > 20300
+        LOCK_TIMERS_READ;
+        for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
+#else
         for (cTimer *Timer = Timers.First(); Timer; Timer = Timers.Next(Timer)) {
+#endif
            if (Timer->HasFlags(tfActive))
               NumTimers++;
            }
@@ -1962,7 +2036,12 @@ void cLCARSNGDisplayMenu::Flush(void)
      case mcTimer:
      case mcTimerEdit:
         if (!Device->Replaying() || Device->Transferring()) {
+#if APIVERSNUM > 20300
+           LOCK_CHANNELS_READ;
+           const cChannel *Channel = Channels->GetByNumber(cDevice::PrimaryDevice()->CurrentChannel());
+#else
            const cChannel *Channel = Channels.GetByNumber(cDevice::PrimaryDevice()->CurrentChannel());
+#endif
            DrawLive(Channel);
            }
         else if (cControl *Control = cControl::Control(true))
