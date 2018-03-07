@@ -1,0 +1,110 @@
+Description = 390Lb
+clrBackground = A0141717
+
+clrTrackName = FFFFCC66
+clrAlertFg = FFFFFFFF
+clrAlertBg = FFFF0000
+clrChannelName = FF99CCFF
+clrEventTitle = FF99CCFF
+clrEventTime = FFFFCC66
+clrEventShortText = FFFFCC66
+clrEventDescription = FF99CCFF
+
+
+clrButtonRedFg = FF000000
+clrButtonRedBg = FFf97d7d
+clrButtonGreenFg = FF000000
+clrButtonGreenBg = FF9df97d
+clrButtonYellowFg = FF000000
+clrButtonYellowBg = FFf9f47d
+clrButtonBlueFg = FF000000
+clrButtonBlueBg = FF7db4f9
+
+
+clrMessageStatusFg = FFFFFFFF
+clrMessageStatusBg = FF0000B2
+clrMessageInfoFg = FF000000
+clrMessageInfoBg = FF00B200
+clrMessageWarningFg = FF000000
+clrMessageWarningBg = FFB2B200
+clrMessageErrorFg = FFFFFFFF
+clrMessageErrorBg = FFB20000
+clrVolumeFrame = FFF1DF6F
+clrVolumeSymbol = FF000000
+clrVolumeBarUpper = FFC1B259
+clrVolumeBarLower = FF00B200
+
+clrChannelFrameFg = FF000000
+clrChannelFrameBg = FF8a9ec9
+
+clrChannelSymbolOn = FF50638b
+clrChannelSymbolOff = FF738ec9
+clrChannelSymbolRecFg = FFFFFFFF
+clrChannelSymbolRecBg = FFB20000
+
+
+#Pegel Text
+clrDeviceFg = FFff9900
+#Pegel Hintergrund
+clrDeviceBg = A0141717
+#Pegel Balken
+clrSignalValue = FFff9966
+#Pegel Hintergrund
+clrSignalRest = FFffcc99
+#Timer Text
+clrTimerFg = FF000000
+#Timer hintergrund
+clrTimerBg = FF99CCFF
+#Sendungsfortschritt
+clrSeen = FFCC99CC
+#Datum Vordergrund
+clrDateFg = FF000000
+#Datum Hintergrund
+clrDateBg = FF99CCFF
+#Umrandung unten Vordergrund
+clrMenuFrameFg = FF202740
+#Umrandung unten Hintergrund
+#c#lrMenuFrameBg = FFe0606d
+clrMenuFrameBg = FFFF9966
+#Menue Titel Text
+clrMenuTitle = FFea962d
+
+#Menu Liste
+clrMenuMainBracket = FF9999ff
+#Liste Aktiv Vordergrund
+clrMenuItemCurrentFg = FFffa201
+#Liste Aktiv Hintergrund
+clrMenuItemCurrentBg = FF202740
+#Liste Eintrag
+clrMenuItemSelectable = FF8a9ec9
+#Liste Eintrag (inaktiv)
+clrMenuItemNonSelectable = FF99CCFF
+
+
+
+
+clrMenuTimerRecording = FFF1B1AF
+clrMenuDeviceRecording = FF99CCFF
+
+
+clrMenuScrollbarTotal = FFFFBC57
+clrMenuScrollbarShown = FFCC99CC
+clrMenuScrollbarArrow = FF000000
+clrMenuText = FFff00ff
+
+clrReplayFrameFg = FF000000
+clrReplayFrameBg = FFCC6666
+clrReplayPosition = FFCC99CC
+clrReplayJumpFg = FF000000
+clrReplayJumpBg = FFCC99CC
+clrReplayProgressSeen = FFCC99CC
+clrReplayProgressRest = FFCCCCCC
+clrReplayProgressSelected = FF990000
+clrReplayProgressMark = FF000000
+clrReplayProgressCurrent = FF990000
+clrTrackFrameFg = FF000000
+clrTrackFrameBg = FFFFCC66
+clrTrackItemFg = FF000000
+clrTrackItemBg = FFFFE6B3
+clrTrackItemCurrentFg = FF000000
+clrTrackItemCurrentBg = FFFFCC66

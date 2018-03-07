@@ -1,0 +1,41 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Mase <vdr.skinlcarsng@test.test>
+Thanks to:                   LCARS-Skin from Klaus Schmiedinger
+
+Project's homepage:          
+
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+See the file COPYING for more information.
+
+Requirements
+------------
+
+- VDR version >= 1.7.34
+
+Description
+-----------
+skinlcarsng ist ein Skin für den VDR aufbauend auf dem Skin LCARS, der dem VDR original beiliegt.
+Der Skin ist ohne Konfiguration.
+
+Installation 
+------------
+Installation wie bei allen VDR Plugins.
+    make
+    make install
+
+Der Skin muss im Menü unter Einstellungen -> OSD ausgewählt werden.
+
+
+Themes
+-------------------------------
+Der Skin ist weitestgehend über Themes anpassbar.
+
+Alle dem VDR beiliegenden LCARS-Themes können hier parallel benutzt werden, z.B. durch verlinken:
+
+ln -s lcars-default.theme lcarsng-default.theme
+
