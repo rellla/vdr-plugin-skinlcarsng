@@ -738,6 +738,7 @@ private:
   static cBitmap bmArrowUp, bmArrowDown, bmTransferMode;
   void DrawMainFrameUpper(tColor Color);
   void DrawMainFrameLower(void);
+  void DrawMainFrameChannel(void);
   void DrawMainButton(const char *Text, int x0, int x1, int x2, int x3, int y0, int y1, tColor ColorFg, tColor ColorBg, const cFont *Font);
   void DrawMenuFrame(void);
   void DrawMainBracket(void);
@@ -1007,12 +1008,13 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
            break;
         case mcChannel:
            osd->DrawRectangle(xa00, yt00, xa09 - 1, yb15 - 1, 0x00000000);
-           yi00 = yt04;
+           yi00 = yt04 + lineHeight;
            yi01 = ym04;
            xi00 = xm00;
            xi01 = xm03;
            xi02 = xm04;
            xi03 = xm05;
+           DrawMainFrameChannel();
            DrawMainBracket();
            break;
         case mcSchedule:
@@ -1084,6 +1086,27 @@ void cLCARSNGDisplayMenu::DrawMainFrameLower(void)
   osd->DrawRectangle(xa06, yc06, xm03 - 1, yc07 - lineHeight / 2 - 1, frameColor);
   osd->DrawRectangle(xm03 + Gap, yc06, xm08 - 1, yc07 - 1, frameColor);
   osd->DrawRectangle(xm08 + Gap, yc06, xs00 - Gap - 1, yc07 - 1, frameColor);
+  // VDR version:
+  osd->DrawRectangle(xa00, yb10, xa02 - 1, yb15 - 1, frameColor);
+  osd->DrawText(xa00, yb10, "VDR", Theme.Color(clrMenuFrameFg), frameColor, tallFont, xa02 - xa00, yb11 - yb10, taTop | taRight | taBorder);
+  osd->DrawText(xa00, yb15 - lineHeight, VDRVERSION, Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
+}
+
+void cLCARSNGDisplayMenu::DrawMainFrameChannel(void)
+{
+  const cFont *font = cFont::GetFont(fontOsd);
+  // Upper elbow:
+  osd->DrawRectangle(xa00, yt05, xa01 - 1, yt06 - 1, frameColor);
+  osd->DrawRectangle(xa00, yt00, xa01 - 1, yt05 - 1, clrTransparent);
+  osd->DrawEllipse  (xa00, yt00, xa01 - 1, yt05 - 1, frameColor, 2);
+  osd->DrawRectangle(xa01, yt00, xa02 - 1, yt06 - 1, frameColor);
+  osd->DrawEllipse  (xa02, yt01, xa04 - 1, yt03 - 1, frameColor, -2);
+  osd->DrawRectangle(xa02, yt00, xa05 - 1, yt01 - 1, frameColor);
+  osd->DrawRectangle(xm04, yt00, xm08 - 1, yt01 - 1, frameColor);
+//  osd->DrawEllipse  (xa08 + lineHeight / 2, yt00, xa09 - 1, yt01 - 1, frameColor, 5);
+  // Center part:
+  osd->DrawRectangle(xa00, yt06 + Gap, xa02 - 1, yc00 - 1 - Gap, frameColor);
+  osd->DrawRectangle(xa00, yc00, xa02 - 1, yc11 - 1, frameColor);
   // VDR version:
   osd->DrawRectangle(xa00, yb10, xa02 - 1, yb15 - 1, frameColor);
   osd->DrawText(xa00, yb10, "VDR", Theme.Color(clrMenuFrameFg), frameColor, tallFont, xa02 - xa00, yb11 - yb10, taTop | taRight | taBorder);
@@ -1189,16 +1212,16 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
   tColor Color = Theme.Color(clrMenuMainBracket);
   int y0, y1, y2, y3;
   if (MenuCategory() == mcChannel) {
-     y0 = yt01;
-     y1 = y0 * 1.5;
-     y2 = yt02;
-     y3 = yt04; // yt02 + Gap
+     y0 = yt00 + lineHeight *2;
+     y1 = y0 + lineHeight / 2;
+     y2 = y1 + lineHeight / 2;
+     y3 = y2 + Gap;
      }
   else {
-     y0 = ym00;
-     y1 = ym01;
-     y2 = ym02;
-     y3 = ym03;
+     y0 = ym00; //yc08
+     y1 = ym01; //ym00 + lineHeight / 2
+     y2 = ym02; //ym01 + lineHeight / 2
+     y3 = ym03; //ym02 + Gap
      }
   if (MenuCategory() != mcSchedule && MenuCategory() != mcScheduleNow && MenuCategory() != mcScheduleNext && MenuCategory() != mcEvent && MenuCategory() != mcRecording && MenuCategory() != mcRecordingInfo && MenuCategory() != mcTimer && MenuCategory() != mcTimerEdit) {
      osd->DrawRectangle(xm00, y0, xm01 - 1, y1 - 1, Color);
@@ -1216,7 +1239,7 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
   if (MenuCategory() == mcCommand)
      osd->DrawText(xm02, ys00, tr("Commands"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
   if (MenuCategory() == mcChannel)
-     osd->DrawText(xm02, y0 - lineHeight / 2, tr("Channels"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
+     osd->DrawText(xm02, yt00, tr("Channels"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
   if (MenuCategory() != mcMain && MenuCategory() != mcSchedule && MenuCategory() != mcScheduleNow && MenuCategory() != mcScheduleNext && MenuCategory() != mcEvent && MenuCategory() != mcRecording && MenuCategory() != mcRecordingInfo && MenuCategory() != mcTimer && MenuCategory() != mcTimerEdit) {
      osd->DrawRectangle(xm04 - Gap, y0, xm04, ym01 - 1, 0x00000000);
      osd->DrawRectangle(xm04 - Gap, ym06, xm04, ym07 - 1, 0x00000000);
@@ -1243,7 +1266,7 @@ void cLCARSNGDisplayMenu::DrawStatusElbows(void)
 
 void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
 {
-  if (MenuCategory() != mcChannel) {
+//  if (MenuCategory() != mcChannel) {
      DrawDate();
      DrawDisk();
      DrawLoad();
@@ -1256,7 +1279,7 @@ void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
            osd->DrawText(xa00, yb09 - lineHeight, "LCARSNG", Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
            }
         }
-     }
+//     }
 }
 
 void cLCARSNGDisplayMenu::DrawScrollbar(int Total, int Offset, int Shown, bool CanScrollUp, bool CanScrollDown)
@@ -1273,7 +1296,7 @@ void cLCARSNGDisplayMenu::DrawScrollbar(int Total, int Offset, int Shown, bool C
   else if (MenuCategory() == mcChannel) {
      x0 = xm07;
      x1 = xm08;
-     tt = yt04;
+     tt = yt04 + lineHeight;
      tb = ym04;
      ClearColor = Theme.Color(clrMenuMainBracket);
      }
@@ -1641,7 +1664,7 @@ int cLCARSNGDisplayMenu::MaxItems(void)
         return (ym04 - ym03) / lineHeight;
         break;
      case mcChannel:
-        return (ym04 - yt04) / lineHeight;
+        return (ym04 - yt04 - lineHeight) / lineHeight;
         break;
      case mcSchedule:
      case mcScheduleNow:
