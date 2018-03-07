@@ -1806,17 +1806,19 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
         if (const cTimers *Timers = cTimers::GetTimersRead(timersStateKey)) {
            for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
 #else
-        if (Timers.Modified(lastTimersState)) {
+//        if (Timers.Modified(lastTimersState)) {
            for (cTimer *Timer = Timers.First(); Timer; Timer = Timers.Next(Timer)) {
 #endif
               if (Timer->HasFlags(tfActive))
                  NumTimers++;
               }
-           osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder);
+//           osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder);
 #if APIVERSNUM > 20300
            timersStateKey.Remove();
-#endif
+//#endif
            }
+#endif
+        osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder);
         }
         break;
      default:
