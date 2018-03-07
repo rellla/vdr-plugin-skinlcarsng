@@ -1657,10 +1657,20 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
      case mcEvent:
      case mcRecording:
      case mcRecordingInfo:
-     case mcTimer:
      case mcTimerEdit:
         osd->DrawText(xs00, ys00, Title, Theme.Color(clrMenuFrameFg), frameColor, font, xs11 - xs00, lineHeight, taBottom | taRight | taBorder);
         osd->DrawRectangle(xs12, ys00, xs13 - 1, ys01 - 1, frameColor);
+        break;
+     case mcTimer: {
+        osd->DrawText(xs00, ys00, Title, Theme.Color(clrMenuFrameFg), frameColor, font, xs11 - xs00, lineHeight, taBottom | taRight | taBorder);
+        osd->DrawRectangle(xs12, ys00, xs13 - 1, ys01 - 1, frameColor);
+        int NumTimers = 0;
+        for (cTimer *Timer = Timers.First(); Timer; Timer = Timers.Next(Timer)) {
+           if (Timer->HasFlags(tfActive))
+              NumTimers++;
+           }
+        osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder);
+        }
         break;
      default:
         int w = font->Width(Title);
