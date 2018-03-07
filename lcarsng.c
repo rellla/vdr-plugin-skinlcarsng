@@ -377,7 +377,7 @@ private:
   void DrawDevice(void);
   void DrawSignal(void);
   void DrawBlinkingRec(void);
-  uint64_t Blink = cTimeMs::Now();
+  uint64_t Blink; //cTimeMs::Now();
 public:
   cLCARSNGDisplayChannel(bool WithInfo);
   virtual ~cLCARSNGDisplayChannel();
@@ -416,6 +416,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo)
   tinyFont = CreateTinyFont(lineHeight);
   frameColor = Theme.Color(clrChannelFrameBg);
   message = false;
+  Blink = 0;
   int d = 5 * lineHeight;
   xc00 = 0;
   xc01 = xc00 + d / 2;
@@ -553,12 +554,13 @@ void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
   bool rec = cRecordControls::Active();
   bool On = false;
   int x = xc13;
-  int blinktime = 800;
+  uint64_t blinktime = 800;
+  uint64_t Now = cTimeMs::Now();
   x -= bmRecording.Width() + SymbolSpacing;
   if (rec) {
-     if (cTimeMs::Now() - Blink > blinktime) {
+     if (Now - Blink > blinktime) {
         On = false;
-           if ((cTimeMs::Now() - Blink) / 2 > blinktime)
+           if ((Now - Blink) / 2 > blinktime)
               Blink = cTimeMs::Now();
         }
      else
@@ -578,7 +580,7 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
            max(bmTeletext.Width(), bmRadio.Width()) - SymbolSpacing;
   osd->DrawRectangle(xc12, yc11, xc13 - 1, yc12 - 1, frameColor);
   if (Channel && !Channel->GroupSep()) {
-     bool rec = cRecordControls::Active();
+//     bool rec = cRecordControls::Active();
      x -= bmRecording.Width() + SymbolSpacing;
 //     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOff), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
      x -= bmEncrypted.Width() + SymbolSpacing;
@@ -1803,7 +1805,8 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
         osd->DrawRectangle(xs12, ys00, xs13 - 1, ys01 - 1, frameColor);
         int NumTimers = 0;
 #if APIVERSNUM > 20300
-        if (const cTimers *Timers = cTimers::GetTimersRead(timersStateKey)) {
+//        if (const cTimers *Timers = cTimers::GetTimersRead(timersStateKey)) {
+           LOCK_TIMERS_READ;
            for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
 #else
 //        if (Timers.Modified(lastTimersState)) {
@@ -1814,9 +1817,9 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
               }
 //           osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder);
 #if APIVERSNUM > 20300
-           timersStateKey.Remove();
+//           timersStateKey.Remove();
 //#endif
-           }
+//           }
 #endif
         osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder);
         }
@@ -2087,7 +2090,9 @@ private:
   void DrawDate(void);
   void DrawTrack(void);
   void DrawBlinkingRec(void);
-  uint64_t Blink = cTimeMs::Now();
+  uint64_t Blink; // = cTimeMs::Now();
+  bool initial;
+  bool lastOn;
 public:
   cLCARSNGDisplayReplay(bool ModeOnly);
   virtual ~cLCARSNGDisplayReplay();
@@ -2118,6 +2123,9 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly)
   lastCurrentWidth = 0;
   lastTotalWidth = 0;
   memset(&lastTrackId, 0, sizeof(lastTrackId));
+  lastOn = false;
+  initial = true;
+  Blink = 0;
   int d = 5 * lineHeight;
   xp00 = 0;
   xp01 = xp00 + d / 2;
@@ -2203,19 +2211,23 @@ void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
   bool rec = cRecordControls::Active();
   bool On = false;
   int x = xp13;
-  int blinktime = 800;
+  uint64_t blinktime = 800;
+  uint64_t Now = cTimeMs::Now();
   if (rec) {
-     if (cTimeMs::Now() - Blink > blinktime) {
+     if (Now - Blink > blinktime) {
         On = false;
-           if ((cTimeMs::Now() - Blink) / 2 > blinktime)
+           if ((Now - Blink) / 2 > blinktime)
               Blink = cTimeMs::Now();
         }
      else
         On = true;
      }
  
-     x -= bmRecording.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
+     if (initial || On != lastOn) { 
+       x -= bmRecording.Width() + SymbolSpacing;
+       osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
+       lastOn = On;
+     }
 }
 
 void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
@@ -2224,8 +2236,9 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
   int x = xp13;
 
   osd->DrawRectangle(xp12, yp08, xp13 - 1, yp09 - 1, frameColor);
-  bool rec = cRecordControls::Active();
+//  bool rec = cRecordControls::Active();
   x -= bmRecording.Width() + SymbolSpacing;
+//  osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(clrChannelSymbolOff), frameColor);
 //  osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOff), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
  
   SetTitle(RecordingInfo->Title());
@@ -2299,6 +2312,7 @@ void cLCARSNGDisplayReplay::Flush(void)
      }
   osd->Flush();
 //  cDevice::PrimaryDevice()->ScaleVideo(videoWindowRect);
+  initial = false;
 }
 
 // --- cLCARSNGDisplayVolume -----------------------------------------------
