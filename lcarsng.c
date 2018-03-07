@@ -4,7 +4,7 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: skinlcars.c 3.3 2013/08/18 13:45:36 kls Exp $
+ * $Id: skinlcars.c 3.6 2013/11/16 13:20:19 kls Exp $
  */
 
 // "Star Trek: The Next Generation"(R) is a registered trademark of Paramount Pictures,
@@ -495,7 +495,7 @@ void cLCARSNGDisplayChannel::DrawTrack(void)
 {
   cDevice *Device = cDevice::PrimaryDevice();
   const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
-  if (!Track && *lastTrackId.description || Track && strcmp(lastTrackId.description, Track->description)) {
+  if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
      osd->DrawText(xc03, yc07, Track ? Track->description : "", Theme.Color(clrTrackName), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xc07 - xc03);
      strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
      }
@@ -1934,6 +1934,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly)
   frameColor = Theme.Color(clrReplayFrameBg);
   lastCurrentWidth = 0;
   lastTotalWidth = 0;
+  memset(&lastTrackId, 0, sizeof(lastTrackId));
   int d = 5 * lineHeight;
   xp00 = 0;
   xp01 = xp00 + d / 2;
@@ -1963,8 +1964,6 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly)
   yp07 = yp08 - lineHeight;
   yp06 = yp08 - d / 4;
   yp05 = yp09 - d / 2;
-
-  memset(&lastTrackId, 0, sizeof(lastTrackId));
 
   osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop() + cOsd::OsdHeight() - yp09, xp00, yp00 - lineHeight, xp15 - 1, yp09 - 1);
   osd->DrawRectangle(xp00, yp00, xp15 - 1, yp09 - 1, modeOnly ? clrTransparent : Theme.Color(clrBackground));
@@ -2010,7 +2009,7 @@ void cLCARSNGDisplayReplay::DrawTrack(void)
 {
   cDevice *Device = cDevice::PrimaryDevice();
   const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
-  if (!Track && *lastTrackId.description || Track && strcmp(lastTrackId.description, Track->description)) {
+  if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
      osd->DrawText(xp03, yp04, Track ? Track->description : "", Theme.Color(clrTrackName), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xp07 - xp03);
      strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
      }
