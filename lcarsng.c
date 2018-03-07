@@ -1797,6 +1797,11 @@ void cLCARSNGDisplayMenu::Clear(void)
 void cLCARSNGDisplayMenu::SetTitle(const char *Title)
 {
   const cFont *font = cFont::GetFont(fontOsd);
+  int i = 0;
+  {
+  LOCK_RECORDINGS_READ;
+  i = Recordings->Count();
+  }
   switch (MenuCategory()) {
      case mcMain:
      case mcSetup:
@@ -1808,6 +1813,7 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
      case mcScheduleNext:
      case mcEvent:
      case mcRecording:
+	osd->DrawText(xm04, ys00, cString::sprintf("%i", i), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight);
      case mcRecordingInfo:
      case mcRecordingEdit:
      case mcTimerEdit:
