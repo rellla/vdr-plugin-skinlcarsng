@@ -1007,7 +1007,7 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
            break;
         case mcChannel:
            osd->DrawRectangle(xa00, yt00, xa09 - 1, yb15 - 1, 0x00000000);
-           yi00 = ym03;
+           yi00 = yt04;
            yi01 = ym04;
            xi00 = xm00;
            xi01 = xm03;
@@ -1187,12 +1187,25 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
 {
   const cFont *font = cFont::GetFont(fontOsd);
   tColor Color = Theme.Color(clrMenuMainBracket);
+  int y0, y1, y2, y3;
+  if (MenuCategory() == mcChannel) {
+     y0 = yt01;
+     y1 = y0 * 1.5;
+     y2 = yt02;
+     y3 = yt04; // yt02 + Gap
+     }
+  else {
+     y0 = ym00;
+     y1 = ym01;
+     y2 = ym02;
+     y3 = ym03;
+     }
   if (MenuCategory() != mcSchedule && MenuCategory() != mcScheduleNow && MenuCategory() != mcScheduleNext && MenuCategory() != mcEvent && MenuCategory() != mcRecording && MenuCategory() != mcRecordingInfo && MenuCategory() != mcTimer && MenuCategory() != mcTimerEdit) {
-     osd->DrawRectangle(xm00, ym00, xm01 - 1, ym01 - 1, Color);
-     osd->DrawRectangle(xm02, ym00, xm07 - 1, ym01 - 1, Color);
-     osd->DrawEllipse  (xm07, ym00, xm08 - 1, ym02 - 1, Color, 1);
-     osd->DrawEllipse  (xm06, ym01, xm07 - 1, ym02 - 1, Color, -1);
-     osd->DrawRectangle(xm07, ym03, xm08 - 1, ym04 - 1, Color);
+     osd->DrawRectangle(xm00, y0, xm01 - 1, y1 - 1, Color);
+     osd->DrawRectangle(xm02, y0, xm07 - 1, y1 - 1, Color);
+     osd->DrawEllipse  (xm07, y0, xm08 - 1, y2 - 1, Color, 1);
+     osd->DrawEllipse  (xm06, y1, xm07 - 1, y2 - 1, Color, -1);
+     osd->DrawRectangle(xm07, y3, xm08 - 1, ym04 - 1, Color);
      osd->DrawEllipse  (xm06, ym05, xm07 - 1, ym06 - 1, Color, -4);
      osd->DrawEllipse  (xm07, ym05, xm08 - 1, ym07 - 1, Color, 4);
      osd->DrawRectangle(xm02, ym06, xm07 - 1, ym07 - 1, Color);
@@ -1203,10 +1216,10 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
   if (MenuCategory() == mcCommand)
      osd->DrawText(xm02, ys00, tr("Commands"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
   if (MenuCategory() == mcChannel)
-     osd->DrawText(xm02, ys00, tr("Channels"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
+     osd->DrawText(xm02, y0 - lineHeight / 2, tr("Channels"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
   if (MenuCategory() != mcMain && MenuCategory() != mcSchedule && MenuCategory() != mcScheduleNow && MenuCategory() != mcScheduleNext && MenuCategory() != mcEvent && MenuCategory() != mcRecording && MenuCategory() != mcRecordingInfo && MenuCategory() != mcTimer && MenuCategory() != mcTimerEdit) {
-     osd->DrawRectangle(xm04 - Gap, ym00, xm04, ym01 - 1, Theme.Color(clrBackground));
-     osd->DrawRectangle(xm04 - Gap, ym06, xm04, ym07 - 1, Theme.Color(clrBackground));
+     osd->DrawRectangle(xm04 - Gap, y0, xm04, ym01 - 1, 0x00000000);
+     osd->DrawRectangle(xm04 - Gap, ym06, xm04, ym07 - 1, 0x00000000);
      }
 }
 
@@ -1250,10 +1263,17 @@ void cLCARSNGDisplayMenu::DrawScrollbar(int Total, int Offset, int Shown, bool C
 {
   int x0, x1, tt, tb;
   tColor ClearColor;
-  if (MenuCategory() == mcMain || MenuCategory() == mcSetup || MenuCategory() == mcCommand || MenuCategory() == mcChannel) {
+  if (MenuCategory() == mcMain || MenuCategory() == mcSetup || MenuCategory() == mcCommand) {
      x0 = xm07;
      x1 = xm08;
      tt = ym03;
+     tb = ym04;
+     ClearColor = Theme.Color(clrMenuMainBracket);
+     }
+  else if (MenuCategory() == mcChannel) {
+     x0 = xm07;
+     x1 = xm08;
+     tt = yt04;
      tb = ym04;
      ClearColor = Theme.Color(clrMenuMainBracket);
      }
@@ -1618,8 +1638,10 @@ int cLCARSNGDisplayMenu::MaxItems(void)
      case mcMain:
      case mcSetup:
      case mcCommand:
-     case mcChannel:
         return (ym04 - ym03) / lineHeight;
+        break;
+     case mcChannel:
+        return (ym04 - yt04) / lineHeight;
         break;
      case mcSchedule:
      case mcScheduleNow:
@@ -1684,12 +1706,18 @@ void cLCARSNGDisplayMenu::SetButtons(const char *Red, const char *Green, const c
   const char *lutText[] = { Red, Green, Yellow, Blue };
   tColor lutFg[] = { clrButtonRedFg, clrButtonGreenFg, clrButtonYellowFg, clrButtonBlueFg };
   tColor lutBg[] = { clrButtonRedBg, clrButtonGreenBg, clrButtonYellowBg, clrButtonBlueBg };
+  int x = 0;
+  int y = 0;
+  if (MenuCategory() == mcChannel) {
+     x = xa09 - xm05;
+     y = yb15 - yc04;
+     }
   const cFont *font = cFont::GetFont(fontSml);
   if (MenuCategory() == mcMain || MenuCategory() == mcSetup || MenuCategory() == mcCommand || MenuCategory() == mcChannel || MenuCategory() == mcSchedule || MenuCategory() == mcScheduleNow || MenuCategory() == mcScheduleNext || MenuCategory() == mcEvent || MenuCategory() == mcRecording || MenuCategory() == mcRecordingInfo || MenuCategory() == mcTimer || MenuCategory() == mcTimerEdit) {
-     DrawMainButton(lutText[Setup.ColorKey0], xd00, xd01, xd02, xd03, yd02, yd03, Theme.Color(lutFg[Setup.ColorKey0]), Theme.Color(lutBg[Setup.ColorKey0]), font);
-     DrawMainButton(lutText[Setup.ColorKey1], xd04, xd05, xd06, xd07, yd02, yd03, Theme.Color(lutFg[Setup.ColorKey1]), Theme.Color(lutBg[Setup.ColorKey1]), font);
-     DrawMainButton(lutText[Setup.ColorKey2], xd00, xd01, xd02, xd03, yd04, yd05, Theme.Color(lutFg[Setup.ColorKey2]), Theme.Color(lutBg[Setup.ColorKey2]), font);
-     DrawMainButton(lutText[Setup.ColorKey3], xd04, xd05, xd06, xd07, yd04, yd05, Theme.Color(lutFg[Setup.ColorKey3]), Theme.Color(lutBg[Setup.ColorKey3]), font);
+     DrawMainButton(lutText[Setup.ColorKey0], xd00 + x, xd01 + x, xd02 + x, xd03 + x, yd02 + y, yd03 + y, Theme.Color(lutFg[Setup.ColorKey0]), Theme.Color(lutBg[Setup.ColorKey0]), font);
+     DrawMainButton(lutText[Setup.ColorKey1], xd04 + x, xd05 + x, xd06 + x, xd07 + x, yd02 + y, yd03 + y, Theme.Color(lutFg[Setup.ColorKey1]), Theme.Color(lutBg[Setup.ColorKey1]), font);
+     DrawMainButton(lutText[Setup.ColorKey2], xd00 + x, xd01 + x, xd02 + x, xd03 + x, yd04 + y, yd05 + y, Theme.Color(lutFg[Setup.ColorKey2]), Theme.Color(lutBg[Setup.ColorKey2]), font);
+     DrawMainButton(lutText[Setup.ColorKey3], xd04 + x, xd05 + x, xd06 + x, xd07 + x, yd04 + y, yd05 + y, Theme.Color(lutFg[Setup.ColorKey3]), Theme.Color(lutBg[Setup.ColorKey3]), font);
      }
   else {
      int h = yb15 - yb14;
