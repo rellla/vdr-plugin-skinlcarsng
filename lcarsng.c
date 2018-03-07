@@ -1610,7 +1610,7 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
   else {
      cString Header = Control->GetHeader();
      if (!*lastHeader || strcmp(Header, lastHeader)) {
-        osd->DrawText(xa03, yt04, Header, Theme.Color(clrMenuText), Theme.Color(clrBackground), tallFont, xd00 - xa03, yd01 - yd00, taTop | taLeft);
+        osd->DrawText(xa03, yt04, Header, Theme.Color(clrMenuText), Theme.Color(clrBackground), tallFont, xd07 - xa03, 0, taTop | taLeft);
         lastHeader = Header;
         }
      }
