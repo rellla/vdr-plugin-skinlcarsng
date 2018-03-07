@@ -1797,26 +1797,30 @@ void cLCARSNGDisplayMenu::Clear(void)
 void cLCARSNGDisplayMenu::SetTitle(const char *Title)
 {
   const cFont *font = cFont::GetFont(fontOsd);
-  int i = 0;
+#ifdef USE_WAREAGLEICON
+  int NumRecordingsInPath = 0;
   {
   LOCK_RECORDINGS_READ;
-  i = Recordings->Count();
+  NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
   }
+#endif /* WAREAGLEICON */
   switch (MenuCategory()) {
      case mcMain:
      case mcSetup:
      case mcCommand:
      case mcChannel:
         break;
+     case mcRecording:
+#ifdef USE_WAREAGLEICON
+	osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight);
+#endif /* WAREAGLEICON */
+     case mcRecordingInfo:
+     case mcRecordingEdit:
+     case mcTimerEdit:
      case mcSchedule:
      case mcScheduleNow:
      case mcScheduleNext:
      case mcEvent:
-     case mcRecording:
-	osd->DrawText(xm04, ys00, cString::sprintf("%i", i), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight);
-     case mcRecordingInfo:
-     case mcRecordingEdit:
-     case mcTimerEdit:
 	osd->DrawRectangle(xs00 - Gap, ys00, xs00, ys01 - 1, Theme.Color(clrBackground));
         osd->DrawText(xs00, ys00, Title, Theme.Color(clrMenuFrameFg), frameColor, font, xs11 - xs00 - 1, lineHeight, taBottom | taRight);
         osd->DrawRectangle(xs12, ys00, xs13 - 1, ys01 - 1, frameColor);
