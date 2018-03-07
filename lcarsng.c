@@ -226,7 +226,7 @@ static cOsd *CreateOsd(int Left, int Top, int x0, int y0, int x1, int y1)
 static cFont *CreateTinyFont(int LineHeight)
 {
   // Creates a font that is not higher than half of LineHeight.
-  LineHeight /= 1.75;
+  LineHeight /= 1.85;
   int Height = LineHeight;
   for (;;) {
       cFont *TinyFont = cFont::CreateFont(Setup.FontOsd, Height);
