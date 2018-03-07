@@ -1807,6 +1807,7 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
      case mcRecording:
      case mcRecordingInfo:
      case mcTimerEdit:
+	osd->DrawRectangle(xs00 - Gap, ys00, xs00, ys01 - 1, Theme.Color(clrBackground));
         osd->DrawText(xs00, ys00, Title, Theme.Color(clrMenuFrameFg), frameColor, font, xs11 - xs00, lineHeight, taBottom | taRight | taBorder);
         osd->DrawRectangle(xs12, ys00, xs13 - 1, ys01 - 1, frameColor);
         break;
