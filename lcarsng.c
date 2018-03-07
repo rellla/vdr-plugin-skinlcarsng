@@ -31,7 +31,10 @@
 #include <vdr/positioner.h>
 #endif
 #include <vdr/themes.h>
+#include "vdr/tools.h"
 #include <vdr/videodir.h>
+#include <sys/statvfs.h>
+#include <string>
 
 #include "symbols/arrowdown.xpm"
 #include "symbols/arrowup.xpm"
@@ -71,6 +74,8 @@
 #define SymbolSpacing  TextSpacing
 #define ShowSeenExtent (Setup.FontOsdSize / 5) // pixels by which the "seen" bar extends out of the frame
 
+#define MB_PER_MINUTE    25.75 // this is just an estimate! (taken over from VDR)
+#define DISKSPACECHEK        5 // seconds between disk space checks
 #define DISKUSAGEALERTLIMIT 95 // percent of disk usage above which the display goes into alert mode
 #define SIGNALDISPLAYDELTA   2 // seconds between subsequent device signal displays
 
@@ -347,6 +352,75 @@ static void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0,
   LastCurrent = c;
 }
 #endif
+
+static time_t lastDiskSpaceCheck = 0;
+static int lastFreeMB = -1;
+
+static int FreeMB(const char *Base, bool Initial)
+{
+  bool Directory = false;
+  char *currentBase = NULL;
+  if (Base) {
+     size_t Length = strlen(Base);
+     const char *p = strchr(Base, ' ');
+     int l = p - Base;
+     if (l < 0)
+        return 0;
+     currentBase = MALLOC(char, Length - l);
+     strncpy(currentBase, &Base[l + 1], Length - l -1);
+     currentBase[Length - l -1] = '\0';
+     Directory = (strcmp(currentBase, cString::sprintf("%s", trVDR("Recordings"))) && strcmp(currentBase, cString::sprintf("%s", trVDR("Deleted Recordings")))) ? true : false;
+//     free(p);
+     }
+  if (Initial || lastFreeMB <= 0 || (time(NULL) - lastDiskSpaceCheck) > DISKSPACECHEK) {
+     dev_t fsid = 0;
+     int freediskspace = 0;
+     std::string path = cVideoDirectory::Name();
+     path += "/";
+     char *tmpbase = Directory ? ExchangeChars(strdup(currentBase), true) : NULL;
+     dsyslog ("%s %s %d %s\n", __FILE__, __func__,  __LINE__, (const char *)tmpbase);
+     if (tmpbase)
+        path += tmpbase;
+     struct stat statdir;
+     if (!stat(path.c_str(), &statdir)) {
+        if (statdir.st_dev != fsid) {
+           fsid = statdir.st_dev;
+           struct statvfs fsstat;
+           if (!statvfs(path.c_str(), &fsstat)) {
+              freediskspace = int((double)fsstat.f_bavail / (double)(1024.0 * 1024.0 / fsstat.f_bsize));
+              LOCK_DELETEDRECORDINGS_READ
+              for (const cRecording *rec = DeletedRecordings->First(); rec; rec = DeletedRecordings->Next(rec)) {
+                 if (!stat(rec->FileName(), &statdir)) {
+                    if (statdir.st_dev == fsid) {
+                       int ds = DirSizeMB(rec->FileName());
+                       if (ds > 0)
+                          freediskspace += ds;
+                       else
+                          esyslog("DirSizeMB(%s) failed!", rec->FileName());
+                       }
+                    }
+                 }
+              }
+           else {
+              dsyslog("Error while getting filesystem size - statvfs (%s): %s", path.c_str(), strerror(errno));
+              freediskspace = 0;
+              }
+           }
+        else {
+           freediskspace = lastFreeMB;
+           }
+        }
+     else {
+        dsyslog("Error while getting filesystem size - stat (%s): %s", path.c_str(), strerror(errno));
+        freediskspace = 0;
+        }
+     free(tmpbase);
+     lastFreeMB = freediskspace;
+     lastDiskSpaceCheck = time(NULL);
+     }
+  free(currentBase);
+  return lastFreeMB;
+}
 
 // --- cLCARSNGDisplayChannel ----------------------------------------------
 
@@ -751,6 +825,7 @@ private:
   enum eCurrentMode { cmUnknown, cmLive, cmPlay };
   eCurrentMode lastMode;
   cString lastDate;
+  const char *currentTitle;
   int lastDiskUsageState;
   bool lastDiskAlert;
   double lastSystemLoad;
@@ -830,6 +905,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   lastSignalDisplay = 0;
   lastLiveIndicatorY = -1;
   lastLiveIndicatorTransferring = false;
+  currentTitle = NULL;
   lastDiskUsageState = -1;
   lastDiskAlert = false;
   lastSystemLoad = -1;
@@ -1219,12 +1295,20 @@ void cLCARSNGDisplayMenu::DrawDisk(void)
         const cFont *font = cFont::GetFont(fontOsd);
         int DiskUsage = cVideoDiskUsage::UsedPercent();
         bool DiskAlert = DiskUsage > DISKUSAGEALERTLIMIT;
+        int freemb = FreeMB(currentTitle, initial);
+        int minutes = 0;
+        {
+        LOCK_RECORDINGS_READ;
+        double MBperMinute = Recordings->MBperMinute();
+        minutes = int(double(freemb) / (MBperMinute > 0 ? MBperMinute : MB_PER_MINUTE));
+        }
         tColor ColorFg = DiskAlert ? Theme.Color(clrAlertFg) : Theme.Color(clrMenuFrameFg);
         tColor ColorBg = DiskAlert ? Theme.Color(clrAlertBg) : frameColor;
         if (initial || DiskAlert != lastDiskAlert)
            osd->DrawText(xa00, yb02, tr("DISK"), ColorFg, ColorBg, tinyFont, xa02 - xa00, yb03 - yb02, taTop | taLeft | taBorder);
         osd->DrawText(xa01, yb02, cString::sprintf("%02d%s", DiskUsage, "%"), ColorFg, ColorBg, font, xa02 - xa01, lineHeight, taBottom | taRight | taBorder);
-        osd->DrawText(xa00, yb03 - lineHeight, cString::sprintf("%02d:%02d", cVideoDiskUsage::FreeMinutes() / 60, cVideoDiskUsage::FreeMinutes() % 60), ColorFg, ColorBg, font, xa02 - xa00, 0, taBottom | taRight | taBorder);
+        osd->DrawText(xa00, yb03 - lineHeight, freemb ? cString::sprintf("%02d:%02d", minutes / 60, minutes % 60) : cString::sprintf("%02d:%02d", cVideoDiskUsage::FreeMinutes() / 60, cVideoDiskUsage::FreeMinutes() % 60), ColorFg, ColorBg, font, xa02 - xa00, 0, taBottom | taRight | taBorder);
+//        osd->DrawText(xa00, yb00 - lineHeight - Gap - 1, cString::sprintf("%02d:%02d", cVideoDiskUsage::FreeMinutes() / 60, cVideoDiskUsage::FreeMinutes() % 60), ColorFg, ColorBg, font, xa02 - xa00, 0, taBottom | taRight | taBorder);
         lastDiskAlert = DiskAlert;
         }
      }
@@ -1797,6 +1881,8 @@ void cLCARSNGDisplayMenu::Clear(void)
 void cLCARSNGDisplayMenu::SetTitle(const char *Title)
 {
   const cFont *font = cFont::GetFont(fontOsd);
+  initial = true;
+  currentTitle = NULL;
 #ifdef USE_WAREAGLEICON
   int NumRecordingsInPath = 0;
   {
@@ -1814,6 +1900,7 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
 #ifdef USE_WAREAGLEICON
 	osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight);
 #endif /* WAREAGLEICON */
+        currentTitle = Title;
      case mcRecordingInfo:
      case mcRecordingEdit:
      case mcTimerEdit:
