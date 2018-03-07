@@ -1803,15 +1803,20 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
         osd->DrawRectangle(xs12, ys00, xs13 - 1, ys01 - 1, frameColor);
         int NumTimers = 0;
 #if APIVERSNUM > 20300
-        LOCK_TIMERS_READ;
-        for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
+        if (const cTimers *Timers = cTimers::GetTimersRead(timersStateKey)) {
+           for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
 #else
-        for (cTimer *Timer = Timers.First(); Timer; Timer = Timers.Next(Timer)) {
+        if (Timers.Modified(lastTimersState)) {
+           for (cTimer *Timer = Timers.First(); Timer; Timer = Timers.Next(Timer)) {
 #endif
-           if (Timer->HasFlags(tfActive))
-              NumTimers++;
+              if (Timer->HasFlags(tfActive))
+                 NumTimers++;
+              }
+           osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder);
+#if APIVERSNUM > 20300
+           timersStateKey.Remove();
+#endif
            }
-        osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder);
         }
         break;
      default:
