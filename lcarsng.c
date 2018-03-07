@@ -1463,6 +1463,8 @@ void cLCARSNGDisplayMenu::DrawTimers(void)
                            FreeDeviceSlots.Append(y);
                            y += lineHeight + Gap;
                            }
+                        else
+                           continue;
                         }
                      else if (cRecordControl *RecordControl = cRecordControls::GetRecordControl(Timer)) {
 #else
