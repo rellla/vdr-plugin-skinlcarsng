@@ -268,7 +268,7 @@ static bool DrawDeviceData(cOsd *Osd, const cDevice *Device, int x0, int y0, int
 #else
         cString s = cString::sprintf("CAM %d", CamSlot->SlotNumber());
 #endif
-	Osd->DrawText(x, y1 - TinyFont->Height(), s, ColorFg, ColorBg, TinyFont);
+        Osd->DrawText(x, y1 - TinyFont->Height(), s, ColorFg, ColorBg, TinyFont);
         xs = max(xs, x + TinyFont->Width(s));
         }
      LastCamSlot = CamSlot;
@@ -1898,7 +1898,7 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
         break;
      case mcRecording:
 #ifdef USE_WAREAGLEICON
-	osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight);
+        osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight);
 #endif /* WAREAGLEICON */
         currentTitle = Title;
      case mcRecordingInfo:
@@ -1908,7 +1908,7 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
      case mcScheduleNow:
      case mcScheduleNext:
      case mcEvent:
-	osd->DrawRectangle(xs00 - Gap, ys00, xs00, ys01 - 1, Theme.Color(clrBackground));
+        osd->DrawRectangle(xs00 - Gap, ys00, xs00, ys01 - 1, Theme.Color(clrBackground));
         osd->DrawText(xs00, ys00, Title, Theme.Color(clrMenuFrameFg), frameColor, font, xs11 - xs00 - 1, lineHeight, taBottom | taRight);
         osd->DrawRectangle(xs12, ys00, xs13 - 1, ys01 - 1, frameColor);
         break;
