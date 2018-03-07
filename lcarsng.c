@@ -553,12 +553,12 @@ void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
   bool rec = cRecordControls::Active();
   bool On = false;
   int x = xc13;
-  int bt = 800;
+  int blinktime = 800;
   x -= bmRecording.Width() + SymbolSpacing;
   if (rec) {
-     if (cTimeMs::Now() - Blink > bt) {
+     if (cTimeMs::Now() - Blink > blinktime) {
         On = false;
-           if ((cTimeMs::Now() - Blink) / 2 > bt)
+           if ((cTimeMs::Now() - Blink) / 2 > blinktime)
               Blink = cTimeMs::Now();
         }
      else
@@ -2115,19 +2115,21 @@ void cLCARSNGDisplayReplay::DrawTrack(void)
 void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
 { 
   bool rec = cRecordControls::Active();
-  bool On;
+  bool On = false;
   int x = xp13;
+  int blinktime = 800;
   if (rec) {
-     if (cTimeMs::Now() - Blink > 1000) {
+     if (cTimeMs::Now() - Blink > blinktime) {
         On = false;
-           if (cTimeMs::Now() - Blink > 2000)
+           if ((cTimeMs::Now() - Blink) / 2 > blinktime)
               Blink = cTimeMs::Now();
         }
      else
         On = true;
+     }
+ 
      x -= bmRecording.Width() + SymbolSpacing;
      osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
-     }
 }
 
 void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
@@ -2138,7 +2140,7 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
   osd->DrawRectangle(xp12, yp08, xp13 - 1, yp09 - 1, frameColor);
   bool rec = cRecordControls::Active();
   x -= bmRecording.Width() + SymbolSpacing;
-  osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOff), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
+//  osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOff), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
  
   SetTitle(RecordingInfo->Title());
   osd->DrawText(xp03, yp01 - lineHeight, RecordingInfo->ShortText(), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xp13 - xp03);
