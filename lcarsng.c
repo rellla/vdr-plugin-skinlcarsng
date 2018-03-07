@@ -914,6 +914,15 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   ys03 = ys04 - Gap;
   ys05 = yb15;
 
+  // The item area (just to have them initialized, actual setting will be done in SetMenuCategory():
+
+  xi00 = 0;
+  xi01 = 0;
+  xi02 = 0;
+  xi03 = 1;
+  yi00 = 0;
+  yi01 = 1;
+
   // The color buttons in submenus:
   xb00 = xa06;
   xb15 = xa07;
@@ -952,9 +961,17 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   yd02 = yd03 - r; //0.85 * r; // Button in der Mitte
   yd01 = yd02 - Gap;
 
+//  yi00 = yt02;
+//  yi01 = yb13;
+//  xi00 = xa03;
+//  xi01 = xa07;
+//  xi02 = xa08;
+//  xi03 = xa09;
+
   xs = 0;
 
   osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop(), xa00, yt00, xa09 - 1, yb15 - 1);
+  DrawMenuFrame();
 }
 
 cLCARSNGDisplayMenu::~cLCARSNGDisplayMenu()
@@ -1031,7 +1048,7 @@ void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color)
 {
   // Top left rectangles:
 //  osd->DrawRectangle(xa00, yt00, xa02 - 1, yt02 - 1, Color);
-  osd->DrawRectangle(xa00, yt00, xa02 - 1, yt06 - 1, Color);
+  osd->DrawRectangle(xa00, yt00, xa02 - 1, yt08 - 1, Color);
 //  osd->DrawRectangle(xa00, yt04, xa02 - 1, yt06 - 1, Color);
 //  osd->DrawRectangle(xa00, yt07, xa02 - 1, yt08 - 1, Color);
   osd->DrawRectangle(xa00, yt02, xa02 - 1, yt04 - 1, Theme.Color(clrBackground));
@@ -1946,6 +1963,8 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly)
   yp07 = yp08 - lineHeight;
   yp06 = yp08 - d / 4;
   yp05 = yp09 - d / 2;
+
+  memset(&lastTrackId, 0, sizeof(lastTrackId));
 
   osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop() + cOsd::OsdHeight() - yp09, xp00, yp00 - lineHeight, xp15 - 1, yp09 - 1);
   osd->DrawRectangle(xp00, yp00, xp15 - 1, yp09 - 1, modeOnly ? clrTransparent : Theme.Color(clrBackground));
