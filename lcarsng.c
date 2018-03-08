@@ -1324,7 +1324,7 @@ void cLCARSNGDisplayMenu::DrawLoad(void)
      double SystemLoad;
      if (getloadavg(&SystemLoad, 1) > 0) {
         if (initial || SystemLoad != lastSystemLoad) {
-           osd->DrawText(xa01, yb04, cString::sprintf("%.1f", SystemLoad), ColorFg, ColorBg, cFont::GetFont(fontOsd), xa02 - xa01, lineHeight, taBottom | taRight | taBorder);
+           osd->DrawText(xa00, yb05 - lineHeight, cString::sprintf("%.1f", SystemLoad), ColorFg, ColorBg, cFont::GetFont(fontOsd), xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
            lastSystemLoad = SystemLoad;
            }
         }
