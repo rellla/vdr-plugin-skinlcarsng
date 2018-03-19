@@ -838,6 +838,7 @@ private:
   int lastLiveIndicatorY;
   bool lastLiveIndicatorTransferring;
   const cChannel *lastChannel;
+  cString lastChannelName;
   const cEvent *lastEvent;
   const cRecording *lastRecording;
   cString lastHeader;
@@ -1714,13 +1715,14 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      }
   if (!Channel)
      return;
-  if (initial || Channel != lastChannel) {
+  if (initial || Channel != lastChannel || strcmp(Channel->Name(), lastChannelName)) {
      osd->DrawText(xa00, yt04, itoa(Channel->Number()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), tallFont, xa02 - xa00, yt06 - yt04, taTop | taRight | taBorder);
      osd->DrawText(xa03, yt04, Channel->Name(), Theme.Color(clrChannelName), Theme.Color(clrBackground), tallFont, xd07 - xa03, yt06 - yt04, taTop | taLeft);
      int x = xa00 + (yc03 - yc02); // compensate for the arc
 //     osd->DrawText(x, yc00, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - x, yc03 - yc00, taTop | taRight | taBorder);
      osd->DrawText(x, yc00, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - x, 2 * lineHeight, taTop | taRight | taBorder);
      lastChannel = Channel;
+     lastChannelName = Channel->Name();
      DrawSeen(0, 0);
      }
   // The current programme:
