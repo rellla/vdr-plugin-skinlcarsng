@@ -388,7 +388,7 @@ static int FreeMB(const char *Base, bool Initial)
            struct statvfs fsstat;
            if (!statvfs(path.c_str(), &fsstat)) {
               freediskspace = int((double)fsstat.f_bavail / (double)(1024.0 * 1024.0 / fsstat.f_bsize));
-              LOCK_DELETEDRECORDINGS_READ
+              LOCK_DELETEDRECORDINGS_READ;
               for (const cRecording *rec = DeletedRecordings->First(); rec; rec = DeletedRecordings->Next(rec)) {
                  if (!stat(rec->FileName(), &statdir)) {
                     if (statdir.st_dev == fsid) {
@@ -1885,13 +1885,6 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
   const cFont *font = cFont::GetFont(fontOsd);
   initial = true;
   currentTitle = NULL;
-#ifdef USE_WAREAGLEICON
-  int NumRecordingsInPath = 0;
-  {
-  LOCK_RECORDINGS_READ;
-  NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
-  }
-#endif /* WAREAGLEICON */
   switch (MenuCategory()) {
      case mcMain:
      case mcSetup:
@@ -1900,6 +1893,11 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
         break;
      case mcRecording:
 #ifdef USE_WAREAGLEICON
+        int NumRecordingsInPath = 0;
+	{
+        LOCK_RECORDINGS_READ;
+        NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
+        }
         osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight);
 #endif /* WAREAGLEICON */
         currentTitle = Title;
