@@ -31,7 +31,7 @@
 #include <vdr/positioner.h>
 #endif
 #include <vdr/themes.h>
-#include "vdr/tools.h"
+#include <vdr/tools.h>
 #include <vdr/videodir.h>
 #include <sys/statvfs.h>
 #include <string>
@@ -854,6 +854,8 @@ private:
   void DrawDate(void);
   void DrawDisk(void);
   void DrawLoad(void);
+  void DrawRecordingNumberinPath(void);
+  void DrawRecordingNumber(void);
   void DrawFrameDisplay(void);
   void DrawScrollbar(int Total, int Offset, int Shown, bool CanScrollUp, bool CanScrollDown);
   void DrawTimer(const cTimer *Timer, int y, bool MultiRec);
@@ -1332,6 +1334,33 @@ void cLCARSNGDisplayMenu::DrawLoad(void)
      }
 }
 
+void cLCARSNGDisplayMenu::DrawRecordingNumberinPath(void)
+{
+  const cFont *font = cFont::GetFont(fontOsd);
+  int NumRecordingsInPath = 0;
+  {
+  LOCK_RECORDINGS_READ;
+  NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
+  }
+  osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight);
+}
+
+void cLCARSNGDisplayMenu::DrawRecordingNumber(void)
+{
+  if (yb06) {
+     const cFont *font = cFont::GetFont(fontOsd);
+     tColor ColorFg = Theme.Color(clrMenuFrameFg);
+     tColor ColorBg = frameColor;
+     int NumRecordings = 0;
+     {
+     LOCK_RECORDINGS_READ;
+     NumRecordings = Recordings->Count();
+     }
+     osd->DrawText(xa00, yb06, tr("RECORDINGNUMBER"), ColorFg, ColorBg, tinyFont, xa02 - xa00, yb07 - yb06, taTop | taLeft | taBorder);
+     osd->DrawText(xa00, yb07 - lineHeight, cString::sprintf("%i", NumRecordings), Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight);
+     }
+}
+
 void cLCARSNGDisplayMenu::DrawMainBracket(void)
 {
   const cFont *font = cFont::GetFont(fontOsd);
@@ -1405,6 +1434,9 @@ void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
            osd->DrawText(xa00, yb09 - lineHeight, "LCARSNG", Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
            }
         }
+     DrawRecordingNumber();
+     if (MenuCategory() == mcRecording)
+        DrawRecordingNumberinPath();
 //     }
 }
 
@@ -1885,9 +1917,6 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
   const cFont *font = cFont::GetFont(fontOsd);
   initial = true;
   currentTitle = NULL;
-#ifdef USE_WAREAGLEICON
-  int NumRecordingsInPath = 0;
-#endif /* WAREAGLEICON */
   switch (MenuCategory()) {
      case mcMain:
      case mcSetup:
@@ -1895,13 +1924,6 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
      case mcChannel:
         break;
      case mcRecording:
-#ifdef USE_WAREAGLEICON
-	{
-        LOCK_RECORDINGS_READ;
-        NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
-        }
-        osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight);
-#endif /* WAREAGLEICON */
         currentTitle = Title;
      case mcRecordingInfo:
      case mcRecordingEdit:
