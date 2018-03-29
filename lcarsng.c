@@ -599,8 +599,6 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
      osd->DrawRectangle(xc06, y0, xc06 + Seen - 1, y1 - 1, Theme.Color(clrSeen));
      osd->DrawRectangle(xc06 + Seen, y0, xc07 - 1, y1 - 1, Theme.Color(clrBackground));
      // Restzeit anzeigen
-//     if ((Current < Total) && ((Current / 60) > 0))
-//     if ((Current / 60) > 0)
      osd->DrawText(xc00, yc03 + lineHeight, ((Current / 60.0) > 0.1) ? cString::sprintf("-%d", max((int)ceil((Total - Current) / 60.0), 0)) : cString::sprintf(" "), Theme.Color(clrChannelFrameFg), frameColor, cFont::GetFont(fontOsd), xc02 - xc00, 0, taRight | taBorder);
      lastSeen = Seen;
      }
@@ -658,9 +656,7 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
            max(bmTeletext.Width(), bmRadio.Width()) - SymbolSpacing;
   osd->DrawRectangle(xc12, yc11, xc13 - 1, yc12 - 1, frameColor);
   if (Channel && !Channel->GroupSep()) {
-//     bool rec = cRecordControls::Active();
      x -= bmRecording.Width() + SymbolSpacing;
-//     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOff), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
      x -= bmEncrypted.Width() + SymbolSpacing;
      osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmEncrypted.Height()) / 2, bmEncrypted, Theme.Color(Channel->Ca() ? clrChannelSymbolOn : clrChannelSymbolOff), frameColor);
      x -= bmDolbyDigital.Width() + SymbolSpacing;
@@ -787,7 +783,6 @@ void cLCARSNGDisplayChannel::Flush(void)
         }
      }
   osd->Flush();
-//  cDevice::PrimaryDevice()->ScaleVideo(videoWindowRect);
   initial = false;
 }
 
@@ -854,8 +849,9 @@ private:
   void DrawDate(void);
   void DrawDisk(void);
   void DrawLoad(void);
-  void DrawRecordingNumberinPath(void);
-  void DrawRecordingNumber(void);
+  void DrawNumRecordingsInPath(void);
+  void DrawCountRecordings(void);
+  void DrawCountTimers(void);
   void DrawFrameDisplay(void);
   void DrawScrollbar(int Total, int Offset, int Shown, bool CanScrollUp, bool CanScrollDown);
   void DrawTimer(const cTimer *Timer, int y, bool MultiRec);
@@ -979,7 +975,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   // Compensate for large font size:
   if (yb09 - yb08 < 2 * lineHeight) {
      yb08 = yb06;
-     yb06 = 0; // drop empty rectangle
+     yb06 = 0; // drop "RECORDINGS" display" or empty rectangle
      }
   if (yb09 - yb08 < 2 * lineHeight) {
      yb05 = yb09;
@@ -1311,7 +1307,6 @@ void cLCARSNGDisplayMenu::DrawDisk(void)
            osd->DrawText(xa00, yb02, tr("DISK"), ColorFg, ColorBg, tinyFont, xa02 - xa00, yb03 - yb02, taTop | taLeft | taBorder);
         osd->DrawText(xa01, yb02, cString::sprintf("%02d%s", DiskUsage, "%"), ColorFg, ColorBg, font, xa02 - xa01, lineHeight, taBottom | taRight | taBorder);
         osd->DrawText(xa00, yb03 - lineHeight, freemb ? cString::sprintf("%02d:%02d", minutes / 60, minutes % 60) : cString::sprintf("%02d:%02d", cVideoDiskUsage::FreeMinutes() / 60, cVideoDiskUsage::FreeMinutes() % 60), ColorFg, ColorBg, font, xa02 - xa00, 0, taBottom | taRight | taBorder);
-//        osd->DrawText(xa00, yb00 - lineHeight - Gap - 1, cString::sprintf("%02d:%02d", cVideoDiskUsage::FreeMinutes() / 60, cVideoDiskUsage::FreeMinutes() % 60), ColorFg, ColorBg, font, xa02 - xa00, 0, taBottom | taRight | taBorder);
         lastDiskAlert = DiskAlert;
         }
      }
@@ -1334,30 +1329,55 @@ void cLCARSNGDisplayMenu::DrawLoad(void)
      }
 }
 
-void cLCARSNGDisplayMenu::DrawRecordingNumberinPath(void)
+void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
 {
   const cFont *font = cFont::GetFont(fontOsd);
   int NumRecordingsInPath = 0;
   {
+#if APIVERSNUM > 20300
   LOCK_RECORDINGS_READ;
+#endif
   NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
   }
-  osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight);
+  osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight | taBorder);
 }
 
-void cLCARSNGDisplayMenu::DrawRecordingNumber(void)
+void cLCARSNGDisplayMenu::DrawCountRecordings(void)
 {
   if (yb06) {
      const cFont *font = cFont::GetFont(fontOsd);
      tColor ColorFg = Theme.Color(clrMenuFrameFg);
      tColor ColorBg = frameColor;
-     int NumRecordings = 0;
+     int CountRecordings = 0;
      {
+#if APIVERSNUM > 20300
      LOCK_RECORDINGS_READ;
-     NumRecordings = Recordings->Count();
+#endif
+     CountRecordings = Recordings->Count();
      }
-     osd->DrawText(xa00, yb06, tr("RECORDINGNS"), ColorFg, ColorBg, tinyFont, xa02 - xa00, yb07 - yb06, taTop | taLeft | taBorder);
-     osd->DrawText(xa00, yb07 - lineHeight, cString::sprintf("%i", NumRecordings), Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight);
+     osd->DrawText(xa00, yb06, tr("RECORDINGS"), ColorFg, ColorBg, tinyFont, xa02 - xa00, yb07 - yb06, taTop | taLeft | taBorder);
+     osd->DrawText(xa00, yb07 - lineHeight, cString::sprintf("%i", CountRecordings), Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
+     }
+}
+
+void cLCARSNGDisplayMenu::DrawCountTimers(void)
+{
+  if (yb08) {
+     const cFont *font = cFont::GetFont(fontOsd);
+     tColor ColorFg = Theme.Color(clrMenuFrameFg);
+     tColor ColorBg = frameColor;
+     int CountTimers = 0;
+#if APIVERSNUM > 20300
+     LOCK_TIMERS_READ;
+     for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
+#else
+     for (cTimer *Timer = Timers.First(); Timer; Timer = Timers.Next(Timer)) {
+#endif
+        if (Timer->HasFlags(tfActive))
+           CountTimers++;
+        }
+     osd->DrawText(xa00, yb08, tr("TIMER"), ColorFg, ColorBg, tinyFont, xa02 - xa00, yb09 - yb08, taTop | taLeft | taBorder);
+     osd->DrawText(xa00, yb09 - lineHeight, itoa(CountTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
      }
 }
 
@@ -1431,12 +1451,13 @@ void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
         if (yb08) {
            const cFont *font = cFont::GetFont(fontOsd);
            osd->DrawRectangle(xa00, yb08, xa02 - 1, yb09 - 1, frameColor);
-           osd->DrawText(xa00, yb09 - lineHeight, "LCARSNG", Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
+           osd->DrawText(xa00, yb00 - lineHeight - Gap, "LCARSNG", Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
            }
         }
-     DrawRecordingNumber();
+     DrawCountRecordings();
+     DrawCountTimers();
      if (MenuCategory() == mcRecording)
-        DrawRecordingNumberinPath();
+        DrawNumRecordingsInPath();
 //     }
 }
 
@@ -1939,25 +1960,17 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
      case mcTimer: {
         osd->DrawText(xs00, ys00, Title, Theme.Color(clrMenuFrameFg), frameColor, font, xs11 - xs00, lineHeight, taBottom | taRight | taBorder);
         osd->DrawRectangle(xs12, ys00, xs13 - 1, ys01 - 1, frameColor);
-        int NumTimers = 0;
+/*        int NumTimers = 0;
 #if APIVERSNUM > 20300
-//        if (const cTimers *Timers = cTimers::GetTimersRead(timersStateKey)) {
            LOCK_TIMERS_READ;
            for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
 #else
-//        if (Timers.Modified(lastTimersState)) {
            for (cTimer *Timer = Timers.First(); Timer; Timer = Timers.Next(Timer)) {
 #endif
               if (Timer->HasFlags(tfActive))
                  NumTimers++;
               }
-//           osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder);
-#if APIVERSNUM > 20300
-//           timersStateKey.Remove();
-//#endif
-//           }
-#endif
-        osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder);
+        osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder); */
         }
         break;
      default:
@@ -2373,10 +2386,7 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
   int x = xp13;
 
   osd->DrawRectangle(xp12, yp08, xp13 - 1, yp09 - 1, frameColor);
-//  bool rec = cRecordControls::Active();
   x -= bmRecording.Width() + SymbolSpacing;
-//  osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(clrChannelSymbolOff), frameColor);
-//  osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOff), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
  
   SetTitle(RecordingInfo->Title());
   osd->DrawText(xp03, yp01 - lineHeight, RecordingInfo->ShortText(), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xp13 - xp03);
@@ -2448,7 +2458,6 @@ void cLCARSNGDisplayReplay::Flush(void)
      DrawBlinkingRec();
      }
   osd->Flush();
-//  cDevice::PrimaryDevice()->ScaleVideo(videoWindowRect);
   initial = false;
 }
 
@@ -2532,7 +2541,6 @@ void cLCARSNGDisplayVolume::SetVolume(int Current, int Total, bool Mute)
 void cLCARSNGDisplayVolume::Flush(void)
 {
   osd->Flush();
-//  cDevice::PrimaryDevice()->ScaleVideo(videoWindowRect);
 }
 
 // --- cLCARSNGDisplayTracks -----------------------------------------------
@@ -2682,7 +2690,6 @@ void cLCARSNGDisplayTracks::SetAudioChannel(int AudioChannel)
 void cLCARSNGDisplayTracks::Flush(void)
 {
   osd->Flush();
-//  cDevice::PrimaryDevice()->ScaleVideo(videoWindowRect);
 }
 
 // --- cLCARSNGDisplayMessage ----------------------------------------------
@@ -2739,7 +2746,6 @@ void cLCARSNGDisplayMessage::SetMessage(eMessageType Type, const char *Text)
 void cLCARSNGDisplayMessage::Flush(void)
 {
   osd->Flush();
-//  cDevice::PrimaryDevice()->ScaleVideo(videoWindowRect);
 }
 
 // --- cLCARSNG ------------------------------------------------------------

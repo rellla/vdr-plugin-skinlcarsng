@@ -14,7 +14,7 @@
 
 #include "lcarsng.h"
 
-static const char *VERSION        = "0.1.0";
+static const char *VERSION        = "0.2.0";
 static const char *DESCRIPTION    = "skin lcarsng";
 
 class cPluginLCARSNG : public cPlugin {
@@ -51,12 +51,12 @@ cPluginLCARSNG::~cPluginLCARSNG() {
 }
 
 const char *cPluginLCARSNG::CommandLineHelp(void) {
-    return "  -l <LOGOPATH>, --logopath=<LOGOPATH>       Set directory where Channel Logos are stored.\n"; 
+    return NULL; //"  -l <LOGOPATH>, --logopath=<LOGOPATH>       Set directory where Channel Logos are stored.\n"; 
 }
 
 bool cPluginLCARSNG::ProcessArgs(int argc, char *argv[]) {
     // Implement command line argument processing here if applicable.
-    static const struct option long_options[] = {
+/*    static const struct option long_options[] = {
         { "logopath", required_argument, NULL, 'l' },
         { NULL }
     };
@@ -70,12 +70,11 @@ bool cPluginLCARSNG::ProcessArgs(int argc, char *argv[]) {
             default:
                 return false;
         }
-    }
+    } */
     return true;
 }
 
 bool cPluginLCARSNG::Initialize(void) {
-//    Config.Init();
     return true;
 }
 

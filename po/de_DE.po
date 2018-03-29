@@ -22,7 +22,7 @@ msgid "LOAD"
 msgstr "LAST"
 
 msgid "RECORDINGS"
-msgstr "Aufnahmen"
+msgstr "AUFNAHMEN"
 
 msgid "Setup"
 msgstr "Einstellungen"
