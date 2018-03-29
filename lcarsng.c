@@ -1356,7 +1356,7 @@ void cLCARSNGDisplayMenu::DrawRecordingNumber(void)
      LOCK_RECORDINGS_READ;
      NumRecordings = Recordings->Count();
      }
-     osd->DrawText(xa00, yb06, tr("RECORDINGNUMBER"), ColorFg, ColorBg, tinyFont, xa02 - xa00, yb07 - yb06, taTop | taLeft | taBorder);
+     osd->DrawText(xa00, yb06, tr("RECORDINGNS"), ColorFg, ColorBg, tinyFont, xa02 - xa00, yb07 - yb06, taTop | taLeft | taBorder);
      osd->DrawText(xa00, yb07 - lineHeight, cString::sprintf("%i", NumRecordings), Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight);
      }
 }

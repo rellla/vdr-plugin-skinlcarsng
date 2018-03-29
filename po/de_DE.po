@@ -21,8 +21,8 @@ msgstr "PLATTE"
 msgid "LOAD"
 msgstr "LAST"
 
-msgid "RECORDINGNUMBER"
-msgstr "Anzahl Aufnahmen"
+msgid "RECORDINGS"
+msgstr "Aufnahmen"
 
 msgid "Setup"
 msgstr "Einstellungen"
