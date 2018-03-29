@@ -1885,6 +1885,9 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
   const cFont *font = cFont::GetFont(fontOsd);
   initial = true;
   currentTitle = NULL;
+#ifdef USE_WAREAGLEICON
+  int NumRecordingsInPath = 0;
+#endif /* WAREAGLEICON */
   switch (MenuCategory()) {
      case mcMain:
      case mcSetup:
@@ -1893,7 +1896,6 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
         break;
      case mcRecording:
 #ifdef USE_WAREAGLEICON
-        int NumRecordingsInPath = 0;
 	{
         LOCK_RECORDINGS_READ;
         NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
