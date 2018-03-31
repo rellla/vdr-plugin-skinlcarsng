@@ -1202,8 +1202,8 @@ void cLCARSNGDisplayMenu::DrawMainFrameLower(void)
   osd->DrawRectangle(xm08 + Gap, yc06, xs00 - Gap - 1, yc07 - 1, frameColor);
   // VDR version:
   osd->DrawRectangle(xa00, yb10, xa02 - 1, yb15 - 1, frameColor);
-  osd->DrawText(xa00, yb10, "VDR", Theme.Color(clrMenuFrameFg), frameColor, tallFont, xa02 - xa00, yb11 - yb10, taTop | taRight | taBorder);
-  osd->DrawText(xa00, yb15 - lineHeight, VDRVERSION, Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
+  osd->DrawText(xa00, yb10, cString::sprintf("%s-%s", "VDR", VDRVERSION), Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, yb11 - yb10, taTop | taRight | taBorder);
+  osd->DrawText(xa00, yb15 - lineHeight, "LCARSNG", Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
 }
 
 void cLCARSNGDisplayMenu::DrawMainFrameChannel(void)
@@ -1224,8 +1224,8 @@ void cLCARSNGDisplayMenu::DrawMainFrameChannel(void)
   osd->DrawRectangle(xa00, yc00, xa02 - 1, yc11 - 1, frameColor);
   // VDR version:
   osd->DrawRectangle(xa00, yb10, xa02 - 1, yb15 - 1, frameColor);
-  osd->DrawText(xa00, yb10, "VDR", Theme.Color(clrMenuFrameFg), frameColor, tallFont, xa02 - xa00, yb11 - yb10, taTop | taRight | taBorder);
-  osd->DrawText(xa00, yb15 - lineHeight, VDRVERSION, Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
+  osd->DrawText(xa00, yb10, cString::sprintf("%s-%s", "VDR", VDRVERSION), Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, yb11 - yb10, taTop | taRight | taBorder);
+  osd->DrawText(xa00, yb15 - lineHeight, "LCARSNG", Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
 }
 
 void cLCARSNGDisplayMenu::DrawMainButton(const char *Text, int x0, int x1, int x2, int x3, int y0, int y1, tColor ColorFg, tColor ColorBg, const cFont *Font)
@@ -1239,6 +1239,7 @@ void cLCARSNGDisplayMenu::DrawMainButton(const char *Text, int x0, int x1, int x
 
 void cLCARSNGDisplayMenu::DrawMenuFrame(void)
 {
+  const cFont *font = cFont::GetFont(fontOsd);
   // Upper elbow:
   osd->DrawRectangle(xa00, yt05, xa01 - 1, yt06 - 1, frameColor);
   osd->DrawRectangle(xa00, yt00, xa01 - 1, yt05 - 1, clrTransparent);
@@ -1263,7 +1264,7 @@ void cLCARSNGDisplayMenu::DrawMenuFrame(void)
   osd->DrawRectangle(xa08, yb14, xa08 + lineHeight / 2 - 1, yb15 - 1, frameColor);
   osd->DrawRectangle(xa08 + lineHeight / 2, yb14 + lineHeight / 2, xa09 - 1, yb15 - 1, clrTransparent);
   osd->DrawEllipse  (xa08 + lineHeight / 2, yb14, xa09 - 1, yb15 - 1, frameColor, 5);
-  osd->DrawText(xa00, yb10, "VDR", Theme.Color(clrMenuFrameFg), frameColor, tallFont, xa02 - xa00, yb11 - yb10, taTop | taRight | taBorder);
+  osd->DrawText(xa00, yb10, cString::sprintf("%s-%s", "VDR", VDRVERSION), Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, yb11 - yb10, taTop | taRight | taBorder);
   // Color buttons:
   tColor lutBg[] = { clrButtonRedBg, clrButtonGreenBg, clrButtonYellowBg, clrButtonBlueBg };
   osd->DrawRectangle(xb00, yb14, xb01 - 1, yb15 - 1, Theme.Color(lutBg[Setup.ColorKey0]));
@@ -1449,9 +1450,9 @@ void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
         if (yb06)
            osd->DrawRectangle(xa00, yb06, xa02 - 1, yb07 - 1, frameColor);
         if (yb08) {
-           const cFont *font = cFont::GetFont(fontOsd);
+//           const cFont *font = cFont::GetFont(fontOsd);
            osd->DrawRectangle(xa00, yb08, xa02 - 1, yb09 - 1, frameColor);
-           osd->DrawText(xa00, yb00 - lineHeight - Gap, "LCARSNG", Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
+//           osd->DrawText(xa00, yb09 - lineHeight - Gap, "LCARSNG", Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
            }
         }
      DrawCountRecordings();
