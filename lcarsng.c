@@ -437,6 +437,7 @@ private:
   tColor frameColor;
   bool message;
   const cEvent *present;
+  const cEvent *following;
   bool initial;
   cString lastDate;
   int lastSeen;
@@ -455,6 +456,7 @@ private:
   void DrawDevice(void);
   void DrawSignal(void);
   void DrawBlinkingRec(void);
+  void DrawEventRec(const cEvent *Present, const cEvent *Following);
   uint64_t Blink; //cTimeMs::Now();
 public:
   cLCARSNGDisplayChannel(bool WithInfo);
@@ -480,6 +482,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo)
   tallFont = cFont::CreateFont(Setup.FontOsd, Setup.FontOsdSize * 1.8);
   initial = true;
   present = NULL;
+  following = NULL;
   lastSeen = -1;
   lastCurrentPosition = -1;
   lastDeviceNumber = -1;
@@ -645,6 +648,24 @@ void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
   osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
 }
  
+void cLCARSNGDisplayChannel::DrawEventRec(const cEvent *Present, const cEvent *Following)
+{
+  for (int i = 0; i < 2; i++) {
+      const cEvent *e = !i ? Present : Following;
+      tColor recColor = !i ? Theme.Color(clrButtonRedBg) : Theme.Color(clrButtonYellowBg);
+      int y = !i ? yc03 : yc05;
+      if (e) {
+         LOCK_TIMERS_READ;
+         eTimerMatch TimerMatch = tmNone;
+         const cTimer *Timer = Timers->GetMatch(e, &TimerMatch);
+         if (Timer && Timer->HasFlags(tfActive) && TimerMatch == tmFull)
+            osd->DrawRectangle(xc02 + Gap, y, xc03 - Gap, y + 2 * lineHeight -1, recColor);
+         else
+            osd->DrawRectangle(xc02 + Gap, y, xc03 - Gap, y + 2 * lineHeight -1, Theme.Color(clrBackground));
+         }
+      }
+}
+
 void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 {
   int x = xc13;
@@ -702,6 +723,7 @@ void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Foll
   if (present != Present)
      lastSeen = -1;
   present = Present;
+  following = Following;
   for (int i = 0; i < 2; i++) {
       const cEvent *e = !i ? Present : Following;
       int y = !i ? yc03 : yc05;
@@ -780,6 +802,7 @@ void cLCARSNGDisplayChannel::Flush(void)
            Total = present->Duration();
            }
         DrawSeen(Current, Total);
+        DrawEventRec(present, following);
         }
      }
   osd->Flush();
