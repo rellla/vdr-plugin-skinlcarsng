@@ -54,7 +54,7 @@ DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):
 
-OBJS = lcarsng.o $(PLUGIN).o
+OBJS = displaychannel.o displayreplay.o lcarsng.o $(PLUGIN).o
 
 ### The main target:
 

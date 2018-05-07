@@ -24,6 +24,8 @@
 // http://www.bracercom.com/tutorial/content/lcars_manifesto/the_lcars_manifesto.html
 
 #include "lcarsng.h"
+#include "displaychannel.h"
+#include "displayreplay.h"
 #include <vdr/font.h>
 #include <vdr/menu.h>
 #include <vdr/osd.h>
@@ -37,81 +39,13 @@
 #include <sys/statvfs.h>
 #include <string>
 
-#include "symbols/arrowdown.xpm"
-#include "symbols/arrowup.xpm"
-#include "symbols/audio.xpm"
-#include "symbols/audioleft.xpm"
-#include "symbols/audioright.xpm"
-#include "symbols/audiostereo.xpm"
-#include "symbols/dolbydigital.xpm"
-#include "symbols/encrypted.xpm"
-#include "symbols/ffwd.xpm"
-#include "symbols/ffwd1.xpm"
-#include "symbols/ffwd2.xpm"
-#include "symbols/ffwd3.xpm"
-#include "symbols/frew.xpm"
-#include "symbols/frew1.xpm"
-#include "symbols/frew2.xpm"
-#include "symbols/frew3.xpm"
-#include "symbols/mute.xpm"
-#include "symbols/pause.xpm"
-#include "symbols/play.xpm"
-#include "symbols/radio.xpm"
-#include "symbols/recording.xpm"
-#include "symbols/sfwd.xpm"
-#include "symbols/sfwd1.xpm"
-#include "symbols/sfwd2.xpm"
-#include "symbols/sfwd3.xpm"
-#include "symbols/srew.xpm"
-#include "symbols/srew1.xpm"
-#include "symbols/srew2.xpm"
-#include "symbols/srew3.xpm"
-#include "symbols/teletext.xpm"
-#include "symbols/volume.xpm"
-
-#define Gap            (Setup.FontOsdSize / 5 & ~1) // must be even
-#define TextFrame      (Setup.FontOsdSize / TEXT_ALIGN_BORDER)
-#define TextSpacing    (2 * TextFrame)
-#define SymbolSpacing  TextSpacing
-#define ShowSeenExtent (Setup.FontOsdSize / 5) // pixels by which the "seen" bar extends out of the frame
-
-#define MB_PER_MINUTE    25.75 // this is just an estimate! (taken over from VDR)
-#define DISKSPACECHEK        5 // seconds between disk space checks
-#define DISKUSAGEALERTLIMIT 95 // percent of disk usage above which the display goes into alert mode
-#define SIGNALDISPLAYDELTA   2 // seconds between subsequent device signal displays
-
-static cTheme Theme;
 cRect availableRect;
 cRect videoWindowRect;
 
-// Color domains:
-
-#define CLR_BACKGROUND      0x99000000
-#define CLR_MAIN_FRAME      0xFFFF9966
-#define CLR_CHANNEL_FRAME   0xFF8A9EC9
-#define CLR_REPLAY_FRAME    0xFFCC6666
-#define CLR_DATE            0xFF99CCFF
-#define CLR_MENU_ITEMS      0xFF9999FF
-#define CLR_TIMER           0xFF99CCFF
-#define CLR_DEVICE          0xFFF1B1AF
-#define CLR_CHANNEL_NAME    0xFF99CCFF
-#define CLR_EVENT_TITLE     0xFF99CCFF
-#define CLR_EVENT_TIME      0xFFFFCC66
-#define CLR_EVENT_SHORTTEXT 0xFFFFCC66
-#define CLR_TEXT            0xFF99CCFF
-#define CLR_TRACK           0xFFFFCC66
-#define CLR_SEEN            0xFFCC99CC
-#define CLR_ALERT           0xFFFF0000
-#define CLR_EXPOSED         0xFF990000
-#define CLR_WHITE           0xFFFFFFFF
-#define CLR_RED             0xFFCC6666
-#define CLR_GREEN           0xFFA0FF99
-#define CLR_YELLOW          0xFFF1DF60
-#define CLR_BLUE            0xFF9A99FF
-#define CLR_BLACK           0xFF000000
+cTheme Theme;
 
 // General colors:
-
+/*
 THEME_CLR(Theme, clrBackground,             CLR_BACKGROUND);
 THEME_CLR(Theme, clrDateFg,                 CLR_BLACK);
 THEME_CLR(Theme, clrDateBg,                 CLR_DATE);
@@ -207,12 +141,12 @@ THEME_CLR(Theme, clrTrackItemFg,            CLR_BLACK);
 THEME_CLR(Theme, clrTrackItemBg,            RgbShade(CLR_TRACK, 0.5));
 THEME_CLR(Theme, clrTrackItemCurrentFg,     CLR_BLACK);
 THEME_CLR(Theme, clrTrackItemCurrentBg,     CLR_TRACK);
-
+*/
 // --- Helper functions ------------------------------------------------------
 
 static bool TwoColors = false;
 
-static cOsd *CreateOsd(int Left, int Top, int x0, int y0, int x1, int y1)
+cOsd *CreateOsd(int Left, int Top, int x0, int y0, int x1, int y1)
 {
   cOsd *Osd = cOsdProvider::NewOsd(Left, Top);
   int Bpp[] = { 32, 8, 4, 2, 1 };
@@ -229,7 +163,7 @@ static cOsd *CreateOsd(int Left, int Top, int x0, int y0, int x1, int y1)
   return Osd;
 }
 
-static cFont *CreateTinyFont(int LineHeight)
+cFont *CreateTinyFont(int LineHeight)
 {
   // Creates a font that is not higher than half of LineHeight.
   LineHeight /= 1.85;
@@ -243,7 +177,7 @@ static cFont *CreateTinyFont(int LineHeight)
       }
 }
 
-static bool DrawDeviceData(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &xs, const cFont *TinyFont, cString &LastDeviceType, cCamSlot *&LastCamSlot, bool Initial)
+bool DrawDeviceData(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &xs, const cFont *TinyFont, cString &LastDeviceType, cCamSlot *&LastCamSlot, bool Initial)
 {
   cString DeviceType = Device->DeviceType();
   cCamSlot *CamSlot = Device->CamSlot();
@@ -278,7 +212,7 @@ static bool DrawDeviceData(cOsd *Osd, const cDevice *Device, int x0, int y0, int
   return false;
 }
 
-static void DrawDeviceSignal(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &LastSignalStrength, int &LastSignalQuality, bool Initial)
+void DrawDeviceSignal(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &LastSignalStrength, int &LastSignalQuality, bool Initial)
 {
   int SignalStrength = Device->SignalStrength();
   int SignalQuality = Device->SignalQuality();
@@ -315,7 +249,7 @@ static void DrawDeviceSignal(cOsd *Osd, const cDevice *Device, int x0, int y0, i
 }
 
 #if APIVERSNUM > 20101
-static void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0, int x1, int y1, int &LastCurrent)
+void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0, int x1, int y1, int &LastCurrent)
 {
   int HorizonLeft = Positioner->HorizonLongitude(cPositioner::pdLeft);
   int HorizonRight = Positioner->HorizonLongitude(cPositioner::pdRight);
@@ -421,407 +355,6 @@ static int FreeMB(const char *Base, bool Initial)
      }
   free(currentBase);
   return lastFreeMB;
-}
-
-// --- cLCARSNGDisplayChannel ----------------------------------------------
-
-class cLCARSNGDisplayChannel : public cSkinDisplayChannel, cThread {
-private:
-  cOsd *osd;
-  int xc00, xc01, xc02, xc03, xc04, xc05, xc06, xc07, xc08, xc09, xc10, xc11, xc12, xc13, xc14, xc15;
-  int yc00, yc01, yc02, yc03, yc04, yc05, yc06, yc07, yc08, yc09, yc10, yc11, yc12;
-  int xs; // starting column for signal display
-  bool withInfo;
-  int lineHeight;
-  bool lastOn;
-  bool On;
-  cFont *tinyFont;
-  cFont *tallFont;
-  tColor frameColor;
-  bool message;
-  const cEvent *present;
-  const cEvent *following;
-  bool initial;
-  cString lastDate;
-  int lastSeen;
-  int lastCurrentPosition;
-  int lastDeviceNumber;
-  cString lastDeviceType;
-  cCamSlot *lastCamSlot;
-  int lastSignalStrength;
-  int lastSignalQuality;
-  time_t lastSignalDisplay;
-  tTrackId lastTrackId;
-  static cBitmap bmTeletext, bmRadio, bmAudio, bmDolbyDigital, bmEncrypted, bmRecording;
-  void Action(void);
-  void DrawDate(void);
-  void DrawTrack(void);
-  void DrawSeen(int Current, int Total);
-  void DrawDevice(void);
-  void DrawSignal(void);
-  void DrawBlinkingRec(void);
-  void DrawEventRec(const cEvent *Present, const cEvent *Following);
-public:
-  cLCARSNGDisplayChannel(bool WithInfo);
-  virtual ~cLCARSNGDisplayChannel();
-  virtual void SetChannel(const cChannel *Channel, int Number);
-  virtual void SetEvents(const cEvent *Present, const cEvent *Following);
-  virtual void SetMessage(eMessageType Type, const char *Text);
-#if APIVERSNUM > 20101
-  virtual void SetPositioner(const cPositioner *Positioner);
-#endif
-  virtual void Flush(void);
-  };
-
-cBitmap cLCARSNGDisplayChannel::bmTeletext(teletext_xpm);
-cBitmap cLCARSNGDisplayChannel::bmRadio(radio_xpm);
-cBitmap cLCARSNGDisplayChannel::bmAudio(audio_xpm);
-cBitmap cLCARSNGDisplayChannel::bmDolbyDigital(dolbydigital_xpm);
-cBitmap cLCARSNGDisplayChannel::bmEncrypted(encrypted_xpm);
-cBitmap cLCARSNGDisplayChannel::bmRecording(recording_xpm);
-
-cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS DisplChan")
-{
-  tallFont = cFont::CreateFont(Setup.FontOsd, Setup.FontOsdSize * 1.8);
-  initial = true;
-  present = NULL;
-  following = NULL;
-  lastSeen = -1;
-  lastCurrentPosition = -1;
-  lastDeviceNumber = -1;
-  lastCamSlot = NULL;
-  lastSignalStrength = -1;
-  lastSignalQuality = -1;
-  lastSignalDisplay = 0;
-  memset(&lastTrackId, 0, sizeof(lastTrackId));
-  const cFont *font = cFont::GetFont(fontOsd);
-  withInfo = WithInfo;
-  lineHeight = font->Height();
-  tinyFont = CreateTinyFont(lineHeight);
-  frameColor = Theme.Color(clrChannelFrameBg);
-  message = false;
-  lastOn = false;
-  On = false;
-  int d = 5 * lineHeight;
-  xc00 = 0;
-  xc01 = xc00 + d / 2;
-  xc02 = xc00 + d;
-  xc03 = xc02 + lineHeight;
-  xc04 = xc02 + d / 4;
-  xc05 = xc02 + d;
-  xc06 = xc05 + Gap;
-  xc15 = cOsd::OsdWidth();
-  xc14 = xc15 - lineHeight;
-  xc13 = xc14 - Gap;
-  xc07 = (xc15 + xc00) / 2;
-  xc08 = xc07 + Gap;
-  xc09 = xc08 + lineHeight;
-  xc10 = xc09 + Gap;
-  xc11 = (xc10 + xc13 + Gap) / 2;
-  xc12 = xc11 + Gap;
-
-  yc00 = 0;
-  yc01 = yc00 + lineHeight;
-  yc02 = yc01 + lineHeight;
-  yc03 = yc02 + Gap;
-  yc04 = yc03 + 2 * lineHeight;
-  yc05 = yc04 + Gap;
-  yc06 = yc05 + 2 * lineHeight;
-
-  yc07 = yc06 + Gap;
-  yc12 = yc07 + 3 * lineHeight + Gap / 2;
-  yc11 = yc12 - lineHeight;
-  yc10 = yc11 - lineHeight;
-  yc09 = yc11 - d / 4;
-  yc08 = yc12 - d / 2;
-
-  xs = 0;
-
-  int y1 = withInfo ? yc12 : yc02;
-  int y0 = cOsd::OsdTop() + (Setup.ChannelInfoPos ? 0 : cOsd::OsdHeight() - y1);
-  osd = CreateOsd(cOsd::OsdLeft(), y0, xc00, yc00, xc15 - 1, y1 - 1);
-  osd->DrawRectangle(xc00, yc00, xc15 - 1, y1 - 1, Theme.Color(clrBackground));
-  // Rectangles:
-  osd->DrawRectangle(xc00, yc00, xc02 - 1, yc02 - 1, frameColor);
-  if (withInfo) {
-     osd->DrawRectangle(xc00, yc03, xc02 - 1, yc04 - 1, frameColor);
-     osd->DrawRectangle(xc00, yc05, xc02 - 1, yc06 - 1, frameColor);
-     // Elbow:
-     osd->DrawRectangle(xc00, yc07, xc01 - 1, yc08 - 1, frameColor);
-     osd->DrawRectangle(xc00, yc08, xc01 - 1, yc12 - 1, clrTransparent);
-     osd->DrawEllipse  (xc00, yc08, xc01 - 1, yc12 - 1, frameColor, 3);
-     osd->DrawRectangle(xc01, yc07, xc02 - 1, yc12 - 1, frameColor);
-     osd->DrawEllipse  (xc02, yc09, xc04 - 1, yc11 - 1, frameColor, -3);
-     osd->DrawRectangle(xc02, yc11, xc05 - 1, yc12 - 1, frameColor);
-     // Status area:
-     osd->DrawRectangle(xc06, yc11 + lineHeight / 2, xc07 - 1, yc12 - 1, frameColor);
-     osd->DrawRectangle(xc08, yc11, xc09 - 1, yc12 - 1, frameColor);
-     osd->DrawRectangle(xc10, yc11, xc11 - 1, yc12 - 1, Theme.Color(clrDeviceBg));
-//     osd->DrawRectangle(xc12, yc11, xc13 - 1, yc12 - 1, Theme.Color(clrDateBg));
-     osd->DrawRectangle(xc14, yc11, xc14 + lineHeight / 2 - 1, yc12 - 1, frameColor);
-     osd->DrawRectangle(xc14 + lineHeight / 2, yc11 + lineHeight / 2, xc15 - 1, yc12 - 1, clrTransparent);
-     osd->DrawEllipse  (xc14 + lineHeight / 2, yc11, xc15 - 1, yc12 - 1, frameColor, 5);
-     }
-  // Icons:
-  osd->DrawRectangle(xc14, yc00, xc14 + lineHeight / 2 - 1, yc01 - 1, frameColor);
-  osd->DrawRectangle(xc14 + lineHeight / 2, yc00, xc15 - 1, yc00 + lineHeight / 2 - 1, clrTransparent);
-  osd->DrawEllipse  (xc14 + lineHeight / 2, yc00, xc15 - 1, yc01 - 1, frameColor, 5);
-}
-
-cLCARSNGDisplayChannel::~cLCARSNGDisplayChannel()
-{
-  Cancel(-1);
-  delete tallFont;
-  delete tinyFont;
-  delete osd;
-  cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
-}
-
-void cLCARSNGDisplayChannel::DrawDate(void)
-{
-  cString s = DayDateTime();
-  if (initial || !*lastDate || strcmp(s, lastDate)) {
-     osd->DrawText(xc12, yc00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), cFont::GetFont(fontOsd), xc13 - xc12, lineHeight, taRight | taBorder);
-     lastDate = s;
-     }
-}
-
-void cLCARSNGDisplayChannel::DrawTrack(void)
-{
-  cDevice *Device = cDevice::PrimaryDevice();
-  const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
-  if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
-     osd->DrawText(xc03, yc07, Track ? Track->description : "", Theme.Color(clrTrackName), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xc07 - xc03);
-     strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
-     }
-}
-
-void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
-{
-  if (lastCurrentPosition >= 0)
-     return; // to not interfere with SetPositioner()
-  int Seen = (Total > 0) ? min(xc07 - xc06, int((xc07 - xc06) * double(Current) / Total)) : 0;
-  if (initial || Seen != lastSeen) {
-     int y0 = yc11 - ShowSeenExtent;
-     int y1 = yc11 + lineHeight / 2 - Gap / 2;
-     osd->DrawRectangle(xc06, y0, xc06 + Seen - 1, y1 - 1, Theme.Color(clrSeen));
-     osd->DrawRectangle(xc06 + Seen, y0, xc07 - 1, y1 - 1, Theme.Color(clrBackground));
-     // Restzeit anzeigen
-     osd->DrawText(xc00, yc03 + lineHeight, ((Current / 60.0) > 0.1) ? cString::sprintf("-%d", max((int)ceil((Total - Current) / 60.0), 0)) : cString::sprintf(" "), Theme.Color(clrChannelFrameFg), frameColor, cFont::GetFont(fontOsd), xc02 - xc00, 0, taRight | taBorder);
-     lastSeen = Seen;
-     }
-}
-
-void cLCARSNGDisplayChannel::DrawDevice(void)
-{
-  const cDevice *Device = cDevice::ActualDevice();
-  if (DrawDeviceData(osd, Device, xc10, yc11, xc11, yc12, xs, tinyFont, lastDeviceType, lastCamSlot, Device->DeviceNumber() != lastDeviceNumber)) {
-     lastDeviceNumber = Device->DeviceNumber();
-     // Make sure signal meters are redrawn:
-     lastSignalStrength = -1;
-     lastSignalQuality = -1;
-     lastSignalDisplay = 0;
-     }
-}
-
-void cLCARSNGDisplayChannel::DrawSignal(void)
-{
-  time_t Now = time(NULL);
-  if (Now != lastSignalDisplay) {
-     DrawDeviceSignal(osd, cDevice::ActualDevice(), xs + lineHeight / 2, yc11, xc11, yc12, lastSignalStrength, lastSignalQuality, initial);
-     lastSignalDisplay = Now;
-     }
-}
-
-void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
-{
-  bool rec = cRecordControls::Active();
-  if (rec) {
-     if (!Running())
-        Start();
-     }
-  else {
-     if (Running()) {
-        Cancel(3);
-        On = false;
-        }
-     }
-  if (initial || On != lastOn) {
-     int x = xc13;
-     x -= bmRecording.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
-     lastOn = On;
-     }
-}
- 
-void cLCARSNGDisplayChannel::DrawEventRec(const cEvent *Present, const cEvent *Following)
-{
-  for (int i = 0; i < 2; i++) {
-      const cEvent *e = !i ? Present : Following;
-      tColor recColor = !i ? Theme.Color(clrButtonRedBg) : Theme.Color(clrButtonYellowBg);
-      int y = !i ? yc03 : yc05;
-      if (e) {
-         LOCK_TIMERS_READ;
-         eTimerMatch TimerMatch = tmNone;
-         const cTimer *Timer = Timers->GetMatch(e, &TimerMatch);
-         if (Timer && Timer->HasFlags(tfActive) && TimerMatch == tmFull)
-            osd->DrawRectangle(xc02 + 2 * Gap, y, xc03 - 2 * Gap, y + 2 * lineHeight -1, recColor);
-         else
-            osd->DrawRectangle(xc02 + 2 * Gap, y, xc03 - 2 * Gap, y + 2 * lineHeight -1, Theme.Color(clrBackground));
-         }
-      }
-}
-
-void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
-{
-  int x = xc13;
-  int xi = x - SymbolSpacing -
-           bmRecording.Width() - SymbolSpacing -
-           bmEncrypted.Width() - SymbolSpacing -
-           bmDolbyDigital.Width() - SymbolSpacing -
-           bmAudio.Width() - SymbolSpacing -
-           max(bmTeletext.Width(), bmRadio.Width()) - SymbolSpacing;
-  osd->DrawRectangle(xc12, yc11, xc13 - 1, yc12 - 1, frameColor);
-  if (Channel && !Channel->GroupSep()) {
-     x -= bmRecording.Width() + SymbolSpacing;
-     x -= bmEncrypted.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmEncrypted.Height()) / 2, bmEncrypted, Theme.Color(Channel->Ca() ? clrChannelSymbolOn : clrChannelSymbolOff), frameColor);
-     x -= bmDolbyDigital.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmDolbyDigital.Height()) / 2, bmDolbyDigital, Theme.Color(Channel->Dpid(0) ? clrChannelSymbolOn : clrChannelSymbolOff), frameColor);
-     x -= bmAudio.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmAudio.Height()) / 2, bmAudio, Theme.Color(Channel->Apid(1) ? clrChannelSymbolOn : clrChannelSymbolOff), frameColor);
-     if (Channel->Vpid()) {
-        x -= bmTeletext.Width() + SymbolSpacing;
-        osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmTeletext.Height()) / 2, bmTeletext, Theme.Color(Channel->Tpid() ? clrChannelSymbolOn : clrChannelSymbolOff), frameColor);
-        }
-     else if (Channel->Apid(0)) {
-        x -= bmRadio.Width() + SymbolSpacing;
-        osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRadio.Height()) / 2, bmRadio, Theme.Color(clrChannelSymbolOn), frameColor);
-        }
-     }
-  cString ChNumber("");
-  cString ChName("");
-  if (Channel) {
-     ChName = Channel->Name();
-     if (!Channel->GroupSep())
-        ChNumber = cString::sprintf("%d%s", Channel->Number(), Number ? "-" : "");
-     }
-  else if (Number)
-     ChNumber = cString::sprintf("%d-", Number);
-  else
-     ChName = ChannelString(NULL, 0);
-  osd->DrawText(xc00, yc00, ChNumber, Theme.Color(clrChannelFrameFg), frameColor, tallFont, xc02 - xc00, yc02 - yc00, taTop | taRight | taBorder);
-  osd->DrawText(xc03, yc00, ChName, Theme.Color(clrChannelName), Theme.Color(clrBackground), tallFont, xi - xc03 - lineHeight, 0, taTop | taLeft);
-  lastSignalDisplay = 0;
-  if (withInfo) {
-     if (Channel) {
-        int x = xc00 + (yc10 - yc09); // compensate for the arc
-        osd->DrawText(x, yc07, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), frameColor, cFont::GetFont(fontOsd), xc02 - x, yc10 - yc07, taTop | taRight | taBorder);
-        }
-     DrawDevice();
-     }
-}
-
-void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Following)
-{
-  if (!withInfo)
-     return;
-  if (present != Present)
-     lastSeen = -1;
-  present = Present;
-  following = Following;
-  for (int i = 0; i < 2; i++) {
-      const cEvent *e = !i ? Present : Following;
-      int y = !i ? yc03 : yc05;
-      if (e) {
-         osd->DrawText(xc00, y, e->GetTimeString(), Theme.Color(clrChannelFrameFg), frameColor, cFont::GetFont(fontOsd), xc02 - xc00, 0, taRight | taBorder);
-         osd->DrawText(xc03, y, e->Title(), Theme.Color(clrEventTitle), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xc13 - xc03);
-         osd->DrawText(xc03, y + lineHeight, e->ShortText(), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc13 - xc03);
-         }
-      else {
-         osd->DrawRectangle(xc00, y, xc02 - 1, y + lineHeight, frameColor);
-         osd->DrawRectangle(xc02, y, xc13 - 1, y + 2 * lineHeight, Theme.Color(clrBackground));
-         }
-      }
-}
-
-void cLCARSNGDisplayChannel::SetMessage(eMessageType Type, const char *Text)
-{
-  if (Text) {
-     int x0, x1, y0, y1, y2;
-     if (withInfo) {
-        x0 = xc06;
-        x1 = xc13;
-        y0 = yc11 - ShowSeenExtent;
-        y1 = yc11;
-        y2 = yc12;
-        }
-     else {
-        x0 = xc03;
-        x1 = xc13;
-        y0 = y1 = yc00;
-        y2 = yc02;
-        }
-     osd->SaveRegion(x0, y0, x1 - 1, y2 - 1);
-     if (withInfo)
-        osd->DrawRectangle(xc06, y0, xc07, y1 - 1, Theme.Color(clrBackground)); // clears the "seen" bar
-     osd->DrawText(x0, y1, Text, Theme.Color(clrMessageStatusFg + 2 * Type), Theme.Color(clrMessageStatusBg + 2 * Type), cFont::GetFont(fontSml), x1 - x0, y2 - y1, taCenter);
-     message = true;
-     }
-  else {
-     osd->RestoreRegion();
-     message = false;
-     }
-}
-
-#if APIVERSNUM > 20101
-void cLCARSNGDisplayChannel::SetPositioner(const cPositioner *Positioner)
-{
-  if (Positioner) {
-     int y0 = yc11 - ShowSeenExtent;
-     int y1 = yc11 + lineHeight / 2 - Gap / 2;
-     DrawDevicePosition(osd, Positioner, xc06, y0, xc07, y1, lastCurrentPosition);
-     }
-  else {
-     lastCurrentPosition = -1;
-     initial = true; // to have DrawSeen() refresh the progress bar
-     }
-  return;
-}
-#endif
-
-void cLCARSNGDisplayChannel::Action(void)
-{
-  while (Running()) {
-     On = !On;
-     Flush();
-     cCondWait::SleepMs(1000);
-  }
-}
-
-void cLCARSNGDisplayChannel::Flush(void)
-{
-  if (withInfo) {
-     if (!message) {
-        DrawDate();
-        DrawTrack();
-        DrawDevice();
-        DrawSignal();
-        DrawBlinkingRec();
-        int Current = 0;
-        int Total = 0;
-        if (present) {
-           time_t t = time(NULL);
-           if (t > present->StartTime())
-              Current = t - present->StartTime();
-           Total = present->Duration();
-           }
-        DrawSeen(Current, Total);
-        DrawEventRec(present, following);
-        }
-     }
-  osd->Flush();
-  initial = false;
 }
 
 // --- cLCARSNGDisplayMenu -------------------------------------------------
@@ -2258,253 +1791,6 @@ void cLCARSNGDisplayMenu::Flush(void)
         osd->Flush();
         cDevice::PrimaryDevice()->ScaleVideo(availableRect);
      }
-  initial = false;
-}
-
-// --- cLCARSNGDisplayReplay -----------------------------------------------
-
-class cLCARSNGDisplayReplay : public cSkinDisplayReplay, cThread {
-private:
-  cOsd *osd;
-  int xp00, xp01, xp02, xp03, xp04, xp05, xp06, xp07, xp08, xp09, xp10, xp11, xp12, xp13, xp14, xp15;
-  int yp00, yp01, yp02, yp03, yp04, yp05, yp06, yp07, yp08, yp09;
-  bool modeOnly;
-  int lineHeight;
-  tColor frameColor;
-  int lastCurrentWidth;
-  int lastTotalWidth;
-  cString lastDate;
-  tTrackId lastTrackId;
-  static cBitmap bmTeletext, bmRadio, bmAudio, bmDolbyDigital, bmEncrypted, bmRecording;
-  void Action(void);
-  void DrawDate(void);
-  void DrawTrack(void);
-  void DrawBlinkingRec(void);
-  bool initial;
-  bool lastOn;
-  bool On;
-public:
-  cLCARSNGDisplayReplay(bool ModeOnly);
-  virtual ~cLCARSNGDisplayReplay();
-  virtual void SetRecording(const cRecording *Recording);
-  virtual void SetTitle(const char *Title);
-  virtual void SetMode(bool Play, bool Forward, int Speed);
-  virtual void SetProgress(int Current, int Total);
-  virtual void SetCurrent(const char *Current);
-  virtual void SetTotal(const char *Total);
-  virtual void SetJump(const char *Jump);
-  virtual void SetMessage(eMessageType Type, const char *Text);
-  virtual void Flush(void);
-  };
-
-cBitmap cLCARSNGDisplayReplay::bmTeletext(teletext_xpm);
-cBitmap cLCARSNGDisplayReplay::bmRadio(radio_xpm);
-cBitmap cLCARSNGDisplayReplay::bmAudio(audio_xpm);
-cBitmap cLCARSNGDisplayReplay::bmDolbyDigital(dolbydigital_xpm);
-cBitmap cLCARSNGDisplayReplay::bmEncrypted(encrypted_xpm);
-cBitmap cLCARSNGDisplayReplay::bmRecording(recording_xpm);
-
-cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS DisplRepl")
-{
-  const cFont *font = cFont::GetFont(fontOsd);
-  modeOnly = ModeOnly;
-  lineHeight = font->Height();
-  frameColor = Theme.Color(clrReplayFrameBg);
-  lastCurrentWidth = 0;
-  lastTotalWidth = 0;
-  memset(&lastTrackId, 0, sizeof(lastTrackId));
-  initial = true;
-  lastOn = false;
-  On = false;
-  int d = 5 * lineHeight;
-  xp00 = 0;
-  xp01 = xp00 + d / 2;
-  xp02 = xp00 + d;
-  xp03 = xp02 + lineHeight;
-  xp04 = xp02 + d / 4;
-  xp05 = xp02 + d;
-  xp06 = xp05 + Gap;
-  xp15 = cOsd::OsdWidth();
-  xp14 = xp15 - lineHeight;
-  xp13 = xp14 - Gap;
-  xp07 = (xp15 + xp00) / 2;
-  xp08 = xp07 + Gap;
-  xp09 = xp08 + lineHeight;
-  xp10 = xp09 + Gap;
-  xp11 = (xp10 + xp13 + Gap) / 2;
-  xp12 = xp11 + Gap;
-
-  yp00 = lineHeight;
-  yp01 = yp00 + 2 * lineHeight;
-  yp02 = yp01 + Gap;
-  yp03 = yp02 + 2 * lineHeight;
-
-  yp04 = yp03 + Gap;
-  yp09 = yp04 + 3 * lineHeight + Gap / 2;
-  yp08 = yp09 - lineHeight;
-  yp07 = yp08 - lineHeight;
-  yp06 = yp08 - d / 4;
-  yp05 = yp09 - d / 2;
-
-  osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop() + cOsd::OsdHeight() - yp09, xp00, yp00 - lineHeight, xp15 - 1, yp09 - 1);
-  osd->DrawRectangle(xp00, yp00, xp15 - 1, yp09 - 1, modeOnly ? clrTransparent : Theme.Color(clrBackground));
-  // Rectangles:
-  if (!modeOnly)
-     osd->DrawRectangle(xp00, yp00, xp02 - 1, yp01 - 1, frameColor);
-  osd->DrawRectangle(xp00, yp02, xp02 - 1, yp03 - 1, frameColor);
-  if (!modeOnly) {
-     // Elbow:
-     osd->DrawRectangle(xp00, yp04, xp01 - 1, yp05 - 1, frameColor);
-     osd->DrawRectangle(xp00, yp05, xp01 - 1, yp09 - 1, clrTransparent);
-     osd->DrawEllipse  (xp00, yp05, xp01 - 1, yp09 - 1, frameColor, 3);
-     osd->DrawRectangle(xp01, yp04, xp02 - 1, yp09 - 1, frameColor);
-     osd->DrawEllipse  (xp02, yp06, xp04 - 1, yp08 - 1, frameColor, -3);
-     osd->DrawRectangle(xp02, yp08, xp05 - 1, yp09 - 1, frameColor);
-     // Status area:
-     osd->DrawRectangle(xp06, yp08, xp07 - 1, yp09 - 1, frameColor);
-     osd->DrawRectangle(xp08, yp08, xp09 - 1, yp09 - 1, frameColor);
-     osd->DrawRectangle(xp10, yp08, xp11 - 1, yp09 - 1, frameColor);
-     osd->DrawRectangle(xp12, yp08, xp13 - 1, yp09 - 1, frameColor);
-     osd->DrawRectangle(xp14, yp08, xp14 + lineHeight / 2 - 1, yp09 - 1, frameColor);
-     osd->DrawRectangle(xp14 + lineHeight / 2, yp08 + lineHeight / 2, xp15 - 1, yp09 - 1, clrTransparent);
-     osd->DrawEllipse  (xp14 + lineHeight / 2, yp08, xp15 - 1, yp09 - 1, frameColor, 5);
-     }
-}
-
-cLCARSNGDisplayReplay::~cLCARSNGDisplayReplay()
-{
-  Cancel(-1);
-  delete osd;
-  cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
-}
-
-void cLCARSNGDisplayReplay::DrawDate(void)
-{
-  cString s = DayDateTime();
-  if (!*lastDate || strcmp(s, lastDate)) {
-     osd->DrawText(xp12, yp00 - lineHeight, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), cFont::GetFont(fontOsd), xp13 - xp12, lineHeight, taRight | taBorder);
-     lastDate = s;
-     }
-}
-
-void cLCARSNGDisplayReplay::DrawTrack(void)
-{
-  cDevice *Device = cDevice::PrimaryDevice();
-  const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
-  if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
-     osd->DrawText(xp03, yp04, Track ? Track->description : "", Theme.Color(clrTrackName), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xp07 - xp03);
-     strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
-     }
-}
-
-void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
-{ 
-  bool rec = cRecordControls::Active();
-  if (rec) {
-     if (!Running())
-        Start();
-     }
-  else {
-     if (Running()) {
-        Cancel(3);
-        On = false;
-        }
-     }
-  if (initial || On != lastOn) { 
-     int x = xp13;
-     x -= bmRecording.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
-     lastOn = On;
-     }
-}
-
-void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
-{
-  const cRecordingInfo *RecordingInfo = Recording->Info();
-  int x = xp13;
-
-  osd->DrawRectangle(xp12, yp08, xp13 - 1, yp09 - 1, frameColor);
-  x -= bmRecording.Width() + SymbolSpacing;
- 
-  SetTitle(RecordingInfo->Title());
-  osd->DrawText(xp03, yp01 - lineHeight, RecordingInfo->ShortText(), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xp13 - xp03);
-  osd->DrawText(xp00, yp00, ShortDateString(Recording->Start()), Theme.Color(clrReplayFrameFg), frameColor, cFont::GetFont(fontOsd), xp02 - xp00, 0, taTop | taRight | taBorder);
-  osd->DrawText(xp00, yp01 - lineHeight, TimeString(Recording->Start()), Theme.Color(clrReplayFrameFg), frameColor, cFont::GetFont(fontOsd), xp02 - xp00, 0, taBottom | taRight | taBorder);
-}
-
-void cLCARSNGDisplayReplay::SetTitle(const char *Title)
-{
-  osd->DrawText(xp03, yp00, Title, Theme.Color(clrEventTitle), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xp13 - xp03);
-}
-
-static const char *const *ReplaySymbols[2][2][5] = {
-  { { pause_xpm, srew_xpm, srew1_xpm, srew2_xpm, srew3_xpm },
-    { pause_xpm, sfwd_xpm, sfwd1_xpm, sfwd2_xpm, sfwd3_xpm }, },
-  { { play_xpm,  frew_xpm, frew1_xpm, frew2_xpm, frew3_xpm },
-    { play_xpm,  ffwd_xpm, ffwd1_xpm, ffwd2_xpm, ffwd3_xpm } }
-  };
-
-void cLCARSNGDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
-{
-  Speed = constrain(Speed, -1, 3);
-  cBitmap bm(ReplaySymbols[Play][Forward][Speed + 1]);
-  osd->DrawBitmap(xp01 - bm.Width() / 2, (yp02 + yp03 - bm.Height()) / 2, bm, Theme.Color(clrReplayFrameFg), frameColor);
-}
-
-void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
-{
-  cProgressBar pb(xp13 - xp03, lineHeight, Current, Total, marks, Theme.Color(clrReplayProgressSeen), Theme.Color(clrReplayProgressRest), Theme.Color(clrReplayProgressSelected), Theme.Color(clrReplayProgressMark), Theme.Color(clrReplayProgressCurrent));
-  osd->DrawBitmap(xp03, yp02, pb);
-}
-
-void cLCARSNGDisplayReplay::SetCurrent(const char *Current)
-{
-  const cFont *font = cFont::GetFont(fontOsd);
-  int w = font->Width(Current);
-  osd->DrawText(xp03, yp03 - lineHeight, Current, Theme.Color(clrReplayPosition), Theme.Color(clrBackground), font, max(lastCurrentWidth, w), 0, taLeft);
-  lastCurrentWidth = w;
-}
-
-void cLCARSNGDisplayReplay::SetTotal(const char *Total)
-{
-  const cFont *font = cFont::GetFont(fontOsd);
-  int w = font->Width(Total);
-  osd->DrawText(xp13 - w, yp03 - lineHeight, Total, Theme.Color(clrReplayPosition), Theme.Color(clrBackground), font, max(lastTotalWidth, w), 0, taRight);
-  lastTotalWidth = w;
-}
-
-void cLCARSNGDisplayReplay::SetJump(const char *Jump)
-{
-  osd->DrawText(xp06, yp08, Jump, Theme.Color(clrReplayJumpFg), Jump ? Theme.Color(clrReplayJumpBg) : frameColor, cFont::GetFont(fontOsd), xp07 - xp06, 0, taCenter);
-}
-
-void cLCARSNGDisplayReplay::SetMessage(eMessageType Type, const char *Text)
-{
-  if (Text) {
-     osd->SaveRegion(xp06, yp08, xp13 - 1, yp09 - 1);
-     osd->DrawText(xp06, yp08, Text, Theme.Color(clrMessageStatusFg + 2 * Type), Theme.Color(clrMessageStatusBg + 2 * Type), cFont::GetFont(fontSml), xp13 - xp06, yp09 - yp08, taCenter);
-     }
-  else
-     osd->RestoreRegion();
-}
-
-void cLCARSNGDisplayReplay::Action(void)
-{
-  while (Running()) {
-     On = !On;
-     Flush();
-     cCondWait::SleepMs(1000);
-  }
-}
-
-void cLCARSNGDisplayReplay::Flush(void)
-{
-  if (!modeOnly) {
-     DrawDate();
-     DrawTrack();
-     DrawBlinkingRec();
-     }
-  osd->Flush();
   initial = false;
 }
 
