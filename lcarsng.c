@@ -432,6 +432,7 @@ private:
   int xs; // starting column for signal display
   bool withInfo;
   int lineHeight;
+  bool On;
   cFont *tinyFont;
   cFont *tallFont;
   tColor frameColor;
@@ -497,6 +498,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo)
   tinyFont = CreateTinyFont(lineHeight);
   frameColor = Theme.Color(clrChannelFrameBg);
   message = false;
+  On = false;
   Blink = 0;
   int d = 5 * lineHeight;
   xc00 = 0;
@@ -631,20 +633,18 @@ void cLCARSNGDisplayChannel::DrawSignal(void)
 void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
 {
   bool rec = cRecordControls::Active();
-  bool On = false;
   int x = xc13;
-  uint64_t blinktime = 800;
+  uint64_t blinktime = 1400;
   uint64_t Now = cTimeMs::Now();
   x -= bmRecording.Width() + SymbolSpacing;
   if (rec) {
      if (Now - Blink > blinktime) {
-        On = false;
-           if ((Now - Blink) / 2 > blinktime)
-              Blink = cTimeMs::Now();
+        On = !On;
+        Blink = Now;
         }
-     else
-        On = true;
      }
+  else
+     On = false;
   osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
 }
  
