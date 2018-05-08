@@ -235,7 +235,8 @@ void cLCARSNGDisplayReplay::Action(void)
 {
   while (Running()) {
      On = !On;
-     Flush();
+     DrawBlinkingRec();
+     osd->Flush();
      cCondWait::SleepMs(1000);
   }
 }

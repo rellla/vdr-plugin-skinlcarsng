@@ -193,11 +193,14 @@ THEME_CLR(Theme, clrTrackItemBg,            RgbShade(CLR_TRACK, 0.5));
 THEME_CLR(Theme, clrTrackItemCurrentFg,     CLR_BLACK);
 THEME_CLR(Theme, clrTrackItemCurrentBg,     CLR_TRACK);
 
+extern bool TwoColors;
+
 cOsd *CreateOsd(int Left, int Top, int x0, int y0, int x1, int y1);
 cFont *CreateTinyFont(int LineHeight);
 bool DrawDeviceData(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &xs, const cFont *TinyFont, cString &LastDeviceType, cCamSlot *&LastCamSlot, bool Initial);
 void DrawDeviceSignal(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &LastSignalStrength, int &LastSignalQuality, bool Initial);
 void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0, int x1, int y1, int &LastCurrent);
+int FreeMB(const char *Base, bool Initial);
 
 class cLCARSNG : public cSkin {
 public:
