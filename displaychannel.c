@@ -95,8 +95,8 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   int y0 = cOsd::OsdTop() + (Setup.ChannelInfoPos ? 0 : cOsd::OsdHeight() - y1);
   osd = CreateOsd(cOsd::OsdLeft(), y0, xc00, yc0B, xc15 - 1, y1 - 1);
   osd->DrawRectangle(xc00, yc0B, xc15 - 1, y1 - 1, Theme.Color(clrBackground));
-  // Elbow:
-  osd->DrawRectangle(xc00, yc0B, xc01 - 1, yc0A - 1, clrTransparent);
+  // Upper Elbow:
+  osd->DrawRectangle(xc00, yc0B, xc01 - 1, yc00 - 1, clrTransparent);
   osd->DrawEllipse  (xc00, yc0B, xc01 - lineHeight / 2 - 1, yc00 - 1, frameColor, 2);
   osd->DrawRectangle(xc01 - lineHeight / 2, yc0B, xc02 - 1, yc00 - 1, frameColor);
   osd->DrawEllipse  (xc02, yc0A, xc02m - 1, yc00 - 1, frameColor, -2);
@@ -108,7 +108,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   if (withInfo) {
      osd->DrawRectangle(xc00, yc03, xc02 - 1, yc04 - 1, frameColor);
      osd->DrawRectangle(xc00, yc05, xc02 - 1, yc06 - 1, frameColor);
-     // Elbow:
+     // Lower Elbow:
      osd->DrawRectangle(xc00, yc07, xc01 - 1, yc08 - 1, frameColor);
      osd->DrawRectangle(xc00, yc08, xc01 - 1, yc12 - 1, clrTransparent);
      osd->DrawEllipse  (xc00, yc08, xc01 - lineHeight / 2 - 1, yc12 - 1, frameColor, 3);
