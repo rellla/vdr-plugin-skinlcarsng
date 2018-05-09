@@ -98,12 +98,14 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   yb00 = yc11 + Gap;
   yb01 = yb00 + 2 * lineHeight;
   yb02 = yb01 + Gap;
-  yb03 = yb02 + 2 * lineHeight;
-  yb04 = yb03 + Gap; // Load
+  yb03 = yb02 + 2 * lineHeight; // Load
+  yb04 = yb03 + Gap;
   yb05 = yb04 + 2 * lineHeight; // Load %
   yb06 = yb05 + Gap;
-  yb07 = yb06 + 2 * lineHeight;
+  yb07 = yb06 + 2 * lineHeight; //Recordings
   yb08 = yb07 + Gap;
+  yb081 = yb08 + 2 * lineHeight; //Timer
+  yb082 = yb081 + Gap;
 
   yb15 = cOsd::OsdHeight();
   yb14 = yb15 - lineHeight;
@@ -115,19 +117,23 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   yb09 = yb10 - Gap;
 
   // Compensate for large font size:
-  if (yb09 - yb08 < 2 * lineHeight) {
-     yb08 = yb06;
-     yb06 = 0; // drop "RECORDINGS" display" or empty rectangle
+  if (yb09 - yb082 < 2 * lineHeight) {
+     yb081 = yb09;
+     yb082 = 0; // drop empty rectangle
      }
   if (yb09 - yb08 < 2 * lineHeight) {
+     yb07 = yb09;
+     yb08 = 0; // drop "TIMER" display
+     }
+  if (yb09 - yb06 < 2 * lineHeight) {
      yb05 = yb09;
-     yb08 = 0; // drop "LCARSNG" display
+     yb06 = 0; // drop "RECORDINGS" display
      }
-  if (yb05 - yb04 < 2 * lineHeight) {
+  if (yb09 - yb04 < 2 * lineHeight) {
      yb03 = yb09;
      yb04 = 0; // drop "LOAD" display
      }
-  if (yb03 - yb02 < 2 * lineHeight) {
+  if (yb09 - yb02 < 2 * lineHeight) {
      yb01 = yb09;
      yb02 = 0; // drop "DISK" display
      }
@@ -519,8 +525,8 @@ void cLCARSNGDisplayMenu::DrawCountTimers(void)
         if (Timer->HasFlags(tfActive))
            CountTimers++;
         }
-     osd->DrawText(xa00, yb08, tr("TIMER"), ColorFg, ColorBg, tinyFont, xa02 - xa00, yb09 - yb08, taTop | taLeft | taBorder);
-     osd->DrawText(xa00, yb09 - lineHeight, itoa(CountTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
+     osd->DrawText(xa00, yb08, tr("TIMER"), ColorFg, ColorBg, tinyFont, xa02 - xa00, yb081 - yb08, taTop | taLeft | taBorder);
+     osd->DrawText(xa00, yb081 - lineHeight, itoa(CountTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
      }
 }
 
@@ -591,9 +597,11 @@ void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
      if (initial) {
         if (yb06)
            osd->DrawRectangle(xa00, yb06, xa02 - 1, yb07 - 1, frameColor);
-        if (yb08) {
+        if (yb08)
+           osd->DrawRectangle(xa00, yb08, xa02 - 1, yb081 - 1, frameColor);
+        if (yb082) {
 //           const cFont *font = cFont::GetFont(fontOsd);
-           osd->DrawRectangle(xa00, yb08, xa02 - 1, yb09 - 1, frameColor);
+           osd->DrawRectangle(xa00, yb082, xa02 - 1, yb09 - 1, frameColor);
 //           osd->DrawText(xa00, yb09 - lineHeight - Gap, "LCARSNG", Theme.Color(clrMenuFrameFg), frameColor, font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
            }
         }

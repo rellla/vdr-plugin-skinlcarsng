@@ -45,7 +45,7 @@ private:
   int xa00, xa01, xa02, xa03, xa04, xa05, xa06, xa07, xa08, xa09;
   int yt00, yt01, yt02, yt03, yt04, yt05, yt06, yt07, yt08;
   int yc00, yc01, yc02, yc03, yc04, yc05, yc06, yc07, yc08, yc09, yc10, yc11;
-  int yb00, yb01, yb02, yb03, yb04, yb05, yb06, yb07, yb08, yb09, yb10, yb11, yb12, yb13, yb14, yb15;
+  int yb00, yb01, yb02, yb03, yb04, yb05, yb06, yb07, yb08, yb081, yb082, yb09, yb10, yb11, yb12, yb13, yb14, yb15;
   int xm00, xm01, xm02, xm03, xm04, xm05, xm06, xm07, xm08;
   int ym00, ym01, ym02, ym03, ym04, ym05, ym06, ym07;
   int xs00, xs01, xs02, xs03, xs04, xs05, xs06, xs07, xs08, xs09, xs10, xs11, xs12, xs13;
