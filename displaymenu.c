@@ -117,7 +117,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   yb09 = yb10 - Gap;
 
   // Compensate for large font size:
-  if (yb09 - yb082 < 2 * lineHeight) {
+  if (yb09 - yb082 < lineHeight) {
      yb081 = yb09;
      yb082 = 0; // drop empty rectangle
      }
