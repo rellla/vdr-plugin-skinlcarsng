@@ -50,12 +50,14 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   lineHeight = font->Height();
   tinyFont = CreateTinyFont(lineHeight);
   frameColor = Theme.Color(clrChannelFrameBg);
+  iconHeight = bmTeletext.Height();
   message = false;
   lastOn = false;
   On = false;
   int d = 5 * lineHeight;
   xc00 = 0;
-  xc01 = xc00 + d / 2;
+  xc00m = xc00 + lineHeight / 2;
+  xc01 = xc00 + 2 * lineHeight;
   xc02 = xc00 + d;
   xc02m = xc02 + lineHeight / 2;
   xc03 = xc02 + lineHeight;
@@ -73,8 +75,9 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   xc12 = xc11 + Gap;
 
   yc0B = 0;
-  yc0A = yc0B + lineHeight;
+  yc0A = yc0B + max(lineHeight, iconHeight);
   yc00 = yc0A + lineHeight / 2;
+  yc00m = yc0B + 2 * lineHeight;
   yc01 = yc00 + lineHeight;
   yc02 = yc01 + lineHeight;
   yc03 = yc02 + Gap;
@@ -84,50 +87,58 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
 
   yc07 = yc06 + Gap;
   yc12 = yc07 + 2.5 * lineHeight + Gap / 2;
-  yc11 = yc12 - lineHeight;
+  yc11 = yc12 - yc0A;
   yc10 = yc11 - lineHeight / 2;
-  yc09 = yc11 - d / 4 + lineHeight / 2;
-  yc08 = yc12 - d / 2 + lineHeight / 2;
+  yc09 = yc11 - (d / 4 - lineHeight / 2);
+  yc08 = yc12 - (d / 2 - lineHeight / 2);
 
   xs = 0;
+
+  dsyslog ("%s %s %d Lineheight %i\n", __FILE__, __func__,  __LINE__, lineHeight);
+  dsyslog ("%s %s %d Iconheight %i\n", __FILE__, __func__,  __LINE__, iconHeight);
+  dsyslog ("%s %s %d Ellipse AU %ix%i\n", __FILE__, __func__,  __LINE__, (xc01 - 1 - xc00), (yc12 - 1 - yc08));
+  dsyslog ("%s %s %d Ellipse AO %ix%i\n", __FILE__, __func__,  __LINE__, (xc01 - 1 - xc00), (yc00m - 1 - yc0B));
 
   int y1 = withInfo ? yc12 : yc02;
   int y0 = cOsd::OsdTop() + (Setup.ChannelInfoPos ? 0 : cOsd::OsdHeight() - y1);
   osd = CreateOsd(cOsd::OsdLeft(), y0, xc00, yc0B, xc15 - 1, y1 - 1);
-  osd->DrawRectangle(xc00, yc0B, xc15 - 1, y1 - 1, Theme.Color(clrBackground));
-  // Upper Elbow:
-  osd->DrawRectangle(xc00, yc0B, xc01 - 1, yc00 - 1, clrTransparent);
-  osd->DrawEllipse  (xc00, yc0B, xc01 - lineHeight / 2 - 1, yc00 - 1, frameColor, 2);
-  osd->DrawRectangle(xc01 - lineHeight / 2, yc0B, xc02 - 1, yc00 - 1, frameColor);
-  osd->DrawEllipse  (xc02, yc0A, xc02m - 1, yc00 - 1, frameColor, -2);
-  osd->DrawRectangle(xc02, yc0B, xc05 - 1, yc0A - 1, frameColor);
-  osd->DrawRectangle(xc06, yc0B, xc11 - 1, yc0A - 1, frameColor);
-  // Rectangles:
-  osd->DrawRectangle(xc02, yc0B, xc05 - 1, yc0A - 1, frameColor);
-  osd->DrawRectangle(xc00, yc00, xc02 - 1, yc02 - 1, frameColor);
   if (withInfo) {
+     // Rectangles:
+     osd->DrawRectangle(xc00, yc0B, xc15 - 1, y1 - 1, Theme.Color(clrBackground));
+     osd->DrawRectangle(xc00, yc00, xc02 - 1, yc02 - 1, frameColor);
      osd->DrawRectangle(xc00, yc03, xc02 - 1, yc04 - 1, frameColor);
      osd->DrawRectangle(xc00, yc05, xc02 - 1, yc06 - 1, frameColor);
-     // Lower Elbow:
      osd->DrawRectangle(xc00, yc07, xc01 - 1, yc08 - 1, frameColor);
+     osd->DrawRectangle(xc06, yc0B, xc11 - 1, yc0A - 1, frameColor);
+     // Upper Elbow:
+     osd->DrawRectangle(xc00, yc0B, xc01 - 1, yc00m - 1, clrTransparent);
+     osd->DrawEllipse  (xc00, yc0B, xc01 - 1, yc00m - 1, frameColor, 2);
+     osd->DrawRectangle(xc01, yc0B, xc02 - 1, yc00 - 1, frameColor);
+     osd->DrawEllipse  (xc02, yc0A, xc02m - 1, yc00m - lineHeight / 2 - 1, frameColor, -2);
+     osd->DrawRectangle(xc02, yc0B, xc05 - 1, yc0A - 1, frameColor);
+     // Lower Elbow:
      osd->DrawRectangle(xc00, yc08, xc01 - 1, yc12 - 1, clrTransparent);
-     osd->DrawEllipse  (xc00, yc08, xc01 - lineHeight / 2 - 1, yc12 - 1, frameColor, 3);
-     osd->DrawRectangle(xc01 - lineHeight / 2, yc07, xc02 - 1, yc12 - 1, frameColor);
+     osd->DrawEllipse  (xc00, yc08, xc01 - 1, yc12 - 1, frameColor, 3);
+     osd->DrawRectangle(xc01, yc07, xc02 - 1, yc12 - 1, frameColor);
      osd->DrawEllipse  (xc02, yc10, xc02m - 1, yc11 - 1, frameColor, -3);
      osd->DrawRectangle(xc02, yc11, xc05 - 1, yc12 - 1, frameColor);
      // Status area:
      osd->DrawRectangle(xc06, yc11 + lineHeight / 2, xc07 - 1, yc12 - 1, frameColor);
      osd->DrawRectangle(xc08, yc11, xc09 - 1, yc12 - 1, frameColor);
      osd->DrawRectangle(xc10, yc11, xc11 - 1, yc12 - 1, Theme.Color(clrDeviceBg));
-//     osd->DrawRectangle(xc12, yc11, xc13 - 1, yc12 - 1, Theme.Color(clrDateBg));
      osd->DrawRectangle(xc14, yc11, xc14 + lineHeight / 2 - 1, yc12 - 1, frameColor);
      osd->DrawRectangle(xc14 + lineHeight / 2, yc11 + lineHeight / 2, xc15 - 1, yc12 - 1, clrTransparent);
      osd->DrawEllipse  (xc14 + lineHeight / 2, yc11, xc15 - 1, yc12 - 1, frameColor, 5);
+     // Icons:
+     osd->DrawRectangle(xc14, yc0B, xc14 + lineHeight / 2 - 1, yc0A - 1, frameColor);
+     osd->DrawRectangle(xc14 + lineHeight / 2, yc0B, xc15 - 1, yc0B + lineHeight / 2 - 1, clrTransparent);
+     osd->DrawEllipse  (xc14 + lineHeight / 2, yc0B, xc15 - 1, yc0A - 1, frameColor, 5);
      }
-  // Icons:
-  osd->DrawRectangle(xc14, yc0B, xc14 + lineHeight / 2 - 1, yc0A - 1, frameColor);
-  osd->DrawRectangle(xc14 + lineHeight / 2, yc0B, xc15 - 1, yc0B + lineHeight / 2 - 1, clrTransparent);
-  osd->DrawEllipse  (xc14 + lineHeight / 2, yc0B, xc15 - 1, yc0A - 1, frameColor, 5);
+  else {
+     // Rectangles:
+     osd->DrawRectangle(xc00, yc00, xc15 - 1, y1 - 1, Theme.Color(clrBackground));
+     osd->DrawRectangle(xc00, yc00, xc02 - 1, yc02 - 1, frameColor);
+     }
 }
 
 cLCARSNGDisplayChannel::~cLCARSNGDisplayChannel()
@@ -143,7 +154,7 @@ void cLCARSNGDisplayChannel::DrawDate(void)
 {
   cString s = DayDateTime();
   if (initial || !*lastDate || strcmp(s, lastDate)) {
-     osd->DrawText(xc12, yc0B, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), cFont::GetFont(fontOsd), xc13 - xc12, lineHeight, taRight | taBorder);
+     osd->DrawText(xc12, yc0B, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), cFont::GetFont(fontOsd), xc13 - xc12, yc0A, taRight | taBorder);
      lastDate = s;
      }
 }
@@ -237,12 +248,12 @@ void cLCARSNGDisplayChannel::DrawEventRec(const cEvent *Present, const cEvent *F
 void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 {
   int x = xc13;
-  int xi = x - SymbolSpacing -
+/*  int xi = x - SymbolSpacing -
            bmRecording.Width() - SymbolSpacing -
            bmEncrypted.Width() - SymbolSpacing -
            bmDolbyDigital.Width() - SymbolSpacing -
            bmAudio.Width() - SymbolSpacing -
-           max(bmTeletext.Width(), bmRadio.Width()) - SymbolSpacing;
+           max(bmTeletext.Width(), bmRadio.Width()) - SymbolSpacing;*/
   osd->DrawRectangle(xc12, yc11, xc13 - 1, yc12 - 1, frameColor);
   if (Channel && !Channel->GroupSep()) {
      x -= bmRecording.Width() + SymbolSpacing;
@@ -272,7 +283,7 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
      ChNumber = cString::sprintf("%d-", Number);
   else
      ChName = ChannelString(NULL, 0);
-  osd->DrawText(xc00, yc00, ChNumber, Theme.Color(clrChannelFrameFg), frameColor, tallFont, xc02 - xc00, yc02 - yc00, taTop | taRight | taBorder);
+  osd->DrawText(xc00m, yc00, ChNumber, Theme.Color(clrChannelFrameFg), frameColor, tallFont, xc02 - xc00m, yc02 - yc00, taTop | taRight | taBorder);
   osd->DrawText(xc03, yc00, ChName, Theme.Color(clrChannelName), Theme.Color(clrBackground), tallFont, xc11 - xc03 - lineHeight, 0, taTop | taLeft);
   lastSignalDisplay = 0;
   if (withInfo) {
@@ -370,7 +381,7 @@ void cLCARSNGDisplayChannel::Flush(void)
         DrawTrack();
         DrawDevice();
         DrawSignal();
-        DrawBlinkingRec();
+//        DrawBlinkingRec();
         int Current = 0;
         int Total = 0;
         if (present) {
@@ -381,6 +392,8 @@ void cLCARSNGDisplayChannel::Flush(void)
            }
         DrawSeen(Current, Total);
         DrawEventRec(present, following);
+        initial = true;
+        DrawBlinkingRec();
         }
      }
   osd->Flush();
