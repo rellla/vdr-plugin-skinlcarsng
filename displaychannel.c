@@ -55,6 +55,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   lastOn = false;
   On = false;
   int d = 5 * lineHeight;
+  int d1 = 3 * lineHeight;
   xc00 = 0;
   xc00m = xc00 + lineHeight / 2;
   xc01 = xc00 + 2 * lineHeight;
@@ -71,6 +72,8 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   xc08 = xc07 + Gap;
   xc09 = xc08 + lineHeight;
   xc10 = xc09 + Gap;
+  xc10m = xc10 + d1;
+  xc10n = xc10m + lineHeight;
   xc11 = (xc10 + xc13 + Gap) / 2;
   xc12 = xc11 + Gap;
 
@@ -80,7 +83,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   yc00m = yc0B + 2 * lineHeight;
   yc01 = yc00 + lineHeight;
   yc02 = yc01 + lineHeight;
-  yc03 = yc02 + Gap;
+  yc03 = yc00; // + Gap;
   yc04 = yc03 + 2 * lineHeight;
   yc05 = yc04 + Gap;
   yc06 = yc05 + 2 * lineHeight;
@@ -129,6 +132,13 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
      osd->DrawRectangle(xc14, yc11, xc14 + lineHeight / 2 - 1, yc12 - 1, frameColor);
      osd->DrawRectangle(xc14 + lineHeight / 2, yc11 + lineHeight / 2, xc15 - 1, yc12 - 1, clrTransparent);
      osd->DrawEllipse  (xc14 + lineHeight / 2, yc11, xc15 - 1, yc12 - 1, frameColor, 5);
+     osd->DrawRectangle(xc08, yc03 + lineHeight, xc09 - 1, yc04 - 1, frameColor);
+     osd->DrawRectangle(xc10, yc03, xc10m - 1, yc04 - lineHeight - 1, frameColor);
+     osd->DrawRectangle(xc08, yc05 + lineHeight, xc09 - 1, yc06 - 1, frameColor);
+     osd->DrawRectangle(xc10, yc05, xc10m - 1, yc06 - lineHeight - 1, frameColor);
+     osd->DrawRectangle(xc08, yc07, xc09 - 1, yc11 - 1, frameColor);
+     osd->DrawEllipse  (xc08, yc03, xc09 - 1, yc04 - lineHeight - 1, frameColor, 2);
+     osd->DrawEllipse  (xc08, yc05, xc09 - 1, yc06 - lineHeight - 1, frameColor, 2);
      // Icons:
      osd->DrawRectangle(xc14, yc0B, xc14 + lineHeight / 2 - 1, yc0A - 1, frameColor);
      osd->DrawRectangle(xc14 + lineHeight / 2, yc0B, xc15 - 1, yc0B + lineHeight / 2 - 1, clrTransparent);
@@ -164,7 +174,7 @@ void cLCARSNGDisplayChannel::DrawTrack(void)
   cDevice *Device = cDevice::PrimaryDevice();
   const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
   if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
-     osd->DrawText(xc03, yc10 - lineHeight, Track ? Track->description : "", Theme.Color(clrTrackName), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xc07 - xc03);
+     osd->DrawText(xc03, yc06 - lineHeight, Track ? Track->description : "", Theme.Color(clrTrackName), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xc07 - xc03);
      strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
      }
 }
@@ -180,7 +190,7 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
      osd->DrawRectangle(xc06, y0, xc06 + Seen - 1, y1 - 1, Theme.Color(clrSeen));
      osd->DrawRectangle(xc06 + Seen, y0, xc07 - 1, y1 - 1, Theme.Color(clrBackground));
      // Restzeit anzeigen
-     osd->DrawText(xc00, yc03 + lineHeight, ((Current / 60.0) > 0.1) ? cString::sprintf("-%d", max((int)ceil((Total - Current) / 60.0), 0)) : cString::sprintf(" "), Theme.Color(clrChannelFrameFg), frameColor, cFont::GetFont(fontOsd), xc02 - xc00, 0, taRight | taBorder);
+     osd->DrawText(xc10, yc03 + lineHeight, ((Current / 60.0) > 0.1) ? cString::sprintf("-%d", max((int)ceil((Total - Current) / 60.0), 0)) : cString::sprintf(" "), Theme.Color(clrChannelFrameFg), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xc10m - xc10, 0, taRight | taBorder);
      lastSeen = Seen;
      }
 }
@@ -238,9 +248,9 @@ void cLCARSNGDisplayChannel::DrawEventRec(const cEvent *Present, const cEvent *F
          eTimerMatch TimerMatch = tmNone;
          const cTimer *Timer = Timers->GetMatch(e, &TimerMatch);
          if (Timer && Timer->HasFlags(tfActive) && TimerMatch == tmFull)
-            osd->DrawRectangle(xc02 + 2 * Gap, y, xc03 - 2 * Gap, y + 2 * lineHeight -1, recColor);
+            osd->DrawRectangle(xc10m + 3 * Gap, y, xc10n - 3 * Gap, y + 2 * lineHeight -1, recColor);
          else
-            osd->DrawRectangle(xc02 + 2 * Gap, y, xc03 - 2 * Gap, y + 2 * lineHeight -1, Theme.Color(clrBackground));
+            osd->DrawRectangle(xc10m + 3 * Gap, y, xc10n - 3 * Gap, y + 2 * lineHeight -1, Theme.Color(clrBackground));
          }
       }
 }
@@ -284,12 +294,12 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
   else
      ChName = ChannelString(NULL, 0);
   osd->DrawText(xc00m, yc00, ChNumber, Theme.Color(clrChannelFrameFg), frameColor, tallFont, xc02 - xc00m, yc02 - yc00, taTop | taRight | taBorder);
-  osd->DrawText(xc03, yc00, ChName, Theme.Color(clrChannelName), Theme.Color(clrBackground), tallFont, xc11 - xc03 - lineHeight, 0, taTop | taLeft);
+  osd->DrawText(xc03, yc00, ChName, Theme.Color(clrChannelName), Theme.Color(clrBackground), tallFont, xc07 - xc03 - lineHeight, 0, taTop | taLeft);
   lastSignalDisplay = 0;
   if (withInfo) {
      if (Channel) {
         int x = xc00 + (yc10 - yc09); // compensate for the arc
-        osd->DrawText(x, yc07, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), frameColor, cFont::GetFont(fontOsd), xc02 - x, yc10 - yc07, taTop | taRight | taBorder);
+        osd->DrawText(x, yc06 - lineHeight, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), frameColor, cFont::GetFont(fontOsd), xc02 - x, lineHeight, taRight | taBorder);
         }
      DrawDevice();
      }
@@ -305,15 +315,17 @@ void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Foll
   following = Following;
   for (int i = 0; i < 2; i++) {
       const cEvent *e = !i ? Present : Following;
+      int x = xc10n; //xc03;
       int y = !i ? yc03 : yc05;
       if (e) {
-         osd->DrawText(xc00, y, e->GetTimeString(), Theme.Color(clrChannelFrameFg), frameColor, cFont::GetFont(fontOsd), xc02 - xc00, 0, taRight | taBorder);
-         osd->DrawText(xc03, y, e->Title(), Theme.Color(clrEventTitle), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xc13 - xc03);
-         osd->DrawText(xc03, y + lineHeight, e->ShortText(), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc13 - xc03);
+         osd->DrawText(xc10, y, e->GetTimeString(), Theme.Color(clrChannelFrameFg), frameColor, cFont::GetFont(fontOsd), xc10m - xc10, 0, taRight | taBorder);
+         osd->DrawText(x, y, e->Title(), Theme.Color(clrEventTitle), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xc13 - x);
+         osd->DrawText(x, y + lineHeight, e->ShortText(), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc13 - x);
          }
       else {
-         osd->DrawRectangle(xc00, y, xc02 - 1, y + lineHeight, frameColor);
-         osd->DrawRectangle(xc02, y, xc13 - 1, y + 2 * lineHeight, Theme.Color(clrBackground));
+         osd->DrawRectangle(xc03, y, xc04 - 1, y + lineHeight, frameColor);
+	 osd->DrawRectangle(xc02, y, xc07 - 1, y + 2 * lineHeight, Theme.Color(clrBackground));
+         osd->DrawRectangle(xc10m, y, xc13 - 1, y + 2 * lineHeight, Theme.Color(clrBackground));
          }
       }
 }

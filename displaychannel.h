@@ -26,7 +26,7 @@
 class cLCARSNGDisplayChannel : public cSkinDisplayChannel, cThread {
 private:
   cOsd *osd;
-  int xc00, xc00m, xc01, xc02, xc02m, xc03, xc04, xc05, xc06, xc07, xc08, xc09, xc10, xc11, xc12, xc13, xc14, xc15;
+  int xc00, xc00m, xc01, xc02, xc02m, xc03, xc04, xc05, xc06, xc07, xc08, xc09, xc10, xc10m, xc10n, xc11, xc12, xc13, xc14, xc15;
   int yc0B, yc0A, yc00, yc00m, yc01, yc02, yc03, yc04, yc05, yc06, yc07, yc08, yc09, yc10, yc11, yc12;
   int xs; // starting column for signal display
   bool withInfo;
