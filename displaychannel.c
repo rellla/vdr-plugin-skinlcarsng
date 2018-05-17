@@ -65,6 +65,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   xc04 = xc02 + d / 4;
   xc05 = xc02 + d;
   xc06 = xc05 + Gap;
+  xc06a = xc06 + d1;
   xc15 = cOsd::OsdWidth();
   xc14 = xc15 - lineHeight;
   xc13 = xc14 - Gap;
@@ -276,23 +277,32 @@ void cLCARSNGDisplayChannel::DrawEventRec(const cEvent *Present, const cEvent *F
 
 void cLCARSNGDisplayChannel::DrawTimer(void)
 {
-  osd->DrawText(xc06l, yc05, "Timer", Theme.Color(clrEventShortText), frameColor, cFont::GetFont(fontSml), xc06m - xc06l - Gap - 1, lineHeight, taRight | taBorder);
+  osd->DrawText(xc06l + Gap, yc05, "Timer", Theme.Color(clrEventShortText), frameColor, cFont::GetFont(fontOsd), xc06m - xc06l - 1, lineHeight, taLeft | taBorder);
   LOCK_TIMERS_READ;
   cSortedTimers SortedTimers(Timers);
-  for (int i = 0; i < 2; i++) {
+  int i = 0;
+  int j = 0;
+  while (i < 2) {
      int y = yc05 + i * lineHeight;
-     if (const cTimer *Timer = SortedTimers[i]) {
-        cString Date;
-        if (Timer->Recording())
-           Date = cString::sprintf("-%s", *TimeString(Timer->StopTime()));
-        else
-           Date = DayDateTime(Timer->StartTime());
-        const cChannel *Channel = Timer->Channel();
-        const cEvent *Event = Timer->Event();
-        if (Channel) {
-           osd->DrawText(xc01, y, cString::sprintf("%d", Channel->Number()), Theme.Color(clrEventShortText), frameColor, cFont::GetFont(fontSml), xc02 - xc01 - 1, lineHeight, taRight | taBorder);
+     if (const cTimer *Timer = SortedTimers[i + j]) {
+        time_t Now = time(NULL);
+        if (!(Timer->HasFlags(tfActive)) || (Timer->StopTime() < Now))
+           j++;
+	else {
+           cString Date;
+           if (Timer->Recording())
+              Date = cString::sprintf("- %s", *TimeString(Timer->StopTime()));
+           else
+              Date = DayDateTime(Timer->StartTime());
+           const cChannel *Channel = Timer->Channel();
+           const cEvent *Event = Timer->Event();
+           if (Channel) {
+              osd->DrawText(xc01, y, cString::sprintf("%d", Channel->Number()), Theme.Color(clrEventShortText), frameColor, cFont::GetFont(fontSml), xc02 - xc01 - Gap - 1, lineHeight, taRight | taBorder);
+              }
+           osd->DrawText(xc04, y, cString::sprintf("%s", *Date), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc06a - xc04 - Gap - 1, lineHeight, taRight | taBorder);
+           osd->DrawText(xc06a, y, cString::sprintf("%s", Event->Title()), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc06l - xc06a - Gap - 1, lineHeight, taLeft | taBorder);
+           i++;
            }
-        osd->DrawText(xc04, y, cString::sprintf("%s %s", *Date, Event->Title()), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc06l - Gap - xc04 - 1, lineHeight, taLeft | taBorder);
         }
      }
 }
