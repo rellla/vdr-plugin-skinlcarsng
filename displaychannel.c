@@ -137,24 +137,22 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
      osd->DrawRectangle(xc14 + lineHeight / 2, yc11 + lineHeight / 2, xc15 - 1, yc12 - 1, clrTransparent);
      osd->DrawEllipse  (xc14 + lineHeight / 2, yc11, xc15 - 1, yc12 - 1, frameColor, 5);
      // Status area tail middle:
-     osd->DrawRectangle(xc07 - lineHeight / 2, yc03 + lineHeight, xc07 - 1, yc04 - 1, frameColor);
-     osd->DrawRectangle(xc07 - lineHeight / 2, yc05, xc07 - 1, yc06 - 1, frameColor);
-     osd->DrawRectangle(xc08, yc05 + lineHeight, xc08 + lineHeight / 2 - 1, yc06 - 1, frameColor);
+     osd->DrawRectangle(xc07 - lineHeight / 2, yc05 + lineHeight, xc07 - 1, yc06 - 1, frameColor);
+     osd->DrawRectangle(xc08, yc03 + lineHeight, xc08 + lineHeight / 2 - 1, yc04 - 1, frameColor);
+     osd->DrawRectangle(xc08, yc05, xc08 + lineHeight / 2 - 1, yc06 - 1, frameColor);
      osd->DrawRectangle(xc10, yc03, xc10m - 1, yc04 - lineHeight - 1, frameColor);
-     osd->DrawRectangle(xc08, yc05 + lineHeight, xc08  - 1, yc06 - 1, frameColor);
      osd->DrawRectangle(xc10, yc05, xc10m - 1, yc06 - lineHeight - 1, frameColor);
      osd->DrawRectangle(xc06m - d1, yc05, xc06m - 1, yc06 - lineHeight - 1, frameColor);
      osd->DrawRectangle(xc07 - lineHeight / 2, yc07, xc07 - 1, yc11 - 1, frameColor);
      osd->DrawRectangle(xc08, yc07, xc08 + lineHeight / 2 - 1, yc11 - 1, frameColor);
      osd->DrawEllipse  (xc08 + lineHeight / 2, yc11 - lineHeight / 2, xc09 - 1, yc11 - 1, frameColor, -3);
      osd->DrawEllipse  (xc06n, yc11 - lineHeight / 2, xc07 - lineHeight / 2 - 1, yc11 - 1, frameColor, -4);
-     osd->DrawEllipse  (xc07 - lineHeight / 2, yc03, xc07 + lineHeight / 2 - 1, yc04 - lineHeight - 1, frameColor, 2);
-     osd->DrawEllipse  (xc07, yc04 - lineHeight, xc07 + lineHeight / 2 - 1, yc04 - lineHeight / 2 - 1, frameColor, -2);
+     osd->DrawEllipse  (xc08, yc03, xc09 - 1, yc04 - lineHeight - 1, frameColor, 2);
+     osd->DrawEllipse  (xc08 + lineHeight / 2, yc04 - lineHeight, xc09 - 1, yc04 - lineHeight / 2 - 1, frameColor, -2);
      osd->DrawEllipse  (xc08, yc05, xc09 - 1, yc06 - lineHeight - 1, frameColor, 2);
      osd->DrawEllipse  (xc08 + lineHeight / 2, yc06 - lineHeight, xc09 - 1, yc06 - lineHeight / 2 - 1, frameColor, -2);
      osd->DrawEllipse  (xc06n, yc05, xc07 - 1, yc06 - lineHeight - 1, frameColor, 1);
      osd->DrawEllipse  (xc06n, yc06 - lineHeight, xc07 - lineHeight / 2 - 1, yc06 - lineHeight / 2 - 1, frameColor, -1);
-     osd->DrawRectangle(xc09 - lineHeight / 2 - Gap, yc03, xc09 - 1, yc03 + lineHeight - 1, frameColor);
      // Icons:
      osd->DrawRectangle(xc14, yc0B, xc14 + lineHeight / 2 - 1, yc0A - 1, frameColor);
      osd->DrawRectangle(xc14 + lineHeight / 2, yc0B, xc15 - 1, yc0B + lineHeight / 2 - 1, clrTransparent);
@@ -347,7 +345,7 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
   else
      ChName = ChannelString(NULL, 0);
   osd->DrawText(xc00m, yc00, ChNumber, Theme.Color(clrChannelFrameFg), frameColor, tallFont, xc02 - xc00m, yc02 - yc00, taTop | taRight | taBorder);
-  osd->DrawText(xc03, yc00, ChName, Theme.Color(clrChannelName), Theme.Color(clrBackground), tallFont, xc06m - xc03 - lineHeight, 0, taTop | taLeft);
+  osd->DrawText(xc03, yc00, ChName, Theme.Color(clrChannelName), Theme.Color(clrBackground), tallFont, xc06m - xc03 - 1, 0, taTop | taLeft);
   lastSignalDisplay = 0;
   if (withInfo) {
      if (Channel) {
