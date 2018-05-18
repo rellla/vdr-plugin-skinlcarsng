@@ -157,6 +157,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
      osd->DrawRectangle(xc14, yc0B, xc14 + lineHeight / 2 - 1, yc0A - 1, frameColor);
      osd->DrawRectangle(xc14 + lineHeight / 2, yc0B, xc15 - 1, yc0B + lineHeight / 2 - 1, clrTransparent);
      osd->DrawEllipse  (xc14 + lineHeight / 2, yc0B, xc15 - 1, yc0A - 1, frameColor, 5);
+     osd->DrawText(xc06l + Gap, yc05, "Timer", Theme.Color(clrEventShortText), frameColor, cFont::GetFont(fontOsd), xc06m - xc06l - Gap - 1, lineHeight, taLeft | taBorder);
      }
   else {
      // Rectangles:
@@ -275,7 +276,6 @@ void cLCARSNGDisplayChannel::DrawEventRec(const cEvent *Present, const cEvent *F
 
 void cLCARSNGDisplayChannel::DrawTimer(void)
 {
-  osd->DrawText(xc06l + Gap, yc05, "Timer", Theme.Color(clrEventShortText), frameColor, cFont::GetFont(fontOsd), xc06m - xc06l - Gap - 1, lineHeight, taLeft | taBorder);
   LOCK_TIMERS_READ;
   cSortedTimers SortedTimers(Timers);
   int i = 0;
