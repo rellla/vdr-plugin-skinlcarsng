@@ -286,10 +286,17 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
         time_t Now = time(NULL);
         if (!(Timer->HasFlags(tfActive)) || (Timer->StopTime() < Now))
            j++;
-	else {
+        else {
            cString Date;
-           if (Timer->Recording())
+           cString Number;
+           bool isRecording = false;
+           if (Timer->Recording()) {
+              isRecording = true;
+              if (cRecordControl *RecordControl = cRecordControls::GetRecordControl(Timer))
+                 if (const cDevice *Device = RecordControl->Device())
+                    Number = itoa(Device->DeviceNumber() + 1);
               Date = cString::sprintf("- %s", *TimeString(Timer->StopTime()));
+              }
            else
               Date = DayDateTime(Timer->StartTime());
            const cChannel *Channel = Timer->Channel();
@@ -300,6 +307,8 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
               osd->DrawText(xc04, y + y1, cString::sprintf("%s", *Date), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc06a - xc04 - Gap - 1, lineHeight - 2 * y1, taRight | taBorder);
               osd->DrawText(xc06a, y + y1, cString::sprintf("%s", Event->Title()), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc06l - xc06a - Gap - 1, lineHeight - 2 * y1, taLeft | taBorder);
               }
+           if (isRecording) // && Number)
+              osd->DrawText(xc04, y + y1, cString::sprintf("Rec: #%s", *Number), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc05 - xc04 - Gap - 1, lineHeight - 2 * y1, taRight | taBorder);
            i++;
            }
         }
