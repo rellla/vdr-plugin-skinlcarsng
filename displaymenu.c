@@ -488,7 +488,8 @@ void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
 #endif
   NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
   }
-  osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight | taBorder);
+  if (NumRecordingsInPath > 0)
+     osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight | taBorder);
 }
 
 void cLCARSNGDisplayMenu::DrawCountRecordings(void)
