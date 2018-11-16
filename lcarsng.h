@@ -153,6 +153,7 @@ THEME_CLR(Theme, clrChannelSymbolOn,        CLR_BLACK);
 THEME_CLR(Theme, clrChannelSymbolOff,       RgbShade(CLR_CHANNEL_FRAME, -0.2));
 THEME_CLR(Theme, clrChannelSymbolRecFg,     CLR_WHITE);
 THEME_CLR(Theme, clrChannelSymbolRecBg,     CLR_RED);
+THEME_CLR(Theme, clrSwitchTimer,            CLR_GREEN);
 
 // Menu:
 
