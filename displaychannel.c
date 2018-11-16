@@ -258,7 +258,7 @@ void cLCARSNGDisplayChannel::DrawEventRec(const cEvent *Present, const cEvent *F
 {
   for (int i = 0; i < 2; i++) {
       const cEvent *e = !i ? Present : Following;
-      tColor recColor = !i ? Theme.Color(clrButtonRedBg) : Theme.Color(clrButtonYellowBg);
+      tColor recColor = !i ? Theme.Color(clrChannelSymbolRecBg) : Theme.Color(clrButtonYellowBg);
       int y = !i ? yc03 : yc05;
       if (e) {
          LOCK_TIMERS_READ;
@@ -308,7 +308,7 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
               osd->DrawText(xc06a, y + y1, cString::sprintf("%s", Event->Title()), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc06l - xc06a - Gap - 1, lineHeight - 2 * y1, taLeft | taBorder);
               }
            if (isRecording) // && Number)
-              osd->DrawText(xc04, y + y1, cString::sprintf("Rec: #%s", *Number), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc05 - xc04 - Gap - 1, lineHeight - 2 * y1, taRight | taBorder);
+              osd->DrawText(xc04, y + y1, cString::sprintf("Rec: #%s", *Number), Theme.Color(clrChannelSymbolRecBg), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc05 - xc04 - Gap - 1, lineHeight - 2 * y1, taRight | taBorder);
            i++;
            }
         }
