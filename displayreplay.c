@@ -116,8 +116,9 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
 
 cLCARSNGDisplayReplay::~cLCARSNGDisplayReplay()
 {
-  Cancel(-1);
+//  Cancel(-1);
   delete osd;
+  Cancel(3);
   cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
 }
 
