@@ -168,11 +168,10 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
 
 cLCARSNGDisplayChannel::~cLCARSNGDisplayChannel()
 {
-//  Cancel(3);
+  Cancel(3);
   delete tallFont;
   delete tinyFont;
   delete osd;
-  Cancel(3);
   cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
 }
 
@@ -237,6 +236,14 @@ void cLCARSNGDisplayChannel::DrawSignal(void)
 void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
 {
   bool rec = cRecordControls::Active();
+
+  if (initial || On != lastOn) {
+     int x = xc13;
+     x -= bmRecording.Width() + SymbolSpacing;
+     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
+     lastOn = On;
+     }
+
   if (rec) {
      if (!Running())
         Start();
@@ -246,12 +253,6 @@ void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
         Cancel(3);
         On = false;
         }
-     }
-  if (initial || On != lastOn) {
-     int x = xc13;
-     x -= bmRecording.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
-     lastOn = On;
      }
 }
  
@@ -446,7 +447,7 @@ void cLCARSNGDisplayChannel::Action(void)
   while (Running()) {
      On = !On;
      DrawBlinkingRec();
-     osd->Flush();
+     if (osd) osd->Flush();
      cCondWait::SleepMs(1000);
   }
 }
@@ -470,7 +471,7 @@ void cLCARSNGDisplayChannel::Flush(void)
         DrawSeen(Current, Total);
 	DrawTrack();
         DrawEventRec(present, following);
-        initial = true;
+//        initial = true;
         DrawBlinkingRec();
         }
      }
