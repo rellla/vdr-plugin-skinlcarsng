@@ -250,7 +250,7 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
      switch (MenuCategory) {
         case mcMain:
         case mcSetup:
-        case mcCommand:
+//        case mcCommand:
            osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, clrTransparent);
            yi00 = ym03;
            yi01 = ym04;
@@ -278,6 +278,7 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
            DrawMainFrameChannel();
            DrawMainBracket();
            break;
+        case mcCommand:
         case mcSchedule:
         case mcScheduleNow:
         case mcScheduleNext:
@@ -548,7 +549,7 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
      y2 = ym02; //ym01 + lineHeight / 2
      y3 = ym03; //ym02 + Gap
      }
-  if (MenuCategory() != mcSchedule && MenuCategory() != mcScheduleNow && MenuCategory() != mcScheduleNext && MenuCategory() != mcEvent && MenuCategory() != mcRecording && MenuCategory() != mcRecordingInfo && MenuCategory() != mcRecordingEdit && MenuCategory() != mcTimer && MenuCategory() != mcTimerEdit) {
+  if (MenuCategory() != mcSchedule && MenuCategory() != mcScheduleNow && MenuCategory() != mcScheduleNext && MenuCategory() != mcEvent && MenuCategory() != mcRecording && MenuCategory() != mcRecordingInfo && MenuCategory() != mcRecordingEdit && MenuCategory() != mcTimer && MenuCategory() != mcTimerEdit && MenuCategory() != mcCommand) {
      osd->DrawRectangle(xm00, y0, xm01 - 1, y1 - 1, Color);
      osd->DrawRectangle(xm02, y0, xm07 - 1, y1 - 1, Color);
      osd->DrawEllipse  (xm07, y0, xm08 - 1, y2 - 1, Color, 1);
@@ -561,11 +562,11 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
      }
   if (MenuCategory() == mcSetup)
      osd->DrawText(xm02, ys00, tr("Setup"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
-  if (MenuCategory() == mcCommand)
-     osd->DrawText(xm02, ys00, tr("Commands"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
+//  if (MenuCategory() == mcCommand)
+//     osd->DrawText(xm02, ys00, tr("Commands"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
   if (MenuCategory() == mcChannel)
      osd->DrawText(xm02, yt00, tr("Channels"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
-  if (MenuCategory() != mcMain && MenuCategory() != mcSchedule && MenuCategory() != mcScheduleNow && MenuCategory() != mcScheduleNext && MenuCategory() != mcEvent && MenuCategory() != mcRecording && MenuCategory() != mcRecordingInfo && MenuCategory() != mcRecordingEdit && MenuCategory() != mcTimer && MenuCategory() != mcTimerEdit) {
+  if (MenuCategory() != mcMain && MenuCategory() != mcSchedule && MenuCategory() != mcScheduleNow && MenuCategory() != mcScheduleNext && MenuCategory() != mcEvent && MenuCategory() != mcRecording && MenuCategory() != mcRecordingInfo && MenuCategory() != mcRecordingEdit && MenuCategory() != mcTimer && MenuCategory() != mcTimerEdit && MenuCategory() != mcCommand) {
      osd->DrawRectangle(xm04 - Gap, y0, xm04, ym01 - 1, clrTransparent);
      osd->DrawRectangle(xm04 - Gap, ym06, xm04, ym07 - 1, clrTransparent);
      }
@@ -617,7 +618,7 @@ void cLCARSNGDisplayMenu::DrawScrollbar(int Total, int Offset, int Shown, bool C
 {
   int x0, x1, tt, tb;
   tColor ClearColor;
-  if (MenuCategory() == mcMain || MenuCategory() == mcSetup || MenuCategory() == mcCommand) {
+  if (MenuCategory() == mcMain || MenuCategory() == mcSetup) { //|| MenuCategory() == mcCommand) {
      x0 = xm07;
      x1 = xm08;
      tt = ym03;
@@ -636,7 +637,7 @@ void cLCARSNGDisplayMenu::DrawScrollbar(int Total, int Offset, int Shown, bool C
      x1 = x0 + lineHeight / 2;
      ClearColor = Theme.Color(clrBackground);
      int d = TextFrame;
-     if (MenuCategory() == mcSchedule || MenuCategory() == mcScheduleNow || MenuCategory() == mcScheduleNext || MenuCategory() == mcEvent || MenuCategory() == mcRecording || MenuCategory() == mcRecordingInfo || MenuCategory() == mcRecordingEdit || MenuCategory() == mcTimer || MenuCategory() == mcTimerEdit) {
+     if (MenuCategory() == mcSchedule || MenuCategory() == mcScheduleNow || MenuCategory() == mcScheduleNext || MenuCategory() == mcEvent || MenuCategory() == mcRecording || MenuCategory() == mcRecordingInfo || MenuCategory() == mcRecordingEdit || MenuCategory() == mcTimer || MenuCategory() == mcTimerEdit || MenuCategory() == mcCommand) {
         tt = yb00;
         tb = yb07 + lineHeight + Gap;
         }
@@ -661,7 +662,8 @@ void cLCARSNGDisplayMenu::DrawScrollbar(int Total, int Offset, int Shown, bool C
      osd->DrawRectangle(x0, tt, x1 - 1, tb - 1, Theme.Color(clrMenuScrollbarTotal));
      osd->DrawRectangle(x0, st, x1 - 1, sb - 1, Theme.Color(clrMenuScrollbarShown));
      }
-  else if (MenuCategory() != mcMain && MenuCategory() != mcSetup && MenuCategory() != mcCommand && MenuCategory() != mcChannel)
+//  else if (MenuCategory() != mcMain && MenuCategory() != mcSetup && MenuCategory() != mcCommand && MenuCategory() != mcChannel)
+  else if (MenuCategory() != mcMain && MenuCategory() != mcSetup && MenuCategory() != mcChannel)
      osd->DrawRectangle(x0, tt, x1 - 1, tb - 1, ClearColor);
 }
 
@@ -1057,12 +1059,13 @@ int cLCARSNGDisplayMenu::MaxItems(void)
   switch (MenuCategory()) {
      case mcMain:
      case mcSetup:
-     case mcCommand:
+//     case mcCommand:
         return (ym04 - ym03) / lineHeight;
         break;
      case mcChannel:
         return (ym04 - yt04 - lineHeight) / lineHeight;
         break;
+     case mcCommand:
      case mcSchedule:
      case mcScheduleNow:
      case mcScheduleNext:
@@ -1093,13 +1096,14 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
   switch (MenuCategory()) {
      case mcMain:
      case mcSetup:
-     case mcCommand:
+//     case mcCommand:
      case mcChannel:
         break;
      case mcRecording:
         currentTitle = Title;
      case mcRecordingInfo:
      case mcRecordingEdit:
+     case mcCommand:
      case mcTimerEdit:
      case mcSchedule:
      case mcScheduleNow:
@@ -1112,17 +1116,6 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
      case mcTimer: {
         osd->DrawText(xs00, ys00, Title, Theme.Color(clrMenuFrameFg), frameColor, font, xs11 - xs00, lineHeight, taBottom | taRight | taBorder);
         osd->DrawRectangle(xs12, ys00, xs13 - 1, ys01 - 1, frameColor);
-/*        int NumTimers = 0;
-#if APIVERSNUM > 20300
-           LOCK_TIMERS_READ;
-           for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
-#else
-           for (cTimer *Timer = Timers.First(); Timer; Timer = Timers.Next(Timer)) {
-#endif
-              if (Timer->HasFlags(tfActive))
-                 NumTimers++;
-              }
-        osd->DrawText(xs00, ys00, itoa(NumTimers), Theme.Color(clrMenuFrameFg), frameColor, font, xs03 - xs02, ys01 - ys00, taBottom | taLeft | taBorder); */
         }
         break;
      default:
@@ -1332,12 +1325,13 @@ void cLCARSNGDisplayMenu::Flush(void)
   switch (MenuCategory()) {
      case mcMain:
      case mcSetup:
-     case mcCommand:
+//     case mcCommand:
 //     case mcChannel:
         DrawTimers();
         DrawDevices();
         DrawLiveIndicator();
         DrawSignals();
+     case mcCommand:
      case mcSchedule:
      case mcScheduleNow:
      case mcScheduleNext:
