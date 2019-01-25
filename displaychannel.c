@@ -172,7 +172,6 @@ cLCARSNGDisplayChannel::~cLCARSNGDisplayChannel()
   delete tallFont;
   delete tinyFont;
   delete osd;
-  cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
 }
 
 void cLCARSNGDisplayChannel::DrawDate(void)
