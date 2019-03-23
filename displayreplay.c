@@ -142,15 +142,17 @@ void cLCARSNGDisplayReplay::DrawTrack(void)
 void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
 { 
   bool rec = cRecordControls::Active();
+
   if (rec) {
-     if (!Running())
+     if (!Running()) {
         Start();
+        On = true;
+        }
      }
   else {
-     if (Running()) {
+     if (Running())
         Cancel(3);
-        On = false;
-        }
+     On = false;
      }
   if (initial || On != lastOn) { 
      int x = xp13;
@@ -232,11 +234,17 @@ void cLCARSNGDisplayReplay::SetMessage(eMessageType Type, const char *Text)
 
 void cLCARSNGDisplayReplay::Action(void)
 {
+  int i = 0;
+
   while (Running()) {
-     On = !On;
-     DrawBlinkingRec();
-     osd->Flush();
-     cCondWait::SleepMs(1000);
+     i++;
+     if (i > 9) {
+        i = 0;
+        On = !On;
+        DrawBlinkingRec();
+        if (osd) osd->Flush();
+        }
+     cCondWait::SleepMs(100);
   }
 }
 

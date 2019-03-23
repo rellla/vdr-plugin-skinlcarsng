@@ -236,22 +236,22 @@ void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
 {
   bool rec = cRecordControls::Active();
 
+  if (rec) {
+     if (!Running()) {
+        Start();
+        On = true;
+        }
+     }
+  else {
+     if (Running())
+        Cancel(3);
+     On = false;
+     }
   if (initial || On != lastOn) {
      int x = xc13;
      x -= bmRecording.Width() + SymbolSpacing;
      osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColor : frameColor);
      lastOn = On;
-     }
-
-  if (rec) {
-     if (!Running())
-        Start();
-     }
-  else {
-     if (Running()) {
-        Cancel(3);
-        On = false;
-        }
      }
 }
  
@@ -443,11 +443,16 @@ void cLCARSNGDisplayChannel::SetPositioner(const cPositioner *Positioner)
 
 void cLCARSNGDisplayChannel::Action(void)
 {
+  int i = 0;
   while (Running()) {
-     On = !On;
-     DrawBlinkingRec();
-     if (osd) osd->Flush();
-     cCondWait::SleepMs(1000);
+     i++;
+     if (i > 9) {
+        i = 0;
+        On = !On;
+        DrawBlinkingRec();
+        if (osd) osd->Flush();
+        }
+     cCondWait::SleepMs(100);
   }
 }
 
