@@ -304,9 +304,13 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
            const cEvent *Event = Timer->Event();
            int y1 = i * Gap / 2;
            if (Channel && Event) {
+              tColor timerColor = Theme.Color(clrEventShortText);
+#ifdef SWITCHONLYPATCH
+              if (Timer->HasFlags(tfSwitchOnly)) timerColor = Theme.Color(clrSwitchTimer);
+#endif
               osd->DrawText(xc01, y + y1, cString::sprintf("%d", Channel->Number()), Theme.Color(clrEventShortText), frameColor, cFont::GetFont(fontSml), xc02 - xc01 - Gap - 1, lineHeight - 2 * y1, taRight | taBorder);
-              osd->DrawText(xc04, y + y1, cString::sprintf("%s", *Date), Timer->HasFlags(tfSwitchOnly) ? Theme.Color(clrSwitchTimer) : Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc06a - xc04 - Gap - 1, lineHeight - 2 * y1, taRight | taBorder);
-              osd->DrawText(xc06a, y + y1, cString::sprintf("%s", Event->Title()), Timer->HasFlags(tfSwitchOnly) ? Theme.Color(clrSwitchTimer) : Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc06l - xc06a - Gap - 1, lineHeight - 2 * y1, taLeft | taBorder);
+              osd->DrawText(xc04, y + y1, cString::sprintf("%s", *Date), timerColor, Theme.Color(clrBackground), cFont::GetFont(fontSml), xc06a - xc04 - Gap - 1, lineHeight - 2 * y1, taRight | taBorder);
+              osd->DrawText(xc06a, y + y1, cString::sprintf("%s", Event->Title()), timerColor, Theme.Color(clrBackground), cFont::GetFont(fontSml), xc06l - xc06a - Gap - 1, lineHeight - 2 * y1, taLeft | taBorder);
               }
            if (isRecording) // && Number)
               osd->DrawText(xc04, y + y1, cString::sprintf("Rec: #%s", *Number), Theme.Color(clrChannelSymbolRecBg), Theme.Color(clrBackground), cFont::GetFont(fontSml), xc05 - xc04 - Gap - 1, lineHeight - 2 * y1, taRight | taBorder);

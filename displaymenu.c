@@ -691,7 +691,7 @@ void cLCARSNGDisplayMenu::DrawTimer(const cTimer *Timer, int y, bool MultiRec)
      }
   if (Timer->Flags() & tfVps)
      Date = cString::sprintf("VPS %s", *Date);
-#ifdef USE_SWITCHONLY
+#ifdef SWITCHONLYPATCH
   if (Timer->Flags() & tfSwitchOnly)
      Date = cString::sprintf("UST %s", *Date);
 #endif
