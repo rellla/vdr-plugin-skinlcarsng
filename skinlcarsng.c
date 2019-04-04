@@ -84,6 +84,7 @@ bool cPluginLCARSNG::Start(void) {
         return false;
     } else
         dsyslog("skinlcarsng: TrueColor OSD found");
+    cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
     lcarsng = new cLCARSNG;
     return lcarsng;
 }
