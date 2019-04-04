@@ -203,8 +203,10 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
 //     int y1 = yc11 + lineHeight / 2 - Gap / 2;
      int y0 = yc0A - (yc0A - yc0B) / 2 + Gap / 2;
      int y1 = yc0A - ShowSeenExtent;
-     osd->DrawRectangle(xc06, y0, xc06 + Seen - 1, y1 - 1, Theme.Color(clrSeen));
-     osd->DrawRectangle(xc06 + Seen, y0, xc11 - 1, y1 - 1, Theme.Color(clrBackground));
+     // Fortschrittsbalken
+     osd->DrawRectangle(xc06, y0, xc11 - 1, y1 + 1, Theme.Color(clrSeen));
+//     osd->DrawRectangle(xc06, y0, xc06 + Seen - 1, y1 - 1, Theme.Color(clrSeen));
+     osd->DrawRectangle(xc06 + Seen + 2, y0, xc11 - 3, y1 - 1, Theme.Color(clrBackground));
      // Restzeit anzeigen
      osd->DrawText(xc10, yc03 + lineHeight, ((Current / 60.0) > 0.1) ? cString::sprintf("-%d", max((int)ceil((Total - Current) / 60.0), 0)) : cString::sprintf(" "), Theme.Color(clrChannelFrameFg), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xc10m - xc10 - 1, 0, taRight | taBorder);
      lastSeen = Seen;
