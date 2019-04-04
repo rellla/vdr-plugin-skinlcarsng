@@ -1,0 +1,52 @@
+--- menu.c	2019-04-04 16:36:17.975084544 +0200
++++ vdr/menu.c	2019-04-04 16:39:45.292151445 +0200
+@@ -2965,6 +2965,7 @@
+ 
+ cString cMenuRecordings::path;
+ cString cMenuRecordings::fileName;
++cString cMenuRecordings::actualpath;
+ 
+ cMenuRecordings::cMenuRecordings(const char *Base, int Level, bool OpenSubMenus, const cRecordingFilter *Filter, bool DelRecMenu)
+ :cOsdMenu(Base ? Base : DelRecMenu ? tr("Deleted Recordings") : tr("Recordings"), 9, 6, 6)
+@@ -3092,6 +3093,11 @@
+      }
+ }
+ 
++void cMenuRecordings::SetActualPath(const char *Path)
++{
++  actualpath = Path;
++}
++
+ void cMenuRecordings::SetPath(const char *Path)
+ {
+   path = Path;
+--- menu.h	2019-04-04 16:36:17.976084530 +0200
++++ vdr/menu.h	2019-04-04 16:43:36.970873692 +0200
+@@ -19,6 +19,10 @@
+ #include "recorder.h"
+ #include "skins.h"
+ 
++#ifndef NUMRECORDINGSINPATH
++#define NUMRECORDINGSINPATH
++#endif
++
+ class cMenuText : public cOsdMenu {
+ private:
+   char *text;
+@@ -216,6 +220,7 @@
+   const cRecordingFilter *filter;
+   static cString path;
+   static cString fileName;
++  static cString actualpath; //Used in SkinLCARSNG
+   void SetHelpKeys(void);
+   void Set(bool Refresh = false);
+   bool Open(bool OpenSubMenus = false);
+@@ -235,6 +240,8 @@
+   virtual eOSState ProcessKey(eKeys Key);
+   static void SetPath(const char *Path);
+   static void SetRecording(const char *FileName);
++  static void SetActualPath(const char *Path);
++  static cString GetActualPath(void) { return actualpath; }
+   };
+ 
+ class cRecordControl {

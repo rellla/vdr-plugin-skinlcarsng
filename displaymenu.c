@@ -483,12 +483,14 @@ void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
 {
   const cFont *font = cFont::GetFont(fontOsd);
   int NumRecordingsInPath = 0;
+#if APIVERSNUM > 20301
+#ifdef NUMRECORDINGSINPATH
   {
-#if APIVERSNUM > 20300
   LOCK_RECORDINGS_READ;
-#endif
   NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
   }
+#endif
+#endif
   if (NumRecordingsInPath > 0)
      osd->DrawText(xm04, ys00, cString::sprintf("%i", NumRecordingsInPath), Theme.Color(clrMenuFrameFg), frameColor, font, xm08 - xm04 - 1, lineHeight, taBottom | taRight | taBorder);
 }
