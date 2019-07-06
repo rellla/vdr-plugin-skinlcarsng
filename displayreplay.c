@@ -52,6 +52,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
   const cFont *font = cFont::GetFont(fontOsd);
   modeOnly = ModeOnly;
   lineHeight = font->Height();
+  iconHeight = bmRecording.Height();
   frameColor = Theme.Color(clrReplayFrameBg);
   lastCurrentWidth = 0;
   lastTotalWidth = 0;
@@ -84,7 +85,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
 
   yp04 = yp03 + Gap;
   yp09 = yp04 + 3 * lineHeight + Gap / 2;
-  yp08 = yp09 - lineHeight;
+  yp08 = yp09 - max(lineHeight, iconHeight);
   yp07 = yp08 - lineHeight;
   yp06 = yp08 - d / 4;
   yp05 = yp09 - d / 2;
