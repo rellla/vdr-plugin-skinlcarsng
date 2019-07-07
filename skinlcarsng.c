@@ -14,7 +14,7 @@
 
 #include "lcarsng.h"
 
-static const char *VERSION        = "0.2.4";
+static const char *VERSION        = "0.2.5";
 static const char *DESCRIPTION    = "skin lcarsng";
 
 class cPluginLCARSNG : public cPlugin {
