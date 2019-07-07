@@ -332,7 +332,7 @@ void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color)
   // Top right rectangles:
   osd->DrawRectangle(xm07, yt00, xm08 - 1, yc04 -Gap - 1, Color);
   osd->DrawEllipse  (xm07, yc04, xm08 - 1, yc05 - 1, Color, 4);
-  osd->DrawEllipse  (xm05, yc04, xm07 - 1, yc05 - 1 - lineHeight / 2, Color, -4);
+  osd->DrawEllipse  (xm06, yc04, xm07 - 1, yc05 - 1 - lineHeight / 2, Color, -4);
 }
 
 void cLCARSNGDisplayMenu::DrawMainFrameLower(void)
