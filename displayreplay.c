@@ -49,7 +49,7 @@ cBitmap cLCARSNGDisplayReplay::bmRecording(recording_xpm);
 
 cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS DisplRepl")
 {
-  const cFont *font = cFont::GetFont(fontOsd);
+  font = cFont::GetFont(fontOsd);
   modeOnly = ModeOnly;
   lineHeight = font->Height();
   iconHeight = bmRecording.Height();
@@ -60,6 +60,10 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
   initial = true;
   lastOn = false;
   On = false;
+  isTimeShift = false;
+  fps = DEFAULTFRAMESPERSECOND;
+  framesTotal = 0;
+  pbinit = true;
   int d = 5 * lineHeight;
   xp00 = 0;
   xp01 = xp00 + d / 2;
@@ -135,7 +139,7 @@ void cLCARSNGDisplayReplay::DrawTrack(void)
   cDevice *Device = cDevice::PrimaryDevice();
   const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
   if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
-     osd->DrawText(xp03, yp04, Track ? Track->description : "", Theme.Color(clrTrackName), Theme.Color(clrBackground), cFont::GetFont(fontOsd), xp07 - xp03);
+     osd->DrawText(xp10, yp08, Track ? Track->description : "", Theme.Color(clrTrackName), frameColor, cFont::GetFont(fontOsd), xp11 - xp10, 0, taRight | taBorder);
      strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
      }
 }
@@ -166,6 +170,8 @@ void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
 void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
 {
   const cRecordingInfo *RecordingInfo = Recording->Info();
+  if (!RecordingInfo)
+     return;
   int x = xp13;
 
   osd->DrawRectangle(xp12, yp08, xp13 - 1, yp09 - 1, frameColor);
@@ -175,6 +181,24 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
   osd->DrawText(xp03, yp01 - lineHeight, RecordingInfo->ShortText(), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xp13 - xp03);
   osd->DrawText(xp00, yp00, ShortDateString(Recording->Start()), Theme.Color(clrReplayFrameFg), frameColor, cFont::GetFont(fontOsd), xp02 - xp00, 0, taTop | taRight | taBorder);
   osd->DrawText(xp00, yp01 - lineHeight, TimeString(Recording->Start()), Theme.Color(clrReplayFrameFg), frameColor, cFont::GetFont(fontOsd), xp02 - xp00, 0, taBottom | taRight | taBorder);
+
+  //check for instant recording
+  const char *recName = Recording->Name();
+  if (recName && *recName == '@')
+     return;
+  int usage = Recording->IsInUse();
+  if (usage & ruTimer)
+     isTimeShift = true;
+  if (!isTimeShift)
+     return;
+  const cEvent *Event = RecordingInfo->GetEvent();
+  if (!Event)
+        return;
+  fps = Recording->FramesPerSecond();
+  time_t liveEventStop = Event->EndTime();
+  time_t recordingStart = time(0) - Recording->LengthInSeconds();
+  framesTotal = (liveEventStop - recordingStart) * fps;
+  endTime = cString::sprintf("%s: %s", tr("length"), *IndexToHMSF(framesTotal, false, fps));
 }
 
 void cLCARSNGDisplayReplay::SetTitle(const char *Title)
@@ -198,23 +222,45 @@ void cLCARSNGDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
 
 void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
 {
-  cProgressBar pb(xp13 - xp03, lineHeight, Current, Total, marks, Theme.Color(clrReplayProgressSeen), Theme.Color(clrReplayProgressRest), Theme.Color(clrReplayProgressSelected), Theme.Color(clrReplayProgressMark), Theme.Color(clrReplayProgressCurrent));
-  osd->DrawBitmap(xp03, yp02, pb);
+  int x = 0;
+  int lH = lineHeight / 4;
+  if (isTimeShift) {
+//     const cFont *font = cFont::GetFont(fontOsd);
+     int w = font->Width(endTime);
+     if (Total > framesTotal) {
+        osd->DrawRectangle(xp13 - w, yp01, xp13 - 1, yp03 - lineHeight - 1, Theme.Color(clrBackground));
+        isTimeShift = false;
+        x = 0;
+     }
+     else {
+        double rest = ((double)framesTotal - (double)Total) / (double)framesTotal;
+        x = (int)((xp13 - xp03) * rest);
+        osd->DrawText(xp13 - w, yp01, *endTime, Theme.Color(clrReplayPosition), Theme.Color(clrBackground), font, w, 0, taRight);
+     }
+     if (pbinit) {
+        osd->DrawRectangle(xp03, yp03 - lineHeight + lH, xp13 - 1, yp03 - lineHeight + (3 * lH), frameColor);
+        pbinit = false;
+     }
+//     osd->DrawRectangle(xp13 - x + 1, yp03 - lineHeight + lH, xp13 - 1, yp03 - lineHeight + (3 * lH), frameColor);
+//     dsyslog ("%s %s %d Current = %i Total = %i framesTotal = %i x = %i endTime = %s\n", __FILE__, __func__,  __LINE__, Current, Total, framesTotal, x, (const char *)endTime);
+  }
+  cProgressBar pb(xp13 - xp03 - x, lineHeight, Current, Total, marks, Theme.Color(clrReplayProgressSeen), Theme.Color(clrReplayProgressRest), Theme.Color(clrReplayProgressSelected), Theme.Color(clrReplayProgressMark), Theme.Color(clrReplayProgressCurrent));
+  osd->DrawBitmap(xp03, yp03 - lineHeight, pb);
 }
 
 void cLCARSNGDisplayReplay::SetCurrent(const char *Current)
 {
-  const cFont *font = cFont::GetFont(fontOsd);
+//  const cFont *font = cFont::GetFont(fontOsd);
   int w = font->Width(Current);
-  osd->DrawText(xp03, yp03 - lineHeight, Current, Theme.Color(clrReplayPosition), Theme.Color(clrBackground), font, max(lastCurrentWidth, w), 0, taLeft);
+  osd->DrawText(xp03, yp04, Current, Theme.Color(clrReplayPosition), Theme.Color(clrBackground), font, max(lastCurrentWidth, w), 0, taTop | taLeft);
   lastCurrentWidth = w;
 }
 
 void cLCARSNGDisplayReplay::SetTotal(const char *Total)
 {
-  const cFont *font = cFont::GetFont(fontOsd);
+//  const cFont *font = cFont::GetFont(fontOsd);
   int w = font->Width(Total);
-  osd->DrawText(xp13 - w, yp03 - lineHeight, Total, Theme.Color(clrReplayPosition), Theme.Color(clrBackground), font, max(lastTotalWidth, w), 0, taRight);
+  osd->DrawText(xp13 - w, yp04, Total, Theme.Color(clrReplayPosition), Theme.Color(clrBackground), font, max(lastTotalWidth, w), 0, taTop | taRight);
   lastTotalWidth = w;
 }
 

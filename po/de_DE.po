@@ -30,9 +30,6 @@ msgstr ""
 msgid "Setup"
 msgstr "Einstellungen"
 
-msgid "Commands"
-msgstr "Befehle"
-
 msgid "Channels"
 msgstr "Kanäle"
 
@@ -48,8 +45,5 @@ msgstr "LIVE"
 msgid "PLAY"
 msgstr "WIEDERGABE"
 
-#~ msgid "clock"
-#~ msgstr "Uhr"
-
-#~ msgid "Volume"
-#~ msgstr "Lautstärke"
+msgid "length"
+msgstr "Länge"
