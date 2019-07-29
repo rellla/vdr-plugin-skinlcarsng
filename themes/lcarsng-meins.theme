@@ -1,5 +1,5 @@
 Description = meins
-clrBackground = 90000000
+clrBackground = 01000000
 clrDateFg = FFFFA060
 clrDateBg = FF990000
 clrTimerFg = FF000000
@@ -58,7 +58,8 @@ clrMenuScrollbarShown = FFCC99CC
 clrMenuScrollbarArrow = FF000000
 clrMenuText = FF99CCFF
 clrReplayFrameFg = FFFFA060
-clrReplayFrameBg = FF804030
+clrReplayFrameBg = 99404040
+clrReplayFrameMg = FF804030
 clrReplayPosition = FFCC99CC
 clrReplayJumpFg = FF000000
 clrReplayJumpBg = FFCC99CC

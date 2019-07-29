@@ -984,8 +984,8 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
      lastMode = cmPlay;
      }
   if (initial) {
-     DrawMainFrameUpper(Theme.Color(clrReplayFrameBg));
-     osd->DrawText(xd00, yd00, tr("PLAY"), Theme.Color(clrReplayFrameBg), Theme.Color(clrBackground), tallFont, xd07 - xd00, yt02 - yd00, taTop | taRight | taBorder);
+     DrawMainFrameUpper(Theme.Color(clrReplayFrameMg));
+     osd->DrawText(xd00, yd00, tr("PLAY"), Theme.Color(clrReplayFrameFg), Theme.Color(clrBackground), tallFont, xd07 - xd00, yt02 - yd00, taTop | taRight | taBorder);
      }
   // The current progress:
   int Current = 0;
@@ -1002,8 +1002,8 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
            }
         else
            osd->DrawText(xa03, yt04, Recording->Name(), Theme.Color(clrEventTitle), Theme.Color(clrBackground), font, xd07 - xa03, 0, taTop | taLeft);
-        osd->DrawText(xa00, yt07, ShortDateString(Recording->Start()), Theme.Color(clrReplayFrameFg), Theme.Color(clrReplayFrameBg), font, xa02 - xa00, 0, taTop | taRight | taBorder);
-        osd->DrawText(xa00, yt07 + lineHeight, TimeString(Recording->Start()), Theme.Color(clrReplayFrameFg), Theme.Color(clrReplayFrameBg), font, xa02 - xa00, 0, taBottom | taRight | taBorder);
+        osd->DrawText(xa00, yt07, ShortDateString(Recording->Start()), Theme.Color(clrReplayFrameFg), Theme.Color(clrReplayFrameMg), font, xa02 - xa00, 0, taTop | taRight | taBorder);
+        osd->DrawText(xa00, yt07 + lineHeight, TimeString(Recording->Start()), Theme.Color(clrReplayFrameFg), Theme.Color(clrReplayFrameMg), font, xa02 - xa00, 0, taBottom | taRight | taBorder);
         lastRecording = Recording;
         }
      }

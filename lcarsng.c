@@ -191,6 +191,12 @@ void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0
 }
 #endif
 
+void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int usage)
+{
+   Osd->DrawRectangle(x1, y1, x2, y2, Color1);
+   Osd->DrawRectangle(x1 + ((usage & muLeft) ? Margin : 0), y1 + ((usage & muTop) ? Margin : 0), x2 - ((usage & muRight) ? Margin : 0), y2 - ((usage & muBottom) ? Margin : 0), Color2);
+}
+
 static time_t lastDiskSpaceCheck = 0;
 static int lastFreeMB = -1;
 

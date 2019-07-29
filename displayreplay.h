@@ -32,12 +32,14 @@ private:
   bool modeOnly;
   int iconHeight;
   int lineHeight;
-  tColor frameColor;
+  tColor frameColorFg;
+  tColor frameColorBg;
+  tColor frameColorMg;
   int lastCurrentWidth;
   int lastTotalWidth;
   cString lastDate;
   tTrackId lastTrackId;
-  bool isTimeShift;
+  bool isRecording;
   int framesTotal;
   double fps;
   cString endTime;
@@ -50,6 +52,7 @@ private:
   bool lastOn;
   bool On;
   bool pbinit;
+  bool timshiftMode;
 public:
   cLCARSNGDisplayReplay(bool ModeOnly);
   virtual ~cLCARSNGDisplayReplay();

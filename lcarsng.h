@@ -57,6 +57,7 @@
 #include "symbols/volume.xpm"
 
 #define Gap            (Setup.FontOsdSize / 5 & ~1) // must be even
+#define Margin         (Gap / 2)
 #define TextFrame      (Setup.FontOsdSize / TEXT_ALIGN_BORDER)
 #define TextSpacing    (2 * TextFrame)
 #define SymbolSpacing  TextSpacing
@@ -176,6 +177,7 @@ THEME_CLR(Theme, clrMenuText,               CLR_TEXT);
 
 THEME_CLR(Theme, clrReplayFrameFg,          CLR_BLACK);
 THEME_CLR(Theme, clrReplayFrameBg,          CLR_REPLAY_FRAME);
+THEME_CLR(Theme, clrReplayFrameMg,          CLR_WHITE);
 THEME_CLR(Theme, clrReplayPosition,         CLR_SEEN);
 THEME_CLR(Theme, clrReplayJumpFg,           CLR_BLACK);
 THEME_CLR(Theme, clrReplayJumpBg,           CLR_SEEN);
@@ -196,11 +198,20 @@ THEME_CLR(Theme, clrTrackItemCurrentBg,     CLR_TRACK);
 
 extern bool TwoColors;
 
+enum eMarginUsage {
+  muNone     = 0x0000,
+  muLeft     = 0x0001,
+  muTop      = 0x0002,
+  muRight    = 0x0004,
+  muBottom   = 0x0008,
+  };
+
 cOsd *CreateOsd(int Left, int Top, int x0, int y0, int x1, int y1);
 cFont *CreateTinyFont(int LineHeight);
 bool DrawDeviceData(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &xs, const cFont *TinyFont, cString &LastDeviceType, cCamSlot *&LastCamSlot, bool Initial);
 void DrawDeviceSignal(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &LastSignalStrength, int &LastSignalQuality, bool Initial);
 void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0, int x1, int y1, int &LastCurrent);
+void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Usage = 0);
 int FreeMB(const char *Base, bool Initial);
 
 class cLCARSNG : public cSkin {
