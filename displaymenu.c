@@ -919,17 +919,16 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      lastMode = cmLive;
      }
   if (initial) {
-     DrawMainFrameUpper(Theme.Color(clrChannelFrameBg));
-     osd->DrawText(xd00, yd00, tr("LIVE"), Theme.Color(clrChannelFrameBg), Theme.Color(clrBackground), tallFont, xd07 - xd00, yt02 - yd00, taTop | taRight | taBorder);
+     DrawMainFrameUpper(Theme.Color(clrChannelFrameMg));
+     osd->DrawText(xd00, yd00, tr("LIVE"), Theme.Color(clrChannelFrameMg), Theme.Color(clrBackground), tallFont, xd07 - xd00, yt02 - yd00, taTop | taRight | taBorder);
      }
   if (!Channel)
      return;
   if (initial || Channel != lastChannel || strcmp(Channel->Name(), lastChannelName)) {
-     osd->DrawText(xa00, yt04, itoa(Channel->Number()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), tallFont, xa02 - xa00, yt06 - yt04, taTop | taRight | taBorder);
+     osd->DrawText(xa00, yt04, itoa(Channel->Number()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameMg), tallFont, xa02 - xa00, yt06 - yt04, taTop | taRight | taBorder);
      osd->DrawText(xa03, yt04, Channel->Name(), Theme.Color(clrChannelName), Theme.Color(clrBackground), tallFont, xd07 - xa03, yt06 - yt04, taTop | taLeft);
      int x = xa00 + (yc03 - yc02); // compensate for the arc
-//     osd->DrawText(x, yc00, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - x, yc03 - yc00, taTop | taRight | taBorder);
-     osd->DrawText(x, yc00, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - x, 2 * lineHeight, taTop | taRight | taBorder);
+     osd->DrawText(x, yc00, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameMg), cFont::GetFont(fontOsd), xa02 - x, 2 * lineHeight, taTop | taRight | taBorder);
      lastChannel = Channel;
      lastChannelName = Channel->Name();
      DrawSeen(0, 0);
@@ -1025,8 +1024,8 @@ void cLCARSNGDisplayMenu::DrawInfo(const cEvent *Event, bool WithTime)
      y += lineHeight;
      osd->DrawText(xa03, y, Event->ShortText(), Theme.Color(clrEventShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xd07 - xa03 - lineHeight, lineHeight, taTop | taLeft);
      if (WithTime) {
-        osd->DrawText(xa00, y - lineHeight, Event->GetTimeString(), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), font, xa02 - xa00, lineHeight, taTop | taRight | taBorder);
-        osd->DrawText(xa00, y, cString::sprintf("-%s", *Event->GetEndTimeString()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
+        osd->DrawText(xa00, y - lineHeight, Event->GetTimeString(), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameMg), font, xa02 - xa00, lineHeight, taTop | taRight | taBorder);
+        osd->DrawText(xa00, y, cString::sprintf("-%s", *Event->GetEndTimeString()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameMg), font, xa02 - xa00, lineHeight, taBottom | taRight | taBorder);
         }
      }
 }
