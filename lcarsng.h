@@ -191,6 +191,7 @@ THEME_CLR(Theme, clrReplayProgressCurrent,  CLR_EXPOSED);
 
 THEME_CLR(Theme, clrTrackFrameFg,           CLR_BLACK);
 THEME_CLR(Theme, clrTrackFrameBg,           CLR_TRACK);
+THEME_CLR(Theme, clrTrackFrameMg,           CLR_WHITE);
 THEME_CLR(Theme, clrTrackItemFg,            CLR_BLACK);
 THEME_CLR(Theme, clrTrackItemBg,            RgbShade(CLR_TRACK, 0.5));
 THEME_CLR(Theme, clrTrackItemCurrentFg,     CLR_BLACK);
