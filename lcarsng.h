@@ -161,6 +161,7 @@ THEME_CLR(Theme, clrSwitchTimer,            CLR_GREEN);
 
 THEME_CLR(Theme, clrMenuFrameFg,            CLR_BLACK);
 THEME_CLR(Theme, clrMenuFrameBg,            CLR_MAIN_FRAME);
+THEME_CLR(Theme, clrMenuFrameMg,            CLR_WHITE);
 THEME_CLR(Theme, clrMenuTitle,              CLR_MAIN_FRAME);
 THEME_CLR(Theme, clrMenuMainBracket,        CLR_MENU_ITEMS);
 THEME_CLR(Theme, clrMenuTimerRecording,     CLR_DEVICE);

@@ -43,7 +43,7 @@ class cLCARSNGDisplayMenu : public cSkinDisplayMenu {
 private:
   cOsd *osd;
   int xa00, xa01, xa02, xa03, xa04, xa05, xa06, xa07, xa08, xa09;
-  int yt00, yt01, yt02, yt03, yt04, yt05, yt06, yt07, yt08;
+  int yt00, yt01, yt02, yt03, yt04, yt05, yt06, yt07, yt08, yt09, yt10;
   int yc00, yc01, yc02, yc03, yc04, yc05, yc06, yc07, yc08, yc09, yc10, yc11;
   int yb00, yb01, yb02, yb03, yb04, yb05, yb06, yb07, yb08, yb081, yb082, yb09, yb10, yb11, yb12, yb13, yb14, yb15;
   int xm00, xm01, xm02, xm03, xm04, xm05, xm06, xm07, xm08;
@@ -59,7 +59,9 @@ private:
   int lineHeight;
   cFont *tinyFont;
   cFont *tallFont;
-  tColor frameColor;
+  tColor frameColorFg;
+  tColor frameColorBg;
+  tColor frameColorMg;
   int currentIndex;
   cVector<int> deviceOffset;
   cVector<bool> deviceRecording;
@@ -68,6 +70,7 @@ private:
   cVector<int> lastSignalStrength;
   cVector<int> lastSignalQuality;
   bool initial;
+  bool videoScaled;
   enum eCurrentMode { cmUnknown, cmLive, cmPlay };
   eCurrentMode lastMode;
   cString lastDate;
