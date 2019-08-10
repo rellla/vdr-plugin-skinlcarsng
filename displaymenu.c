@@ -1357,6 +1357,12 @@ void cLCARSNGDisplayMenu::Flush(void)
   int xrand = (Width - xa09) / 2;
   int yrand = (Height - yb15) / 2;
   cRect videoWindowRect( xs00 + xrand, yrand + Gap, xs11 - xs00, yc05 - yrand / 2);
+  if (initial) {
+     if (videoScaled)
+	availableRect = cDevice::PrimaryDevice()->CanScaleVideo(videoWindowRect);
+     else
+        availableRect = cDevice::PrimaryDevice()->CanScaleVideo(cRect::Null);
+     }
   DrawFrameDisplay();
   switch (MenuCategory()) {
      case mcMain:
@@ -1389,7 +1395,6 @@ void cLCARSNGDisplayMenu::Flush(void)
         else if (cControl *Control = cControl::Control(true))
            DrawPlay(Control);
         if (initial) {
-           availableRect = cDevice::PrimaryDevice()->CanScaleVideo(videoWindowRect);
            osd->Flush();
            cDevice::PrimaryDevice()->ScaleVideo(availableRect);
            }
@@ -1397,7 +1402,6 @@ void cLCARSNGDisplayMenu::Flush(void)
            osd->Flush();
         break;
      default:
-        availableRect = cDevice::PrimaryDevice()->CanScaleVideo(cRect::Null);
         osd->Flush();
         cDevice::PrimaryDevice()->ScaleVideo(availableRect);
      }
