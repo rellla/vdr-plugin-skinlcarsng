@@ -300,11 +300,18 @@ void cLCARSNGDisplayChannel::DrawEventRec(const cEvent *Present, const cEvent *F
 
 void cLCARSNGDisplayChannel::DrawTimer(void)
 {
+  int CountTimers = 0;
   LOCK_TIMERS_READ;
+  for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
+     if (Timer->HasFlags(tfActive))
+        CountTimers++;
+     }
+  if (CountTimers == 0)
+     return;
   cSortedTimers SortedTimers(Timers);
   int i = 0;
   int j = 0;
-  while (i < 3) {
+  while (i < min(CountTimers, 3)) {
      int y = yc05 + Margin + i * lineHeight + (i == 2 ? Margin : 0);
      if (const cTimer *Timer = SortedTimers[i + j]) {
         time_t Now = time(NULL);
