@@ -7,6 +7,8 @@
  */
 #include <getopt.h>
 #include <vdr/plugin.h>
+#include "config.h"
+#include "setup.h"
 
 #if defined(APIVERSNUM) && APIVERSNUM < 10734
 #error "VDR-1.7.34 API version or greater is required!"
@@ -111,11 +113,12 @@ cOsdObject *cPluginLCARSNG::MainMenuAction(void) {
 }
 
 cMenuSetupPage *cPluginLCARSNG::SetupMenu(void) {
+    return new cLCARSNGSetup();
     return NULL;
 }
 
 bool cPluginLCARSNG::SetupParse(const char *Name, const char *Value) {
-    return true;
+    return Config.SetupParse(Name, Value);
 }
 
 bool cPluginLCARSNG::Service(const char *Id, void *Data) {
