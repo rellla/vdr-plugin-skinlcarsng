@@ -1,5 +1,6 @@
 #include "lcarsng.h"
 #include "displaytracks.h"
+#include "config.h"
 #include <vdr/font.h>
 
 // --- cLCARSNGDisplayTracks -----------------------------------------------
@@ -16,6 +17,7 @@ cLCARSNGDisplayTracks::cLCARSNGDisplayTracks(const char *Title, int NumTracks, c
   frameColorBg = Theme.Color(clrTrackFrameBg);
   frameColorMg = Theme.Color(clrTrackFrameMg);
   currentIndex = -1;
+  Margin = Config.Margin;
   xt00 = 0;
   xt01 = xt00 + lineHeight / 2;
   xt02 = xt01 + Gap;

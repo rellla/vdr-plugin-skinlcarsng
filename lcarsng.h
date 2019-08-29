@@ -57,7 +57,7 @@
 #include "symbols/volume.xpm"
 
 #define Gap            (Setup.FontOsdSize / 5 & ~1) // must be even
-#define Margin         (Gap / 2)
+//#define Margin         (Gap / 2)
 #define TextFrame      (Setup.FontOsdSize / TEXT_ALIGN_BORDER)
 #define TextSpacing    (2 * TextFrame)
 #define SymbolSpacing  TextSpacing

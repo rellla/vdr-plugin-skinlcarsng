@@ -25,6 +25,7 @@
 
 #include "lcarsng.h"
 #include "displayreplay.h"
+#include "config.h"
 #include <vdr/font.h>
 #include <vdr/menu.h>
 #include <vdr/osd.h>
@@ -56,6 +57,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
   frameColorBg = Theme.Color(clrReplayFrameBg);
   frameColorFg = Theme.Color(clrReplayFrameFg);
   frameColorMg = Theme.Color(clrReplayFrameMg);
+  Margin = Config.Margin;
   lastCurrentWidth = 0;
   lastTotalWidth = 0;
   memset(&lastTrackId, 0, sizeof(lastTrackId));

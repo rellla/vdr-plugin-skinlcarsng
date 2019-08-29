@@ -92,6 +92,7 @@ private:
   const cRecording *lastRecording;
   cString lastHeader;
   int lastSeen;
+  int Margin;
   static cBitmap bmArrowUp, bmArrowDown, bmTransferMode;
   void DrawMainFrameUpper(tColor Color);
   void DrawMainFrameLower(void);

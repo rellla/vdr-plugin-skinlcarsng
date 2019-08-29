@@ -1,4 +1,5 @@
 #include "lcarsng.h"
+#include "config.h"
 #include "displayvolume.h"
 #include <vdr/font.h>
 
@@ -10,6 +11,7 @@ cLCARSNGDisplayVolume::cLCARSNGDisplayVolume(void)
   int lineHeight = font->Height();
   frameColor = Theme.Color(clrVolumeFrame);
   mute = -1;
+  Margin = Config.Margin;
   x0 = 0;
   x1 = lineHeight / 2;
   x2 = lineHeight;

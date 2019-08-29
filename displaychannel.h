@@ -34,6 +34,7 @@ private:
   int lineHeight;
   bool lastOn;
   bool On;
+  int Margin;
   cFont *tinyFont;
   cFont *tallFont;
   tColor frameColorFg;

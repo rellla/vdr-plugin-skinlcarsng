@@ -1,5 +1,6 @@
 #include "lcarsng.h"
 #include "displaymessage.h"
+#include "config.h"
 #include <vdr/font.h>
 
 // --- cLCARSNGDisplayMessage ----------------------------------------------
@@ -8,6 +9,7 @@ cLCARSNGDisplayMessage::cLCARSNGDisplayMessage(void)
 {
   const cFont *font = cFont::GetFont(fontOsd);
   int lineHeight = font->Height();
+  Margin = Config.Margin;
   x0 = 0;
   x1 = lineHeight / 2;
   x2 = lineHeight;

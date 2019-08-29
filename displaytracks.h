@@ -7,6 +7,7 @@
 class cLCARSNGDisplayTracks : public cSkinDisplayTracks {
 private:
   cOsd *osd;
+  int Margin;
   int xt00, xt01, xt02, xt03, xt04, xt05, xt06, xt07, xt08, xt09, xt10, xt11, xt12;
   int yt00, yt01, yt02, yt03, yt04, yt05, yt06, yt07;
   int lineHeight;

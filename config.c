@@ -23,7 +23,7 @@ cLCARSNGConfig::cLCARSNGConfig(void)
   mcRecordingScaled = false;
 //  mcRecordingInfo,
 //  mcRecordingEdit,
-  mcPluginScaled = false;
+//  mcPluginScaled = false;
 //  mcPluginSetup,
   mcSetupScaled = false;
 //  mcSetupOsd,
@@ -37,9 +37,9 @@ cLCARSNGConfig::cLCARSNGConfig(void)
 //  mcSetupPlugins,
   mcCommandScaled = false;
   mcEventScaled = false;
-  mcTextScaled = false;
-  mcFolderScaled = false;
-  mcCamScaled = false;
+//  mcTextScaled = false;
+//  mcFolderScaled = false;
+//  mcCamScaled = false;
 }
 
 bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
@@ -50,13 +50,13 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "ChannelMenue"))    mcChannelScaled    = atoi(Value);
   else if (!strcasecmp(Name, "TimerMenue"))      mcTimerScaled      = atoi(Value);
   else if (!strcasecmp(Name, "RecordingMenue"))  mcRecordingScaled  = atoi(Value);
-  else if (!strcasecmp(Name, "PluginMenue"))     mcPluginScaled     = atoi(Value);
+//  else if (!strcasecmp(Name, "PluginMenue"))     mcPluginScaled     = atoi(Value);
   else if (!strcasecmp(Name, "SetupMenue"))      mcSetupScaled      = atoi(Value);
   else if (!strcasecmp(Name, "CommandMenue"))    mcCommandScaled    = atoi(Value);
   else if (!strcasecmp(Name, "EventMenue"))      mcEventScaled      = atoi(Value);
-  else if (!strcasecmp(Name, "TextMenue"))       mcTextScaled       = atoi(Value);
-  else if (!strcasecmp(Name, "FolderMenue"))     mcFolderScaled     = atoi(Value);
-  else if (!strcasecmp(Name, "CamMenue"))        mcCamScaled        = atoi(Value);
+//  else if (!strcasecmp(Name, "TextMenue"))       mcTextScaled       = atoi(Value);
+//  else if (!strcasecmp(Name, "FolderMenue"))     mcFolderScaled     = atoi(Value);
+//  else if (!strcasecmp(Name, "CamMenue"))        mcCamScaled        = atoi(Value);
   else
      return false;
   return true;

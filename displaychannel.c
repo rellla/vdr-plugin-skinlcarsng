@@ -9,6 +9,7 @@
 
 #include "lcarsng.h"
 #include "displaychannel.h"
+#include "config.h"
 #include <vdr/font.h>
 #include <vdr/menu.h>
 #include <vdr/osd.h>
@@ -56,6 +57,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   message = false;
   lastOn = false;
   On = false;
+  Margin = Config.Margin;
   int d = 5 * lineHeight;
   int d1 = 3 * lineHeight;
   xc00 = 0;
@@ -294,9 +296,9 @@ void cLCARSNGDisplayChannel::DrawEventRec(const cEvent *Present, const cEvent *F
          eTimerMatch TimerMatch = tmNone;
          const cTimer *Timer = Timers->GetMatch(e, &TimerMatch);
          if (Timer && Timer->HasFlags(tfActive) && TimerMatch == tmFull)
-            osd->DrawEllipse(xc10m + Gap, y + Gap, xc10n - Gap - 1, y + lineHeight - Gap - 1, recColor, 0);
+            osd->DrawEllipse(xc10m + Gap, y + Gap + Margin, xc10n - Gap - 1, y + lineHeight - Gap - 1, recColor, 0);
          else
-            osd->DrawRectangle(xc10m + Gap, y, xc10n - Gap - 1, y + lineHeight - 1, Theme.Color(clrBackground));
+            osd->DrawRectangle(xc10m + Gap, y + Margin, xc10n - Gap - 1, y + lineHeight - 1, Theme.Color(clrBackground));
          }
       }
 }

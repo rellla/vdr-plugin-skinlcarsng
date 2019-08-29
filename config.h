@@ -16,7 +16,7 @@ public:
   int mcRecordingScaled;
 //  mcRecordingInfo,
 //  mcRecordingEdit,
-  int mcPluginScaled;
+//  int mcPluginScaled;
 //  mcPluginSetup,
   int mcSetupScaled;
 //  mcSetupOsd,
@@ -30,9 +30,9 @@ public:
 //  mcSetupPlugins,
   int mcCommandScaled;
   int mcEventScaled;
-  int mcTextScaled;
-  int mcFolderScaled;
-  int mcCamScaled;
+//  int mcTextScaled;
+//  int mcFolderScaled;
+//  int mcCamScaled;
   bool SetupParse(const char *Name, const char *Value);
   cLCARSNGConfig(void);
 };

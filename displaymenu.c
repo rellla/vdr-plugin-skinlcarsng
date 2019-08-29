@@ -9,6 +9,7 @@
 
 #include "lcarsng.h"
 #include "displaymenu.h"
+#include "config.h"
 #include <vdr/font.h>
 #include <vdr/menu.h>
 #include <vdr/osd.h>
@@ -58,6 +59,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   frameColorBg = Theme.Color(clrMenuFrameBg);
   frameColorMg = Theme.Color(clrMenuFrameMg);
   currentIndex = -1;
+  Margin = Config.Margin;
   // The outer frame:
   int d = 5 * lineHeight;
   xa00 = 0;
@@ -72,7 +74,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   xa07 = xa08 - Gap;
 
   yt00 = 0;
-  yt01 = yt00 + lineHeight + Margin;
+  yt01 = yt00 + lineHeight + 2* Margin;
   yt02 = yt01 + lineHeight + Margin;
   yt03 = yt01 + d / 4;
   yt04 = yt02 + Gap;
@@ -113,7 +115,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   yb082 = yb081 + Gap;
 
   yb15 = cOsd::OsdHeight();
-  yb14 = yb15 - lineHeight - Margin;
+  yb14 = yb15 - lineHeight - 2 * Margin;
   yb13 = yb14 - lineHeight - Margin;
   yb12 = yb14 - d / 4;
   yb11 = yb15 - d / 2;
