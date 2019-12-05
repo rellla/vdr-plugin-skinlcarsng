@@ -222,7 +222,7 @@ int FreeMB(const char *Base, bool Initial)
      std::string path = cVideoDirectory::Name();
      path += "/";
      char *tmpbase = Directory ? ExchangeChars(strdup(currentBase), true) : NULL;
-     dsyslog ("%s %s %d %s\n", __FILE__, __func__,  __LINE__, (const char *)tmpbase);
+//     dsyslog ("%s %s %d %s\n", __FILE__, __func__,  __LINE__, (const char *)tmpbase);
      if (tmpbase)
         path += tmpbase;
      struct stat statdir;
