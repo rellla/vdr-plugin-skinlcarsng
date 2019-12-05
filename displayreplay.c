@@ -196,13 +196,13 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
 
   //check for instant recording
   const char *recName = Recording->Name();
-  if (recName && *recName == '@') {
-     timshiftMode = true;
-     return;
-  }
   int usage = Recording->IsInUse();
   if (usage & ruTimer)
      isRecording = true;
+  if ((recName && *recName == '@') && (isRecording)) {
+     timshiftMode = true;
+     return;
+  }
   if (!isRecording)
      return;
   const cEvent *Event = RecordingInfo->GetEvent();
