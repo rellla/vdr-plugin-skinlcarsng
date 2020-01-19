@@ -409,13 +409,18 @@ void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Foll
   following = Following;
   for (int i = 0; i < 2; i++) {
       const cEvent *e = !i ? Present : Following;
-      int x = xc10n; //xc03;
+      int x = xc10n;
       int y = !i ? yc03 : yc05;
       if (e) {
+//       draw Time:
          osd->DrawText(xc10 + Margin, y  + Margin, e->GetTimeString(), Theme.Color(clrChannelFrameFg), frameColorBg, cFont::GetFont(fontOsd), xc10m - xc10 - 1 - 2 * Margin, lineHeight, taRight | taBorder);
+//       draw Title:
          int w = cFont::GetFont(fontOsd)->Width(e->Title());
+         osd->DrawRectangle(x, y + Margin, xc13, y + Margin + lineHeight, Theme.Color(clrBackground));
          osd->DrawText(x, y + Margin, e->Title(), Theme.Color(clrEventTitle), frameColorBg, cFont::GetFont(fontOsd), min(w, xc13 - x), lineHeight);
-	 w = cFont::GetFont(fontSml)->Width(e->ShortText());
+//       draw ShortText:
+         w = cFont::GetFont(fontSml)->Width(e->ShortText());
+         osd->DrawRectangle(x, y + lineHeight + 2 * Margin + Gap / 2, xc13, y + 2 * lineHeight + Gap / 2, Theme.Color(clrBackground));
          osd->DrawText(x, y + lineHeight + 2 * Margin + Gap / 2, e->ShortText(), Theme.Color(clrEventShortText), frameColorBg, cFont::GetFont(fontSml), min(w, xc13 - x), lineHeight - 2 * Margin);
          }
       else {
