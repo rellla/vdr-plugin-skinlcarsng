@@ -62,6 +62,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
   initial = true;
   lastOn = false;
   On = false;
+  message = false;
   isRecording = false;
   timshiftMode = false;
   fps = DEFAULTFRAMESPERSECOND;
@@ -160,6 +161,9 @@ void cLCARSNGDisplayReplay::DrawTrack(void)
 
 void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
 { 
+  if (message)
+     return;
+
   bool rec = cRecordControls::Active();
 
   if (rec) {
@@ -293,11 +297,24 @@ void cLCARSNGDisplayReplay::SetJump(const char *Jump)
 void cLCARSNGDisplayReplay::SetMessage(eMessageType Type, const char *Text)
 {
   if (Text) {
-     osd->SaveRegion(xp06, yp08, xp13 - 1, yp09 - 1);
-     osd->DrawText(xp06, yp08, Text, Theme.Color(clrMessageStatusFg + 2 * Type), Theme.Color(clrMessageStatusBg + 2 * Type), cFont::GetFont(fontSml), xp13 - xp06, yp09 - yp08, taCenter);
+     tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
+     tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
+     int x0, x1, y0, y1, lx, ly;
+     x0 = xp06;
+     x1 = xp13 - 1;
+     y0 = yp08;
+     y1 = yp09 - 1;
+     lx = x1 - x0 - 2 * Margin;
+     ly = y1 - y0 - 2 * Margin;
+     message = true;
+     osd->SaveRegion(x0, y0, x1, y1);
+     DrawRectangleOutline(osd, x0, y0, x1, y1, ColorFg, ColorBg, 15);
+     osd->DrawText(x0 + Margin, y0 + Margin, Text, ColorFg, ColorBg, cFont::GetFont(fontSml), lx, ly, taCenter);
      }
-  else
+  else {
      osd->RestoreRegion();
+     message = false;
+     }
 }
 
 void cLCARSNGDisplayReplay::Action(void)
@@ -306,7 +323,7 @@ void cLCARSNGDisplayReplay::Action(void)
 
   while (Running()) {
      i++;
-     if (i > 9) {
+     if (message || i > 9) {
         i = 0;
         On = !On;
         DrawBlinkingRec();
@@ -321,7 +338,8 @@ void cLCARSNGDisplayReplay::Flush(void)
   if (!modeOnly) {
      DrawDate();
      DrawTrack();
-     DrawBlinkingRec();
+     if (initial)
+        DrawBlinkingRec();
      }
   osd->Flush();
   initial = false;

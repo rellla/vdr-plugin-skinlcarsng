@@ -39,6 +39,7 @@ private:
   int lastTotalWidth;
   cString lastDate;
   tTrackId lastTrackId;
+  bool message;
   bool isRecording;
   int framesTotal;
   double fps;
