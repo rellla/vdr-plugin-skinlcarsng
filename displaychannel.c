@@ -259,6 +259,9 @@ void cLCARSNGDisplayChannel::DrawSignal(void)
 
 void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
 {
+  if (message)
+     return;
+
   bool rec = cRecordControls::Active();
 
   if (rec) {
@@ -433,25 +436,30 @@ void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Foll
 void cLCARSNGDisplayChannel::SetMessage(eMessageType Type, const char *Text)
 {
   if (Text) {
-     int x0, x1, y0, y1, y2;
+     tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
+     tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
+     int x0, x1, y0, y1, y2, lx, ly;
      if (withInfo) {
         x0 = xc06;
-        x1 = xc13;
+        x1 = xc13 - 1;
         y0 = yc11 - ShowSeenExtent;
         y1 = yc11;
-        y2 = yc12;
+        y2 = yc12 - 1;
         }
      else {
         x0 = xc03;
-        x1 = xc13;
+        x1 = xc13 - 1;
         y0 = y1 = yc00;
-        y2 = yc02;
+        y2 = yc02 - 1;
         }
-     osd->SaveRegion(x0, y0, x1 - 1, y2 - 1);
-     if (withInfo)
-        osd->DrawRectangle(xc06, y0, xc06m, y1 - 1, Theme.Color(clrBackground)); // clears the "seen" bar
-     osd->DrawText(x0, y1, Text, Theme.Color(clrMessageStatusFg + 2 * Type), Theme.Color(clrMessageStatusBg + 2 * Type), cFont::GetFont(fontSml), x1 - x0, y2 - y1, taCenter);
+     lx = x1 - x0 - 2 * Margin;
+     ly = y2 - y1 - 2 * Margin;
      message = true;
+     osd->SaveRegion(x0, y0, x1, y2);
+     if (withInfo)
+        osd->DrawRectangle(x0, y0, xc06m, y1 - 1, Theme.Color(clrBackground)); // clears the "seen" bar
+     DrawRectangleOutline(osd, x0, y1, x1, y2, ColorFg, ColorBg, 15);
+     osd->DrawText(x0 + Margin, y1 + Margin, Text, ColorFg, ColorBg, cFont::GetFont(fontSml), lx, ly, taCenter);
      }
   else {
      osd->RestoreRegion();
@@ -478,9 +486,10 @@ void cLCARSNGDisplayChannel::SetPositioner(const cPositioner *Positioner)
 void cLCARSNGDisplayChannel::Action(void)
 {
   int i = 0;
+
   while (Running()) {
      i++;
-     if (i > 9) {
+     if (message || i > 9) {
         i = 0;
         On = !On;
         DrawBlinkingRec();
@@ -497,7 +506,7 @@ void cLCARSNGDisplayChannel::Flush(void)
         DrawDate();
         DrawDevice();
         DrawSignal();
-	DrawTimer();
+        DrawTimer();
         int Current = 0;
         int Total = 0;
         if (present) {
@@ -507,9 +516,10 @@ void cLCARSNGDisplayChannel::Flush(void)
            Total = present->Duration();
            }
         DrawSeen(Current, Total);
-	DrawTrack();
+        DrawTrack();
         DrawEventRec(present, following);
-        DrawBlinkingRec();
+        if (initial)
+           DrawBlinkingRec();
         }
      }
   osd->Flush();
