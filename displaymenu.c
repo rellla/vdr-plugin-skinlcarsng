@@ -1191,9 +1191,18 @@ void cLCARSNGDisplayMenu::SetButtons(const char *Red, const char *Green, const c
 void cLCARSNGDisplayMenu::SetMessage(eMessageType Type, const char *Text)
 {
   if (Text) {
-     osd->SaveRegion(xb00, yb14 - 2 * Margin, xb15 - 1, yb15 - 1);
-     osd->DrawRectangle(xb00, yb14 - 2 * Margin, xb15 - 1, yb15 - 1, Theme.Color(clrMessageStatusFg + 2 * Type));
-     osd->DrawText(xb00 + Margin, yb14 - Margin, Text, Theme.Color(clrMessageStatusFg + 2 * Type), Theme.Color(clrMessageStatusBg + 2 * Type), cFont::GetFont(fontSml), xb15 - xb00 - 2 * Margin, yb15 - yb14, taCenter);
+     tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
+     tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
+     int x0, x1, y0, y1, lx, ly;
+     x0 = xb00;
+     x1 = xb15 - 1;
+     y0 = yb14 - 2 * Margin;
+     y1 = yb15 - 1;
+     lx = x1 - x0 - 2 * Margin;
+     ly = y1 - y0 - 2 * Margin;
+     osd->SaveRegion(x0, y0, x1, y1);
+     DrawRectangleOutline(osd, x0, y0, x1, y1, ColorFg, ColorBg, 15);
+     osd->DrawText(x0 + Margin, y0 + Margin, Text, ColorFg, ColorBg, cFont::GetFont(fontSml), lx, ly, taCenter);
      }
   else
      osd->RestoreRegion();
