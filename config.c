@@ -10,36 +10,37 @@ cLCARSNGConfig Config;
 cLCARSNGConfig::cLCARSNGConfig(void)
 {
   Margin = 2;
-//  mcUndefined = -1,
-//  mcUnknown = 0,
-  mcMainScaled = false;
-  mcScheduleScaled = false;
-//  mcScheduleNow,
-//  mcScheduleNext,
-  mcChannelScaled = false;
-//  mcChannelEdit,
-  mcTimerScaled = false;
-//  mcTimerEdit,
-  mcRecordingScaled = false;
-//  mcRecordingInfo,
-//  mcRecordingEdit,
-//  mcPluginScaled = false;
-//  mcPluginSetup,
-  mcSetupScaled = false;
-//  mcSetupOsd,
-//  mcSetupEpg,
-//  mcSetupDvb,
-//  mcSetupLnb,
-//  mcSetupCam,
-//  mcSetupRecord,
-//  mcSetupReplay,
-//  mcSetupMisc,
-//  mcSetupPlugins,
-  mcCommandScaled = false;
-  mcEventScaled = false;
-//  mcTextScaled = false;
-//  mcFolderScaled = false;
-//  mcCamScaled = false;
+  mcUndefinedScaled = efullscreen;
+  mcUnknownScaled = efullscreen;
+  mcMainScaled = efullscreen;
+  mcScheduleScaled = efullscreen;
+  mcScheduleNowScaled = efullscreen;
+  mcScheduleNextScaled = efullscreen;
+  mcChannelScaled = efullscreen;
+  mcChannelEditScaled = efullscreen;
+  mcTimerScaled = efullscreen;
+  mcTimerEditScaled = efullscreen;
+  mcRecordingScaled = efullscreen;
+  mcRecordingInfoScaled = efullscreen;
+  mcRecordingEditScaled = efullscreen;
+  mcPluginScaled = efullscreen;
+  mcPluginSetupScaled = efullscreen;
+  mcSetupScaled = efullscreen;
+  mcSetupOsdScaled = efullscreen;
+  mcSetupEpgScaled = efullscreen;
+  mcSetupDvbScaled = efullscreen;
+  mcSetupLnbScaled = efullscreen;
+  mcSetupCamScaled = efullscreen;
+  mcSetupRecordScaled = efullscreen;
+  mcSetupReplayScaled = efullscreen;
+  mcSetupMiscScaled = efullscreen;
+  mcSetupPluginsScaled = efullscreen;
+  mcCommandScaled = efullscreen;
+  mcEventScaled = efullscreen;
+  mcTextScaled = efullscreen;
+  mcFolderScaled = efullscreen;
+  mcCamScaled = efullscreen;
+  mcDefaultScaled = efullscreen;
 }
 
 bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
@@ -57,6 +58,7 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
 //  else if (!strcasecmp(Name, "TextMenue"))       mcTextScaled       = atoi(Value);
 //  else if (!strcasecmp(Name, "FolderMenue"))     mcFolderScaled     = atoi(Value);
 //  else if (!strcasecmp(Name, "CamMenue"))        mcCamScaled        = atoi(Value);
+  else if (!strcasecmp(Name, "DefaultMenue"))    mcDefaultScaled    = atoi(Value);
   else
      return false;
   return true;

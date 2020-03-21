@@ -1,38 +1,45 @@
 #include <vdr/menu.h>
 
+enum viewMode {
+    escaledvideo = 0,
+    efullscreen,
+    esplitscreen
+};
+
 class cLCARSNGConfig {
 public:
   int Margin;
-//  mcUndefined = -1,
-//  mcUnknown = 0,
+  int mcUndefinedScaled;
+  int mcUnknownScaled;
   int mcMainScaled;
   int mcScheduleScaled;
-//  mcScheduleNow,
-//  mcScheduleNext,
+  int mcScheduleNowScaled;
+  int mcScheduleNextScaled;
   int mcChannelScaled;
-//  mcChannelEdit,
+  int mcChannelEditScaled;
   int mcTimerScaled;
-//  mcTimerEdit,
+  int mcTimerEditScaled;
   int mcRecordingScaled;
-//  mcRecordingInfo,
-//  mcRecordingEdit,
-//  int mcPluginScaled;
-//  mcPluginSetup,
+  int mcRecordingInfoScaled;
+  int mcRecordingEditScaled;
+  int mcPluginScaled;
+  int mcPluginSetupScaled;
   int mcSetupScaled;
-//  mcSetupOsd,
-//  mcSetupEpg,
-//  mcSetupDvb,
-//  mcSetupLnb,
-//  mcSetupCam,
-//  mcSetupRecord,
-//  mcSetupReplay,
-//  mcSetupMisc,
-//  mcSetupPlugins,
+  int mcSetupOsdScaled;
+  int mcSetupEpgScaled;
+  int mcSetupDvbScaled;
+  int mcSetupLnbScaled;
+  int mcSetupCamScaled;
+  int mcSetupRecordScaled;
+  int mcSetupReplayScaled;
+  int mcSetupMiscScaled;
+  int mcSetupPluginsScaled;
   int mcCommandScaled;
   int mcEventScaled;
-//  int mcTextScaled;
-//  int mcFolderScaled;
-//  int mcCamScaled;
+  int mcTextScaled;
+  int mcFolderScaled;
+  int mcCamScaled;
+  int mcDefaultScaled;
   bool SetupParse(const char *Name, const char *Value);
   cLCARSNGConfig(void);
 };
