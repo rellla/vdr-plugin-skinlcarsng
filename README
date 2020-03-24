@@ -1,6 +1,6 @@
 This is a "plugin" for the Video Disk Recorder (VDR).
 
-Written by:                  Mase <vdr.skinlcarsng@test.test>
+Written by:                  kamel5 <vdr.kamel5@gmx.net>
 Thanks to:                   LCARS-Skin from Klaus Schmiedinger
 
 Project's homepage:          
@@ -19,23 +19,37 @@ Requirements
 
 Description
 -----------
-skinlcarsng ist ein Skin für den VDR aufbauend auf dem Skin LCARS, der dem VDR original beiliegt.
-Der Skin ist ohne Konfiguration.
+skinlcarsng is a skin for VDR based on skin LCARS originally included in vdr source code.
+The skin has no command line parameter.
 
 Installation 
 ------------
-Installation wie bei allen VDR Plugins.
-    make
-    make install
+ make
+ make install
 
-Der Skin muss im Menü unter Einstellungen -> OSD ausgewählt werden.
-
+Select this Skin in Menu -> Setup -> OSD.
 
 Themes
 -------------------------------
-Der Skin ist weitestgehend über Themes anpassbar.
+The skin colors can be changed by themes.
 
-Alle dem VDR beiliegenden LCARS-Themes können hier parallel benutzt werden, z.B. durch verlinken:
+Included themes are:
+- lcarsng-Light.theme
+- lcarsng-Dark.theme
 
+All LCARS themes included with the VDR can also be used here by links:
 ln -s lcars-default.theme lcarsng-default.theme
+But the colors can vary then.
 
+If you switch from new themes to themes from LCARS
+you have to restart the VDR to display the correct colors.
+
+Setup
+-----
+The menu view mode can be changed in plugin setup.
+
+Included patch
+--------------
+patches/numrecordingsinpath.patch:
+
+This patch is needed to display the number of recordings in current path in recordings menu.
