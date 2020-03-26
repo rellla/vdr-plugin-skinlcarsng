@@ -29,13 +29,14 @@ private:
   const cFont *font;
   int Margin;
   int xp00, xp01, xp02, xp03, xp04, xp05, xp06, xp07, xp08, xp09, xp10, xp11, xp12, xp13, xp14, xp15;
-  int yp00, yp01, yp02, yp03, yp04, yp05, yp06, yp07, yp08, yp09;
+  int yp00A, yp00, yp01, yp02, yp03, yp04, yp05, yp06, yp07, yp08, yp09;
   bool modeOnly;
   int iconHeight;
   int lineHeight;
   tColor frameColorFg;
   tColor frameColorBg;
-  tColor frameColorMg;
+  tColor frameColorBr;
+  tColor textColorBg;
   int lastCurrentWidth;
   int lastTotalWidth;
   cString lastDate;

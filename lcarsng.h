@@ -68,6 +68,9 @@
 #define DISKUSAGEALERTLIMIT 95 // percent of disk usage above which the display goes into alert mode
 #define SIGNALDISPLAYDELTA   2 // seconds between subsequent device signal displays
 
+//extern cTheme Theme;
+cTheme Theme;
+
 // Color domains:
 
 #define CLR_BACKGROUND      0x99000000
@@ -93,8 +96,6 @@
 #define CLR_YELLOW          0xFFF1DF60
 #define CLR_BLUE            0xFF9A99FF
 #define CLR_BLACK           0xFF000000
-
-extern cTheme Theme;
 
 // General colors:
 
@@ -150,7 +151,8 @@ THEME_CLR(Theme, clrVolumeBarLower,         CLR_GREEN);
 
 THEME_CLR(Theme, clrChannelFrameFg,         CLR_BLACK);
 THEME_CLR(Theme, clrChannelFrameBg,         CLR_CHANNEL_FRAME);
-THEME_CLR(Theme, clrChannelFrameMg,         CLR_WHITE);
+THEME_CLR(Theme, clrChannelFrameBr,         CLR_BLACK);
+THEME_CLR(Theme, clrChannelTextBg,          CLR_BACKGROUND);
 THEME_CLR(Theme, clrChannelSymbolOn,        CLR_BLACK);
 THEME_CLR(Theme, clrChannelSymbolOff,       RgbShade(CLR_CHANNEL_FRAME, -0.2));
 THEME_CLR(Theme, clrChannelSymbolRecFg,     CLR_WHITE);
@@ -161,7 +163,8 @@ THEME_CLR(Theme, clrSwitchTimer,            CLR_GREEN);
 
 THEME_CLR(Theme, clrMenuFrameFg,            CLR_BLACK);
 THEME_CLR(Theme, clrMenuFrameBg,            CLR_MAIN_FRAME);
-THEME_CLR(Theme, clrMenuFrameMg,            CLR_WHITE);
+THEME_CLR(Theme, clrMenuFrameBr,            CLR_BLACK);
+THEME_CLR(Theme, clrMenuTextBg,             CLR_BACKGROUND);
 THEME_CLR(Theme, clrMenuTitle,              CLR_MAIN_FRAME);
 THEME_CLR(Theme, clrMenuMainBracket,        CLR_MENU_ITEMS);
 THEME_CLR(Theme, clrMenuTimerRecording,     CLR_DEVICE);
@@ -179,7 +182,8 @@ THEME_CLR(Theme, clrMenuText,               CLR_TEXT);
 
 THEME_CLR(Theme, clrReplayFrameFg,          CLR_BLACK);
 THEME_CLR(Theme, clrReplayFrameBg,          CLR_REPLAY_FRAME);
-THEME_CLR(Theme, clrReplayFrameMg,          CLR_WHITE);
+THEME_CLR(Theme, clrReplayFrameBr,          CLR_BLACK);
+THEME_CLR(Theme, clrReplayTextBg,           CLR_BACKGROUND);
 THEME_CLR(Theme, clrReplayPosition,         CLR_SEEN);
 THEME_CLR(Theme, clrReplayJumpFg,           CLR_BLACK);
 THEME_CLR(Theme, clrReplayJumpBg,           CLR_SEEN);

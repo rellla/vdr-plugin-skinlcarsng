@@ -57,7 +57,10 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   tinyFont = CreateTinyFont(lineHeight);
   frameColorFg = Theme.Color(clrMenuFrameFg);
   frameColorBg = Theme.Color(clrMenuFrameBg);
-  frameColorMg = Theme.Color(clrMenuFrameMg);
+  frameColorBr = (Theme.Color(clrMenuFrameBr) == CLR_BLACK) ? frameColorBg : Theme.Color(clrMenuFrameBr);
+  channelFrameColorBr = (Theme.Color(clrChannelFrameBr) == CLR_BLACK) ? Theme.Color(clrChannelFrameBg) : Theme.Color(clrChannelFrameBr);
+  replayFrameColorBr = (Theme.Color(clrReplayFrameBr) == CLR_BLACK) ? Theme.Color(clrReplayFrameBg) : Theme.Color(clrReplayFrameBr);
+  textColorBg = Theme.Color(clrMenuTextBg);
   currentIndex = -1;
   Margin = Config.Margin;
 
@@ -359,7 +362,8 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
      else {
         if (viewmode == esplitscreen)
            SetCoordinateY(yt08);
-        osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, clrTransparent);
+        if (viewmode == escaledvideo)
+           osd->DrawRectangle( xs00, 0, xa09, yc06 - 1, clrTransparent);
         yi00 = ym00;
         yi01 = ym07;
         xi00 = xa03;
@@ -372,47 +376,47 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
      }
 }
 
-void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color)
+void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color, tColor ColorBg)
 {
   // Top left rectangles:
-  DrawRectangleOutline(osd, xa00, yt00, xa02 - 1, yt02 - 1, Color, frameColorBg, 15);
-  DrawRectangleOutline(osd, xa00, yt04, xa02 - 1, yt06 - 1, Color, frameColorBg, 15);
-  DrawRectangleOutline(osd, xa00, yt07, xa02 - 1, yt08 - 1, Color, frameColorBg, 15);
+  DrawRectangleOutline(osd, xa00, yt00, xa02 - 1, yt02 - 1, Color, ColorBg, 15);
+  DrawRectangleOutline(osd, xa00, yt04, xa02 - 1, yt06 - 1, Color, ColorBg, 15);
+  DrawRectangleOutline(osd, xa00, yt07, xa02 - 1, yt08 - 1, Color, ColorBg, 15);
   if (!(viewmode == esplitscreen || (!(viewmode == escaledvideo) && (MenuCategory() == mcMain))))
-     DrawRectangleOutline(osd, xa00, yt09, xa02 - 1, yt10 - 1, Color, frameColorBg, 15);
+     DrawRectangleOutline(osd, xa00, yt09, xa02 - 1, yt10 - 1, Color, ColorBg, 15);
   // Upper elbow:
-  DrawRectangleOutline(osd, xa00, yc00, xa01 - 1, yc01 - 1, Color, frameColorBg, 3);
-  DrawRectangleOutline(osd, xa01, yc00, xa02 - 1, yc05 - 1, Color, frameColorBg, 14);
-  DrawRectangleOutline(osd, xa02 - Margin, yc04, xa05 - 1, yc05 - 1, Color, frameColorBg, 14);
+  DrawRectangleOutline(osd, xa00, yc00, xa01 - 1, yc01 - 1, Color, ColorBg, 3);
+  DrawRectangleOutline(osd, xa01, yc00, xa02 - 1, yc05 - 1, Color, ColorBg, 14);
+  DrawRectangleOutline(osd, xa02 - Margin, yc04, xa05 - 1, yc05 - 1, Color, ColorBg, 14);
   osd->DrawEllipse  (xa00, yc01, xa01 - 1, yc05 - 1, Color, 3);
-  osd->DrawEllipse  (xa00 + Margin, yc01, xa01 - 1, yc05 - 1 - Margin, frameColorBg, 3);
+  osd->DrawEllipse  (xa00 + Margin, yc01, xa01 - 1, yc05 - 1 - Margin, ColorBg, 3);
   osd->DrawEllipse  (xa02, yc02, xa04 - 1, yc04 - 1, Color, -3);
-  osd->DrawEllipse  (xa02 - Margin, yc02, xa04 - 1, yc04 - 1 + Margin, frameColorBg, -3);
+  osd->DrawEllipse  (xa02 - Margin, yc02, xa04 - 1, yc04 - 1 + Margin, ColorBg, -3);
   if (viewmode == esplitscreen || (viewmode == efullscreen && (MenuCategory() == mcMain))) {
      // Upper delimiter:
-     DrawRectangleOutline(osd, xa06, yc04 + lineHeight / 2, xm08 - 1, yc05 - 1, Color, frameColorBg, 15);
+     DrawRectangleOutline(osd, xa06, yc04 + lineHeight / 2, xm08 - 1, yc05 - 1, Color, ColorBg, 15);
      // Top right rectangles:
-     DrawRectangleOutline(osd, xm08 + Gap, yc04, xs00 - Gap - 1, yc05 - 1, Color, frameColorBg, 15);
+     DrawRectangleOutline(osd, xm08 + Gap, yc04, xs00 - Gap - 1, yc05 - 1, Color, ColorBg, 15);
      if (viewmode == esplitscreen && (MenuCategory() != mcSetup)) {
-        DrawRectangleOutline(osd, xs00, yc04, xs11 - 1, yc05 - 1, Color, frameColorBg, 15);
+        DrawRectangleOutline(osd, xs00, yc04, xs11 - 1, yc05 - 1, Color, ColorBg, 15);
         }
      else {
-        DrawRectangleOutline(osd, xs00, yc04, xs05 - 1, yc05 - 1, Color, frameColorBg, 15);
-        DrawRectangleOutline(osd, xs06, yc04, xa07 - 1, yc05 - 1, Color, frameColorBg, 15);
+        DrawRectangleOutline(osd, xs00, yc04, xs05 - 1, yc05 - 1, Color, ColorBg, 15);
+        DrawRectangleOutline(osd, xs06, yc04, xa07 - 1, yc05 - 1, Color, ColorBg, 15);
         }
-     DrawRectangleOutline(osd, xa08, yc04, xa09 - 1, yc05 - 1, Color, frameColorBg, 15);
+     DrawRectangleOutline(osd, xa08, yc04, xa09 - 1, yc05 - 1, Color, ColorBg, 15);
      }
   else {
      // Upper delimiter:
-     DrawRectangleOutline(osd, xa06, yc04 + lineHeight / 2, xm03 - 1, yc05 - 1, Color, frameColorBg, 15);
+     DrawRectangleOutline(osd, xa06, yc04 + lineHeight / 2, xm03 - 1, yc05 - 1, Color, ColorBg, 15);
      // Top right rectangles:
-     DrawRectangleOutline(osd, xm07, yt00, xm08 - 1, yc04 - Gap - 1, Color, frameColorBg, 15);
-     DrawRectangleOutline(osd, xm03 + Gap, yc04 + lineHeight / 2, xm07 + Margin, yc05 - 1, Color, frameColorBg, 11);
-     DrawRectangleOutline(osd, xm07, yc04, xm07 + lineHeight / 2, yc04 + lineHeight / 2, Color, frameColorBg, 3);
+     DrawRectangleOutline(osd, xm07, yt00, xm08 - 1, yc04 - Gap - 1, Color, ColorBg, 15);
+     DrawRectangleOutline(osd, xm03 + Gap, yc04 + lineHeight / 2, xm07 + Margin, yc05 - 1, Color, ColorBg, 11);
+     DrawRectangleOutline(osd, xm07, yc04, xm07 + lineHeight / 2, yc04 + lineHeight / 2, Color, ColorBg, 3);
      osd->DrawEllipse  (xm07 + Margin, yc04, xm08 - 1, yc05 - 1, Color, 4);
-     osd->DrawEllipse  (xm07 + Margin, yc04 + Margin, xm08 - 1 - Margin, yc05 - 1 - Margin, frameColorBg, 4);
+     osd->DrawEllipse  (xm07 + Margin, yc04 + Margin, xm08 - 1 - Margin, yc05 - 1 - Margin, ColorBg, 4);
      osd->DrawEllipse  (xm06, yc04, xm07, yc04 + lineHeight / 2, Color, -4);
-     osd->DrawEllipse  (xm06, yc04 + Margin, xm07 + Margin, yc04 + lineHeight / 2 + Margin, frameColorBg, -4);
+     osd->DrawEllipse  (xm06, yc04 + Margin, xm07 + Margin, yc04 + lineHeight / 2 + Margin, ColorBg, -4);
      }
 }
 
@@ -421,27 +425,27 @@ void cLCARSNGDisplayMenu::DrawMainFrameLower(void)
 // Mitte unterer Ellenbogen
   const cFont *font = cFont::GetFont(fontOsd);
   // Lower elbow:
-  DrawRectangleOutline(osd, xa00, yc10, xa01 - 1, yc11 - 1, frameColorMg, frameColorBg, 9);
-  DrawRectangleOutline(osd, xa01, yc06, xa02 - 1, yc11 - 1, frameColorMg, frameColorBg, 14);
-  DrawRectangleOutline(osd, xa02 - Margin, yc06, xa05 - 1, yc07 - 1, frameColorMg, frameColorBg, 14);
-  osd->DrawEllipse  (xa00, yc06, xa01 - 1, yc10 - 1, frameColorMg, 2);
+  DrawRectangleOutline(osd, xa00, yc10, xa01 - 1, yc11 - 1, frameColorBr, frameColorBg, 9);
+  DrawRectangleOutline(osd, xa01, yc06, xa02 - 1, yc11 - 1, frameColorBr, frameColorBg, 14);
+  DrawRectangleOutline(osd, xa02 - Margin, yc06, xa05 - 1, yc07 - 1, frameColorBr, frameColorBg, 14);
+  osd->DrawEllipse  (xa00, yc06, xa01 - 1, yc10 - 1, frameColorBr, 2);
   osd->DrawEllipse  (xa00 + Margin, yc06 + Margin, xa01 - 1, yc10 - 1, frameColorBg, 2);
-  osd->DrawEllipse  (xa02, yc07, xa04 - 1, yc09 - 1, frameColorMg, -2);
+  osd->DrawEllipse  (xa02, yc07, xa04 - 1, yc09 - 1, frameColorBr, -2);
   osd->DrawEllipse  (xa02 - Margin, yc07 - Margin, xa04 - 1, yc09 - 1, frameColorBg, -2);
   // Lower delimiter:
   if (!viewmode == escaledvideo && (MenuCategory() == mcMain)) {
-     DrawRectangleOutline(osd, xa06, yc06, xm08 - 1, yc07 - lineHeight / 2 - 1, frameColorMg, frameColorBg, 15);
+     DrawRectangleOutline(osd, xa06, yc06, xm08 - 1, yc07 - lineHeight / 2 - 1, frameColorBr, frameColorBg, 15);
      }
   else if (viewmode == esplitscreen && !(MenuCategory() == mcRecording)) {
-     DrawRectangleOutline(osd, xa06, yc06, xm08 - 1, yc07 - lineHeight / 2 - 1, frameColorMg, frameColorBg, 15);
+     DrawRectangleOutline(osd, xa06, yc06, xm08 - 1, yc07 - lineHeight / 2 - 1, frameColorBr, frameColorBg, 15);
      }
   else {
-     DrawRectangleOutline(osd, xa06, yc06, xm03 - 1, yc07 - lineHeight / 2 - 1, frameColorMg, frameColorBg, 15);
-     DrawRectangleOutline(osd, xm04, yc06, xm08 - 1, yc07 - 1, frameColorMg, frameColorBg, 15);
+     DrawRectangleOutline(osd, xa06, yc06, xm03 - 1, yc07 - lineHeight / 2 - 1, frameColorBr, frameColorBg, 15);
+     DrawRectangleOutline(osd, xm04, yc06, xm08 - 1, yc07 - 1, frameColorBr, frameColorBg, 15);
      }
-  DrawRectangleOutline(osd, xm08 + Gap, yc06, xs00 - Gap - 1, yc07 - 1, frameColorMg, frameColorBg, 15);
+  DrawRectangleOutline(osd, xm08 + Gap, yc06, xs00 - Gap - 1, yc07 - 1, frameColorBr, frameColorBg, 15);
   // VDR version:
-  osd->DrawRectangle(xa00, yb10, xa02 - 1, yb15 - 1, frameColorMg);
+  osd->DrawRectangle(xa00, yb10, xa02 - 1, yb15 - 1, frameColorBr);
   osd->DrawText(xa00 + Margin, yb10 + Margin, cString::sprintf("%s-%s", "VDR", VDRVERSION), frameColorFg, frameColorBg, font, xa02 - xa00 - 2 * Margin, yb15 - yb10 - 2 * Margin, taTop | taRight | taBorder);
   osd->DrawText(xa00 + Margin, yb15 - lineHeight - Margin, "LCARSNG", frameColorFg, frameColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
 }
@@ -450,22 +454,22 @@ void cLCARSNGDisplayMenu::DrawMainFrameChannel(void)
 {
   const cFont *font = cFont::GetFont(fontOsd);
   // Upper elbow:
-  DrawRectangleOutline(osd, xa00, yt05, xa01 - 1, yt06 - 1, frameColorMg, frameColorBg, 9);
-  DrawRectangleOutline(osd, xa01, yt00, xa02 - 1, yt06 - 1, frameColorMg, frameColorBg, 14);
-  DrawRectangleOutline(osd, xa02  - Margin, yt00, xa05 - 1, yt01 - 1, frameColorMg, frameColorBg, 14);
-  osd->DrawEllipse  (xa00, yt00, xa01 - 1, yt05 - 1, frameColorMg, 2);
+  DrawRectangleOutline(osd, xa00, yt05, xa01 - 1, yt06 - 1, frameColorBr, frameColorBg, 9);
+  DrawRectangleOutline(osd, xa01, yt00, xa02 - 1, yt06 - 1, frameColorBr, frameColorBg, 14);
+  DrawRectangleOutline(osd, xa02  - Margin, yt00, xa05 - 1, yt01 - 1, frameColorBr, frameColorBg, 14);
+  osd->DrawEllipse  (xa00, yt00, xa01 - 1, yt05 - 1, frameColorBr, 2);
   osd->DrawEllipse  (xa00 + Margin, yt00 + Margin, xa01 - 1, yt05 - 1, frameColorBg, 2);
-  osd->DrawEllipse  (xa02, yt01, xa04 - 1, yt03 - 1, frameColorMg, -2);
+  osd->DrawEllipse  (xa02, yt01, xa04 - 1, yt03 - 1, frameColorBr, -2);
   osd->DrawEllipse  (xa02 - Margin, yt01 - Margin, xa04 - 1, yt03 - 1, frameColorBg, -2);
-  DrawRectangleOutline(osd, xm02, yt00, xm03 -1, yt01 - 1, frameColorMg, frameColorBg, 15);
-  DrawRectangleOutline(osd, xm04, yt00, xm07 - Gap - 1, yt01 - 1, frameColorMg, frameColorBg, 15);
-  DrawRectangleOutline(osd, xm07, yt00, xm07 + lineHeight / 2 -1, yt01 - 1, frameColorMg, frameColorBg, 11);
-  osd->DrawEllipse  (xm07 + lineHeight / 2, yt00, xm08 - 1, yt01 - 1, frameColorMg, 5);
+  DrawRectangleOutline(osd, xm02, yt00, xm03 -1, yt01 - 1, frameColorBr, frameColorBg, 15);
+  DrawRectangleOutline(osd, xm04, yt00, xm07 - Gap - 1, yt01 - 1, frameColorBr, frameColorBg, 15);
+  DrawRectangleOutline(osd, xm07, yt00, xm07 + lineHeight / 2 -1, yt01 - 1, frameColorBr, frameColorBg, 11);
+  osd->DrawEllipse  (xm07 + lineHeight / 2, yt00, xm08 - 1, yt01 - 1, frameColorBr, 5);
   osd->DrawEllipse  (xm07 + lineHeight / 2, yt00 + Margin, xm08 - 1 - Margin, yt01 - 1 - Margin, frameColorBg, 5);
   // Center part:
-  DrawRectangleOutline(osd, xa00, yt06 + Gap, xa02 - 1, yb00 - 1 - Gap, frameColorMg, frameColorBg, 15);
+  DrawRectangleOutline(osd, xa00, yt06 + Gap, xa02 - 1, yb00 - 1 - Gap, frameColorBr, frameColorBg, 15);
   // VDR version:
-  osd->DrawRectangle(xa00, yb10, xa02 - 1, yb15 - 1, frameColorMg);
+  osd->DrawRectangle(xa00, yb10, xa02 - 1, yb15 - 1, frameColorBr);
   osd->DrawText(xa00 + Margin, yb10 + Margin, cString::sprintf("%s-%s", "VDR", VDRVERSION), frameColorFg, frameColorBg, font, xa02 - xa00 - 2 * Margin, yb15 - yb10 - 2 * Margin, taTop | taRight | taBorder);
   osd->DrawText(xa00 + Margin, yb15 - lineHeight - Margin, "LCARSNG", frameColorFg, frameColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
 }
@@ -483,35 +487,35 @@ void cLCARSNGDisplayMenu::DrawMenuFrame(void)
 {
   const cFont *font = cFont::GetFont(fontOsd);
   // Upper elbow:
-  DrawRectangleOutline(osd, xa00, yt05, xa01 - 1, yt06 - 1, frameColorMg, frameColorBg, 9);
-  DrawRectangleOutline(osd, xa01, yt00, xa02 - 1, yt06 - 1, frameColorMg, frameColorBg, 14);
-  DrawRectangleOutline(osd, xa02 - Margin, yt00, xa05 - 1, yt01 - 1, frameColorMg, frameColorBg, 14);
+  DrawRectangleOutline(osd, xa00, yt05, xa01 - 1, yt06 - 1, frameColorBr, frameColorBg, 9);
+  DrawRectangleOutline(osd, xa01, yt00, xa02 - 1, yt06 - 1, frameColorBr, frameColorBg, 14);
+  DrawRectangleOutline(osd, xa02 - Margin, yt00, xa05 - 1, yt01 - 1, frameColorBr, frameColorBg, 14);
 //  osd->DrawRectangle(xa00, yt00, xa01 - 1, yt05 - 1, clrTransparent);
-  osd->DrawEllipse  (xa00, yt00, xa01 - 1, yt05 - 1, frameColorMg, 2);
+  osd->DrawEllipse  (xa00, yt00, xa01 - 1, yt05 - 1, frameColorBr, 2);
   osd->DrawEllipse  (xa00 + Margin, yt00 + Margin, xa01 - 1, yt05 - 1, frameColorBg, 2);
-  osd->DrawEllipse  (xa02, yt01, xa04 - 1, yt03 - 1, frameColorMg, -2);
+  osd->DrawEllipse  (xa02, yt01, xa04 - 1, yt03 - 1, frameColorBr, -2);
   osd->DrawEllipse  (xa02 - Margin, yt01 - Margin, xa04 - 1, yt03 - 1, frameColorBg, -2);
 //  osd->DrawRectangle(xa06, yt00, xa07 - 1, yt01 - 1, frameColor);
-  DrawRectangleOutline(osd, xa08, yt00, xa08 + lineHeight / 2 - 1, yt01 - 1, frameColorMg, frameColorBg, 11);
+  DrawRectangleOutline(osd, xa08, yt00, xa08 + lineHeight / 2 - 1, yt01 - 1, frameColorBr, frameColorBg, 11);
   osd->DrawRectangle(xa08 + lineHeight / 2, yt00, xa09 - 1, yt00 + lineHeight / 2 - 1, clrTransparent);
-  osd->DrawEllipse  (xa08 + lineHeight / 2, yt00, xa09 - 1, yt01 - 1, frameColorMg, 5);
+  osd->DrawEllipse  (xa08 + lineHeight / 2, yt00, xa09 - 1, yt01 - 1, frameColorBr, 5);
   osd->DrawEllipse  (xa08 + lineHeight / 2, yt00 + Margin, xa09 - 1 - Margin, yt01 - 1 - Margin, frameColorBg, 5);
   // Center part:
 //  osd->DrawRectangle(xa00, yt06 + Gap, xa02 - 1, yc00 - 1 - Gap, frameColor);
 //  osd->DrawRectangle(xa00, yc00, xa02 - 1, yc11 - 1, frameColor);
-  DrawRectangleOutline(osd, xa00, yt06 + Gap, xa02 - 1, yb00 - 1 - Gap, frameColorMg, frameColorBg, 15);
+  DrawRectangleOutline(osd, xa00, yt06 + Gap, xa02 - 1, yb00 - 1 - Gap, frameColorBr, frameColorBg, 15);
   // Lower elbow:
-  DrawRectangleOutline(osd, xa00, yb10, xa01 - 1, yb11 - 1, frameColorMg, frameColorBg, 3);
-  DrawRectangleOutline(osd, xa01, yb10, xa02 - 1, yb15 - 1, frameColorMg, frameColorBg, 14);
-  DrawRectangleOutline(osd, xa02 - Margin, yb14, xa05 - 1, yb15 - 1, frameColorMg, frameColorBg, 14);
+  DrawRectangleOutline(osd, xa00, yb10, xa01 - 1, yb11 - 1, frameColorBr, frameColorBg, 3);
+  DrawRectangleOutline(osd, xa01, yb10, xa02 - 1, yb15 - 1, frameColorBr, frameColorBg, 14);
+  DrawRectangleOutline(osd, xa02 - Margin, yb14, xa05 - 1, yb15 - 1, frameColorBr, frameColorBg, 14);
 //  osd->DrawRectangle(xa00, yb11, xa01 - 1, yb15 - 1, clrTransparent);
-  osd->DrawEllipse  (xa00, yb11, xa01 - 1, yb15 - 1, frameColorMg, 3);
+  osd->DrawEllipse  (xa00, yb11, xa01 - 1, yb15 - 1, frameColorBr, 3);
   osd->DrawEllipse  (xa00 + Margin, yb11, xa01 - 1, yb15 - 1 - Margin, frameColorBg, 3);
-  osd->DrawEllipse  (xa02, yb12, xa04 - 1, yb14 - 1, frameColorMg, -3);
+  osd->DrawEllipse  (xa02, yb12, xa04 - 1, yb14 - 1, frameColorBr, -3);
   osd->DrawEllipse  (xa02 - Margin, yb12, xa04 - 1, yb14 - 1 + Margin, frameColorBg, -3);
-  DrawRectangleOutline(osd, xa08, yb14, xa08 + lineHeight / 2 - 1, yb15 - 1, frameColorMg, frameColorBg, 11);
+  DrawRectangleOutline(osd, xa08, yb14, xa08 + lineHeight / 2 - 1, yb15 - 1, frameColorBr, frameColorBg, 11);
   osd->DrawRectangle(xa08 + lineHeight / 2, yb14 + lineHeight / 2, xa09 - 1, yb15 - 1, clrTransparent);
-  osd->DrawEllipse  (xa08 + lineHeight / 2, yb14, xa09 - 1, yb15 - 1, frameColorMg, 5);
+  osd->DrawEllipse  (xa08 + lineHeight / 2, yb14, xa09 - 1, yb15 - 1, frameColorBr, 5);
   osd->DrawEllipse  (xa08 + lineHeight / 2, yb14 + Margin, xa09 - 1  - Margin, yb15 - 1 - Margin, frameColorBg, 5);
   osd->DrawText(xa00 + Margin, yb10 + Margin, cString::sprintf("%s-%s", "VDR", VDRVERSION), frameColorFg, frameColorBg, font, xa02 - xa00 - 2 * Margin, yb11 - yb10 - Margin, taTop | taRight | taBorder);
   // Color buttons:
@@ -667,7 +671,7 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
         }
      }
   if (MenuCategory() == mcSetup) {
-     DrawRectangleOutline(osd, xm02, ys00, xm03 - 1, ys01 - 1, frameColorMg, frameColorBg, 15);
+     DrawRectangleOutline(osd, xm02, ys00, xm03 - 1, ys01 - 1, frameColorBr, frameColorBg, 15);
      osd->DrawText(xm02 + Margin, ys00 + Margin, tr("Setup"), frameColorFg, frameColorBg, font, xm03 - xm02 - 2 * Margin, lineHeight - Margin, taBottom | taLeft | taBorder);
      }
 //  if (MenuCategory() == mcCommand)
@@ -679,42 +683,42 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
 void cLCARSNGDisplayMenu::DrawStatusElbows(void)
 {
   const cFont *font = cFont::GetFont(fontOsd);
-  osd->DrawRectangle(xs00, ys00, xs01 - 1, ys01 - 1, frameColorMg);
+  osd->DrawRectangle(xs00, ys00, xs01 - 1, ys01 - 1, frameColorBr);
   osd->DrawText     (xs00 + Margin, ys00 + Margin, tr("TIMERS"), frameColorFg, frameColorBg, font, xs01 - xs00 - 2 * Margin, lineHeight - Margin, taBottom | taLeft | taBorder);
-  DrawRectangleOutline(osd, xs02, ys00, xs03 - 1, ys01 - 1, frameColorMg, frameColorBg, 11);
-  osd->DrawEllipse  (xs03, ys00, xs05 - 1, ys01 - 1, frameColorMg, 1);
+  DrawRectangleOutline(osd, xs02, ys00, xs03 - 1, ys01 - 1, frameColorBr, frameColorBg, 11);
+  osd->DrawEllipse  (xs03, ys00, xs05 - 1, ys01 - 1, frameColorBr, 1);
   osd->DrawEllipse  (xs03, ys00 + Margin, xs05 - 1 - Margin, ys01 - 1 - Margin, frameColorBg, 1);
-  DrawRectangleOutline(osd, xs04, ys01 - Margin, xs05 - 1, ys03 - 1, frameColorMg, frameColorBg, 13);
-  osd->DrawEllipse  (xs03, ys01, xs04 - 1, ys02 - 1, frameColorMg, -1);
+  DrawRectangleOutline(osd, xs04, ys01 - Margin, xs05 - 1, ys03 - 1, frameColorBr, frameColorBg, 13);
+  osd->DrawEllipse  (xs03, ys01, xs04 - 1, ys02 - 1, frameColorBr, -1);
   osd->DrawEllipse  (xs03, ys01 - Margin, xs04 - 1 + Margin, ys02 - 1, frameColorBg, -1);
-  DrawRectangleOutline(osd, xs04, ys04, xs05 - 1, ys05 - 1, frameColorMg, frameColorBg, 15);
-  osd->DrawRectangle(xs10, ys00, xs11 - 1, ys01 - 1, frameColorMg);
+  DrawRectangleOutline(osd, xs04, ys04, xs05 - 1, ys05 - 1, frameColorBr, frameColorBg, 15);
+  osd->DrawRectangle(xs10, ys00, xs11 - 1, ys01 - 1, frameColorBr);
   osd->DrawText     (xs10 + Margin, ys00 + Margin, tr("DEVICES"), frameColorFg, frameColorBg, font, xs11 - xs10 - 2 * Margin, lineHeight - Margin, taBottom | taRight | taBorder);
-  DrawRectangleOutline(osd, xs08, ys00, xs09 - 1, ys01 - 1, frameColorMg, frameColorBg, 14);
-  osd->DrawEllipse  (xs06, ys00, xs08 - 1, ys01 - 1, frameColorMg, 2);
+  DrawRectangleOutline(osd, xs08, ys00, xs09 - 1, ys01 - 1, frameColorBr, frameColorBg, 14);
+  osd->DrawEllipse  (xs06, ys00, xs08 - 1, ys01 - 1, frameColorBr, 2);
   osd->DrawEllipse  (xs06 + Margin, ys00 + Margin, xs08 - 1, ys01 - 1 - Margin, frameColorBg, 2);
-  DrawRectangleOutline(osd, xs06, ys01 - Margin, xs07 - 1, ys03 - 1, frameColorMg, frameColorBg, 13);
-  osd->DrawEllipse  (xs07, ys01, xs08 - 1, ys02 - 1, frameColorMg, -2);
+  DrawRectangleOutline(osd, xs06, ys01 - Margin, xs07 - 1, ys03 - 1, frameColorBr, frameColorBg, 13);
+  osd->DrawEllipse  (xs07, ys01, xs08 - 1, ys02 - 1, frameColorBr, -2);
   osd->DrawEllipse  (xs07 - Margin, ys01 - Margin, xs08 - 1, ys02 - 1, frameColorBg, -2);
-  DrawRectangleOutline(osd, xs06, ys04, xs07 - 1, ys05 - 1, frameColorMg, frameColorBg, 15);
-  DrawRectangleOutline(osd, xs12, ys00, xs13 - 1, ys01 - 1, frameColorMg, frameColorBg, 15);
+  DrawRectangleOutline(osd, xs06, ys04, xs07 - 1, ys05 - 1, frameColorBr, frameColorBg, 15);
+  DrawRectangleOutline(osd, xs12, ys00, xs13 - 1, ys01 - 1, frameColorBr, frameColorBg, 15);
 }
 
 void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
 {
 //  if (MenuCategory() != mcChannel) {
      if (initial) {
-        osd->DrawRectangle(xa00, yb00, xa02 - 1, yb01 - 1, frameColorMg);
+        osd->DrawRectangle(xa00, yb00, xa02 - 1, yb01 - 1, frameColorBr);
         if (yb02) // DISK
-           osd->DrawRectangle(xa00, yb02, xa02 - 1, yb03 - 1, frameColorMg);
+           osd->DrawRectangle(xa00, yb02, xa02 - 1, yb03 - 1, frameColorBr);
         if (yb04) // LOAD
-           osd->DrawRectangle(xa00, yb04, xa02 - 1, yb05 - 1, frameColorMg);
+           osd->DrawRectangle(xa00, yb04, xa02 - 1, yb05 - 1, frameColorBr);
         if (yb06) // RECORDINGS
-           osd->DrawRectangle(xa00, yb06, xa02 - 1, yb07 - 1, frameColorMg);
+           osd->DrawRectangle(xa00, yb06, xa02 - 1, yb07 - 1, frameColorBr);
         if (yb08) // TIMER
-           osd->DrawRectangle(xa00, yb08, xa02 - 1, yb081 - 1, frameColorMg);
+           osd->DrawRectangle(xa00, yb08, xa02 - 1, yb081 - 1, frameColorBr);
         if (yb082)
-           DrawRectangleOutline(osd, xa00, yb082, xa02 - 1, yb09 - 1, frameColorMg, frameColorBg, 15);
+           DrawRectangleOutline(osd, xa00, yb082, xa02 - 1, yb09 - 1, frameColorBr, frameColorBg, 15);
         }
      DrawDate();
      DrawDisk();
@@ -981,9 +985,8 @@ void cLCARSNGDisplayMenu::DrawLiveIndicator(void)
      if (lastLiveIndicatorY >= 0)
         osd->DrawRectangle(xs12, lastLiveIndicatorY, xs13 - 1, lastLiveIndicatorY + lineHeight - 1, Theme.Color(clrBackground));
      if (y > 0) {
-        tColor ColorBg = Theme.Color(clrChannelFrameMg);
-        osd->DrawRectangle(xs12, y, xs12 + lineHeight / 2 - 1, y + lineHeight - 1, ColorBg);
-        osd->DrawEllipse  (xs12 + lineHeight / 2, y, xs13 - 1, y + lineHeight - 1, ColorBg, 5);
+        osd->DrawRectangle(xs12, y, xs12 + lineHeight / 2 - 1, y + lineHeight - 1, channelFrameColorBr);
+        osd->DrawEllipse  (xs12 + lineHeight / 2, y, xs13 - 1, y + lineHeight - 1, channelFrameColorBr, 5);
         if (Transferring) {
            int w = bmTransferMode.Width();
            int h = bmTransferMode.Height();
@@ -995,7 +998,7 @@ void cLCARSNGDisplayMenu::DrawLiveIndicator(void)
               double f = sqrt(double(c) / (2 * b));
               bm = bmTransferMode.Scaled(f, f);
               }
-           osd->DrawBitmap((xs12 + xs13 - bm->Width()) / 2, y + (lineHeight - bm->Height()) / 2, *bm, Theme.Color(clrChannelFrameFg), ColorBg);
+           osd->DrawBitmap((xs12 + xs13 - bm->Width()) / 2, y + (lineHeight - bm->Height()) / 2, *bm, Theme.Color(clrChannelFrameFg), channelFrameColorBr);
            if (bm != &bmTransferMode)
               delete bm;
            }
@@ -1029,24 +1032,24 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      }
   int w = tallFont->Width(tr("LIVE")) + 2 * Gap;
   int x1 = (viewmode == escaledvideo) ? xd07 - (xa09 - xm05) : xd07 - lineHeight;
-  tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : frameColorBg;
+  tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : textColorBg;
   if (initial) {
-     DrawMainFrameUpper(Theme.Color(clrChannelFrameMg));
+     DrawMainFrameUpper(channelFrameColorBr, Theme.Color(clrChannelFrameBg));
      int x = 0;
      if (viewmode == escaledvideo) {
         x = xa09 - xm05;
         }
-     osd->DrawText(xd07 - x - w, yd00, tr("LIVE"), Theme.Color(clrChannelFrameMg), ColorBg, tallFont, w, tallFont->Height(), taRight | taBorder);
+     osd->DrawText(xd07 - x - w, yd00, tr("LIVE"), channelFrameColorBr, ColorBg, tallFont, w, tallFont->Height(), taRight | taBorder);
      }
   if (!Channel)
      return;
   if (initial || Channel != lastChannel || strcmp(Channel->Name(), lastChannelName)) {
-     osd->DrawText(xa00 + Margin, yt04 + Margin, itoa(Channel->Number()), Theme.Color(clrChannelFrameFg), frameColorBg, tallFont, xa02 - xa00 - 2 * Margin, yt06 - yt04 - 2 * Margin, taTop | taRight | taBorder);
+     osd->DrawText(xa00 + Margin, yt04 + Margin, itoa(Channel->Number()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), tallFont, xa02 - xa00 - 2 * Margin, yt06 - yt04 - 2 * Margin, taTop | taRight | taBorder);
      w = tallFont->Width(Channel->Name());
      osd->DrawRectangle(xa03, yt04  + Margin, x1, yt04  + Margin + tallFont->Height(), Theme.Color(clrBackground));
      osd->DrawText(xa03, yt04  + Margin, Channel->Name(), Theme.Color(clrChannelName), ColorBg, tallFont, min(w, x1 - xa03), tallFont->Height(), taTop | taLeft);
 //     int x = xa00 + (yc03 - yc02); // compensate for the arc
-     osd->DrawText(xa00 + 3 * Margin, yt09 + Margin, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), frameColorBg, cFont::GetFont(fontOsd), xa02 - xa00 - 4 * Margin, lineHeight, taTop | taRight | taBorder);
+     osd->DrawText(xa00 + 3 * Margin, yt09 + Margin, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - xa00 - 4 * Margin, lineHeight, taTop | taRight | taBorder);
      lastChannel = Channel;
      lastChannelName = Channel->Name();
      DrawSeen(0, 0);
@@ -1102,14 +1105,14 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
      }
   int w = tallFont->Width(tr("PLAY")) + 2 * Gap;
   int x1 = (viewmode == escaledvideo) ? xd07 - (xa09 - xm05) : xd07 - lineHeight;
-  tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : frameColorBg;
+  tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : textColorBg;
   if (initial) {
-     DrawMainFrameUpper(Theme.Color(clrReplayFrameMg));
+     DrawMainFrameUpper(replayFrameColorBr, Theme.Color(clrReplayFrameBg));
      int x = 0;
      if (viewmode == escaledvideo) {
         x = xa09 - xm05;
         }
-     osd->DrawText(xd07 - x - w, yd00, tr("PLAY"), Theme.Color(clrReplayFrameFg), ColorBg, tallFont, w, tallFont->Height(), taRight | taBorder);
+     osd->DrawText(xd07 - x - w, yd00, tr("PLAY"), replayFrameColorBr, ColorBg, tallFont, w, tallFont->Height(), taRight | taBorder);
      }
   // The current progress:
   int Current = 0;
@@ -1130,8 +1133,8 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
            w = tallFont->Width(Recording->Name());
            osd->DrawText(xa03, yt04 + Margin, Recording->Name(), Theme.Color(clrEventTitle), ColorBg, tallFont, min(w, x1 - xa03), tallFont->Height(), taTop | taLeft);
            }
-        osd->DrawText(xa00 + Margin, yt07 + Margin, ShortDateString(Recording->Start()), Theme.Color(clrReplayFrameFg), frameColorBg, font, xa02 - xa00  - 2 * Margin, 0, taTop | taRight | taBorder);
-        osd->DrawText(xa00 + Margin, yt07 + lineHeight + Margin, TimeString(Recording->Start()), Theme.Color(clrReplayFrameFg), frameColorBg, font, xa02 - xa00  - 2 * Margin, 0, taBottom | taRight | taBorder);
+        osd->DrawText(xa00 + Margin, yt07 + Margin, ShortDateString(Recording->Start()), Theme.Color(clrReplayFrameFg), Theme.Color(clrReplayFrameBg), font, xa02 - xa00  - 2 * Margin, 0, taTop | taRight | taBorder);
+        osd->DrawText(xa00 + Margin, yt07 + lineHeight + Margin, TimeString(Recording->Start()), Theme.Color(clrReplayFrameFg), Theme.Color(clrReplayFrameBg), font, xa02 - xa00  - 2 * Margin, 0, taBottom | taRight | taBorder);
         lastRecording = Recording;
         }
      }
@@ -1153,18 +1156,18 @@ void cLCARSNGDisplayMenu::DrawInfo(const cEvent *Event, bool WithTime)
      const cFont *fontsml = cFont::GetFont(fontSml);
      int y = yt07 + Margin;
      int x = (viewmode == escaledvideo) ? xd07 - (xa09 - xm05) : xd00 - lineHeight;
-     tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : frameColorBg;
+     tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : textColorBg;
      int w = font->Width(Event->Title());
      osd->DrawRectangle(xa03, y, x, y + lineHeight, Theme.Color(clrBackground));
      osd->DrawText(xa03, y, Event->Title(), Theme.Color(clrEventTitle), ColorBg, font, min (w, x - xa03), lineHeight, taBottom | taLeft);
      if (WithTime)
-        osd->DrawText(xa00 + Margin, y, Event->GetTimeString(), Theme.Color(clrChannelFrameFg), frameColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taTop | taRight | taBorder);
+        osd->DrawText(xa00 + Margin, y, Event->GetTimeString(), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), font, xa02 - xa00 - 2 * Margin, lineHeight, taTop | taRight | taBorder);
      y += lineHeight;
      w = fontsml->Width(Event->ShortText());
      osd->DrawRectangle(xa03, y + ((lineHeight - fontsml->Height()) / 2), x, y + lineHeight, Theme.Color(clrBackground));
      osd->DrawText(xa03, y + ((lineHeight - fontsml->Height()) / 2), Event->ShortText(), Theme.Color(clrEventShortText), ColorBg, fontsml, min (w, x - xa03), fontsml->Height(), taBottom | taLeft);
      if (WithTime)
-        osd->DrawText(xa00 + Margin, y, cString::sprintf("-%s", *Event->GetEndTimeString()), Theme.Color(clrChannelFrameFg), frameColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
+        osd->DrawText(xa00 + Margin, y, cString::sprintf("-%s", *Event->GetEndTimeString()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
      }
 }
 
@@ -1234,13 +1237,13 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
         if (viewmode != efullscreen) {
            if (MenuCategory() == mcSetup)
               return;
-           DrawRectangleOutline(osd, xs00, ys00, xs11, ys01 - 1, frameColorMg, frameColorBg, 15);
+           DrawRectangleOutline(osd, xs00, ys00, xs11, ys01 - 1, frameColorBr, frameColorBg, 15);
            osd->DrawText(xs00 + Margin, ys00 + Margin, Title, frameColorFg, frameColorBg, font, xs11 - xs00 - 1 - 2 * Margin, lineHeight - Margin, taBottom | taRight | taBorder);
-           DrawRectangleOutline(osd, xs12, ys00, xs13 - 1, ys01 - 1, frameColorMg, frameColorBg, 15);
+           DrawRectangleOutline(osd, xs12, ys00, xs13 - 1, ys01 - 1, frameColorBr, frameColorBg, 15);
            }
         else {
            int w = min(font->Width(Title), xa07 - xa06 - Gap);
-           DrawRectangleOutline(osd, xa06, yt00, xa07 - 1, yt01 - 1, frameColorMg, frameColorBg, 15);
+           DrawRectangleOutline(osd, xa06, yt00, xa07 - 1, yt01 - 1, frameColorBr, frameColorBg, 15);
            osd->DrawText(xa07 - w - Gap, yt00 + Margin, Title, frameColorFg, frameColorBg, font, w + Gap - Margin, lineHeight - Margin, taRight);
            }
      }
@@ -1315,7 +1318,7 @@ void cLCARSNGDisplayMenu::SetItem(const char *Text, int Index, bool Current, boo
      }
   else {
      ColorFg = Theme.Color(Selectable ? clrMenuItemSelectable : clrMenuItemNonSelectable);
-     ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : frameColorBg;
+     ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : textColorBg;
 //     if (currentIndex == Index)
         osd->DrawRectangle(xi00, y, xi03 - 1, y + lineHeight - 1, Theme.Color(clrBackground));
      }
@@ -1346,7 +1349,7 @@ void cLCARSNGDisplayMenu::SetEvent(const cEvent *Event)
   int y = yi00;
   cTextScroller ts;
   char t[32];
-  tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : frameColorBg;
+  tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : textColorBg;
   snprintf(t, sizeof(t), "%s  %s - %s", *Event->GetDateString(), *Event->GetTimeString(), *Event->GetEndTimeString());
   int w = font->Width(t) + Gap;
   ts.Set(osd, xl, y, min(w, xi01 - xl), yi01 - y, t, font, Theme.Color(clrEventTime), ColorBg);
@@ -1397,7 +1400,7 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
   int xl = xi00;
   int y = yi00;
   cTextScroller ts;
-  tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : frameColorBg;
+  tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : textColorBg;
   cString t = cString::sprintf("%s  %s  %s", *DateString(Recording->Start()), *TimeString(Recording->Start()), Info->ChannelName() ? Info->ChannelName() : "");
   ts.Set(osd, xl, y, xi01 - xl, yi01 - y, t, font, Theme.Color(clrEventTime), ColorBg);
   y += ts.Height();
@@ -1432,7 +1435,7 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
 
 void cLCARSNGDisplayMenu::SetText(const char *Text, bool FixedFont)
 {
-  tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : frameColorBg;
+  tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : textColorBg;
   textScroller.Set(osd, xi00, yi00, GetTextAreaWidth(), yi01 - yi00, Text, GetTextAreaFont(FixedFont), Theme.Color(clrMenuText), ColorBg);
   DrawTextScrollbar();
 }

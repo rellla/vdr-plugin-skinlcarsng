@@ -62,7 +62,10 @@ private:
   cFont *tallFont;
   tColor frameColorFg;
   tColor frameColorBg;
-  tColor frameColorMg;
+  tColor frameColorBr;
+  tColor channelFrameColorBr;
+  tColor replayFrameColorBr;
+  tColor textColorBg;
   int currentIndex;
   cVector<int> deviceOffset;
   cVector<bool> deviceRecording;
@@ -96,7 +99,7 @@ private:
   int Margin;
   static cBitmap bmArrowUp, bmArrowDown, bmTransferMode;
   void SetCoordinateY(int y);
-  void DrawMainFrameUpper(tColor Color);
+  void DrawMainFrameUpper(tColor Color, tColor ColorBg);
   void DrawMainFrameLower(void);
   void DrawMainFrameChannel(void);
   void DrawMainButton(const char *Text, int x0, int x1, int x2, int x3, int y0, int y1, tColor ColorFg, tColor ColorBg, const cFont *Font);

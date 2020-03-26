@@ -39,7 +39,8 @@ private:
   cFont *tallFont;
   tColor frameColorFg;
   tColor frameColorBg;
-  tColor frameColorMg;
+  tColor frameColorBr;
+  tColor textColorBg;
   bool message;
   const cEvent *present;
   const cEvent *following;

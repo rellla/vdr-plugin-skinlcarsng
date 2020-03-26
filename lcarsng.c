@@ -44,7 +44,7 @@
 #include <sys/statvfs.h>
 #include <string>
 
-cTheme Theme;
+//cTheme Theme;
 
 bool TwoColors = false;
 
