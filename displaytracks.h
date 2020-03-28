@@ -1,7 +1,3 @@
-#include "lcarsng.h"
-#include <vdr/font.h>
-#include <vdr/menu.h>
-
 // --- cLCARSNGDisplayTracks -----------------------------------------------
 
 class cLCARSNGDisplayTracks : public cSkinDisplayTracks {

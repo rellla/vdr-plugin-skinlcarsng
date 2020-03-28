@@ -1,6 +1,3 @@
-#include "lcarsng.h"
-#include <vdr/font.h>
-
 // --- cLCARSNGDisplayVolume -----------------------------------------------
 
 class cLCARSNGDisplayVolume : public cSkinDisplayVolume {

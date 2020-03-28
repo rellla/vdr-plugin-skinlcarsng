@@ -1,26 +1,3 @@
-/*
- * skinlcars.c: A VDR skin with Star Trek's "LCARS" layout
- *
- * See the main source file 'vdr.c' for copyright information and
- * how to reach the author.
- *
- * $Id: skinlcars.c 4.1 2015/09/01 10:07:07 kls Exp $
- */
-
-#include "lcarsng.h"
-#include <vdr/font.h>
-#include <vdr/menu.h>
-#include <vdr/osd.h>
-#if APIVERSNUM > 20101
-#include <vdr/positioner.h>
-#endif
-#include <vdr/themes.h>
-#include <vdr/thread.h>
-#include <vdr/tools.h>
-#include <vdr/videodir.h>
-#include <sys/statvfs.h>
-#include <string>
-
 // --- cLCARSNGDisplayReplay -----------------------------------------------
 
 class cLCARSNGDisplayReplay : public cSkinDisplayReplay, cThread {

@@ -1,27 +1,6 @@
-/*
- * skinlcars.c: A VDR skin with Star Trek's "LCARS" layout
- *
- * See the main source file 'vdr.c' for copyright information and
- * how to reach the author.
- *
- * $Id: skinlcars.c 4.1 2015/09/01 10:07:07 kls Exp $
- */
-
+#include "config.h"
 #include "lcarsng.h"
 #include "displaymenu.h"
-#include "config.h"
-#include <vdr/font.h>
-#include <vdr/menu.h>
-#include <vdr/osd.h>
-#if APIVERSNUM > 20101
-#include <vdr/positioner.h>
-#endif
-#include <vdr/themes.h>
-#include <vdr/thread.h>
-#include <vdr/tools.h>
-#include <vdr/videodir.h>
-#include <sys/statvfs.h>
-#include <string>
 
 cBitmap cLCARSNGDisplayMenu::bmArrowUp(arrowup_xpm);
 cBitmap cLCARSNGDisplayMenu::bmArrowDown(arrowdown_xpm);
@@ -478,7 +457,6 @@ void cLCARSNGDisplayMenu::DrawMainButton(const char *Text, int x0, int x1, int x
 {
   int h = y1 - y0;
   osd->DrawEllipse(x0, y0, x1 - 1, y1 - 1, ColorBg, 7);
-//  osd->DrawText(x1, y0, Text, ColorFg, ColorBg, Font, x2 - x1, h, taBottom | taRight);
   osd->DrawText(x1, y0, Text, ColorFg, ColorBg, Font, x2 - x1, h, taCenter);
   osd->DrawEllipse(x2, y0, x3 - 1, y1 - 1, ColorBg, 5);
 }
@@ -490,25 +468,20 @@ void cLCARSNGDisplayMenu::DrawMenuFrame(void)
   DrawRectangleOutline(osd, xa00, yt05, xa01 - 1, yt06 - 1, frameColorBr, frameColorBg, 9);
   DrawRectangleOutline(osd, xa01, yt00, xa02 - 1, yt06 - 1, frameColorBr, frameColorBg, 14);
   DrawRectangleOutline(osd, xa02 - Margin, yt00, xa05 - 1, yt01 - 1, frameColorBr, frameColorBg, 14);
-//  osd->DrawRectangle(xa00, yt00, xa01 - 1, yt05 - 1, clrTransparent);
   osd->DrawEllipse  (xa00, yt00, xa01 - 1, yt05 - 1, frameColorBr, 2);
   osd->DrawEllipse  (xa00 + Margin, yt00 + Margin, xa01 - 1, yt05 - 1, frameColorBg, 2);
   osd->DrawEllipse  (xa02, yt01, xa04 - 1, yt03 - 1, frameColorBr, -2);
   osd->DrawEllipse  (xa02 - Margin, yt01 - Margin, xa04 - 1, yt03 - 1, frameColorBg, -2);
-//  osd->DrawRectangle(xa06, yt00, xa07 - 1, yt01 - 1, frameColor);
   DrawRectangleOutline(osd, xa08, yt00, xa08 + lineHeight / 2 - 1, yt01 - 1, frameColorBr, frameColorBg, 11);
   osd->DrawRectangle(xa08 + lineHeight / 2, yt00, xa09 - 1, yt00 + lineHeight / 2 - 1, clrTransparent);
   osd->DrawEllipse  (xa08 + lineHeight / 2, yt00, xa09 - 1, yt01 - 1, frameColorBr, 5);
   osd->DrawEllipse  (xa08 + lineHeight / 2, yt00 + Margin, xa09 - 1 - Margin, yt01 - 1 - Margin, frameColorBg, 5);
   // Center part:
-//  osd->DrawRectangle(xa00, yt06 + Gap, xa02 - 1, yc00 - 1 - Gap, frameColor);
-//  osd->DrawRectangle(xa00, yc00, xa02 - 1, yc11 - 1, frameColor);
   DrawRectangleOutline(osd, xa00, yt06 + Gap, xa02 - 1, yb00 - 1 - Gap, frameColorBr, frameColorBg, 15);
   // Lower elbow:
   DrawRectangleOutline(osd, xa00, yb10, xa01 - 1, yb11 - 1, frameColorBr, frameColorBg, 3);
   DrawRectangleOutline(osd, xa01, yb10, xa02 - 1, yb15 - 1, frameColorBr, frameColorBg, 14);
   DrawRectangleOutline(osd, xa02 - Margin, yb14, xa05 - 1, yb15 - 1, frameColorBr, frameColorBg, 14);
-//  osd->DrawRectangle(xa00, yb11, xa01 - 1, yb15 - 1, clrTransparent);
   osd->DrawEllipse  (xa00, yb11, xa01 - 1, yb15 - 1, frameColorBr, 3);
   osd->DrawEllipse  (xa00 + Margin, yb11, xa01 - 1, yb15 - 1 - Margin, frameColorBg, 3);
   osd->DrawEllipse  (xa02, yb12, xa04 - 1, yb14 - 1, frameColorBr, -3);
@@ -593,10 +566,10 @@ void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
   LOCK_RECORDINGS_READ;
   NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
   }
-#endif
-#endif
   if (NumRecordingsInPath > 0)
      osd->DrawText(xm04 + Margin, yc06 + Margin, cString::sprintf("%i", NumRecordingsInPath), frameColorFg, frameColorBg, font, xm08 - xm04 - 1 - 2 * Margin, lineHeight - Margin, taBottom | taRight | taBorder);
+#endif
+#endif
 }
 
 void cLCARSNGDisplayMenu::DrawCountRecordings(void)
@@ -650,10 +623,10 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
      y3 = y2 + Gap;
      }
   else {
-     y0 = ym00; //yc08
-     y1 = ym01; //ym00 + lineHeight / 2
-     y2 = ym02; //ym01 + lineHeight / 2
-     y3 = ym03; //ym02 + Gap
+     y0 = ym00;
+     y1 = ym01;
+     y2 = ym02;
+     y3 = ym03;
      }
   if (MenuCategory() == mcMain || MenuCategory() == mcSetup || MenuCategory() == mcChannel) {
      osd->DrawRectangle(xm00, y0, xm01 - 1, y1 - 1, Color);
@@ -706,28 +679,26 @@ void cLCARSNGDisplayMenu::DrawStatusElbows(void)
 
 void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
 {
-//  if (MenuCategory() != mcChannel) {
-     if (initial) {
-        osd->DrawRectangle(xa00, yb00, xa02 - 1, yb01 - 1, frameColorBr);
-        if (yb02) // DISK
-           osd->DrawRectangle(xa00, yb02, xa02 - 1, yb03 - 1, frameColorBr);
-        if (yb04) // LOAD
-           osd->DrawRectangle(xa00, yb04, xa02 - 1, yb05 - 1, frameColorBr);
-        if (yb06) // RECORDINGS
-           osd->DrawRectangle(xa00, yb06, xa02 - 1, yb07 - 1, frameColorBr);
-        if (yb08) // TIMER
-           osd->DrawRectangle(xa00, yb08, xa02 - 1, yb081 - 1, frameColorBr);
-        if (yb082)
-           DrawRectangleOutline(osd, xa00, yb082, xa02 - 1, yb09 - 1, frameColorBr, frameColorBg, 15);
-        }
-     DrawDate();
-     DrawDisk();
-     DrawLoad();
-     DrawCountRecordings();
-     DrawCountTimers();
-     if ((MenuCategory() == mcRecording) && viewmode != efullscreen)
-        DrawNumRecordingsInPath();
-//     }
+  if (initial) {
+     osd->DrawRectangle(xa00, yb00, xa02 - 1, yb01 - 1, frameColorBr);
+     if (yb02) // DISK
+        osd->DrawRectangle(xa00, yb02, xa02 - 1, yb03 - 1, frameColorBr);
+     if (yb04) // LOAD
+        osd->DrawRectangle(xa00, yb04, xa02 - 1, yb05 - 1, frameColorBr);
+     if (yb06) // RECORDINGS
+        osd->DrawRectangle(xa00, yb06, xa02 - 1, yb07 - 1, frameColorBr);
+     if (yb08) // TIMER
+        osd->DrawRectangle(xa00, yb08, xa02 - 1, yb081 - 1, frameColorBr);
+     if (yb082)
+        DrawRectangleOutline(osd, xa00, yb082, xa02 - 1, yb09 - 1, frameColorBr, frameColorBg, 15);
+     }
+  DrawDate();
+  DrawDisk();
+  DrawLoad();
+  DrawCountRecordings();
+  DrawCountTimers();
+  if ((MenuCategory() == mcRecording) && viewmode != efullscreen)
+     DrawNumRecordingsInPath();
 }
 
 void cLCARSNGDisplayMenu::DrawScrollbar(int Total, int Offset, int Shown, bool CanScrollUp, bool CanScrollDown)
@@ -1054,7 +1025,7 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      lastChannelName = Channel->Name();
      DrawSeen(0, 0);
      }
-  // The current programme:
+  // The current programm:
 #if APIVERSNUM > 20300
   LOCK_SCHEDULES_READ;
   if (const cSchedule *Schedule = Schedules->GetSchedule(Channel)) {
@@ -1119,7 +1090,7 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
   int Total = 0;
   if (Control->GetIndex(Current, Total))
      DrawSeen(Current, Total);
-  // The current programme:
+  // The current recording:
   if (const cRecording *Recording = Control->GetRecording()) {
      if (initial || Recording != lastRecording) {
         const cFont *font = cFont::GetFont(fontOsd);
@@ -1173,7 +1144,7 @@ void cLCARSNGDisplayMenu::DrawInfo(const cEvent *Event, bool WithTime)
 
 void cLCARSNGDisplayMenu::DrawSeen(int Current, int Total)
 {
-// Fortschrittsbalken
+// progress bar
 
   int x = (!(viewmode == escaledvideo) && (MenuCategory() == mcMain)) ? xm08 : xm03;
   int Seen = (Total > 0) ? min(x - xm02, int((x - xm02) * double(Current) / Total)) : 0;
@@ -1259,7 +1230,6 @@ void cLCARSNGDisplayMenu::SetButtons(const char *Red, const char *Green, const c
   if (viewmode == escaledvideo)
      x = xm05 - xa09;
   if (MenuCategory() == mcChannel) {
-//     x = xa09 - xm05;
      y = yb15 - yc04;
      }
   const cFont *font = cFont::GetFont(fontSml);
@@ -1319,8 +1289,7 @@ void cLCARSNGDisplayMenu::SetItem(const char *Text, int Index, bool Current, boo
   else {
      ColorFg = Theme.Color(Selectable ? clrMenuItemSelectable : clrMenuItemNonSelectable);
      ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : textColorBg;
-//     if (currentIndex == Index)
-        osd->DrawRectangle(xi00, y, xi03 - 1, y + lineHeight - 1, Theme.Color(clrBackground));
+     osd->DrawRectangle(xi00, y, xi03 - 1, y + lineHeight - 1, Theme.Color(clrBackground));
      }
   const cFont *font = cFont::GetFont(fontOsd);
   for (int i = 0; i < MaxTabs; i++) {

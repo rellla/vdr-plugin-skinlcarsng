@@ -31,20 +31,8 @@
 #include "displayreplay.h"
 #include "displaytracks.h"
 #include "displayvolume.h"
-#include <vdr/font.h>
-#include <vdr/menu.h>
-#include <vdr/osd.h>
-#if APIVERSNUM > 20101
-#include <vdr/positioner.h>
-#endif
-#include <vdr/themes.h>
-#include <vdr/thread.h>
-#include <vdr/tools.h>
-#include <vdr/videodir.h>
-#include <sys/statvfs.h>
-#include <string>
 
-//cTheme Theme;
+cTheme Theme;
 
 bool TwoColors = false;
 

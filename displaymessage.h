@@ -1,6 +1,3 @@
-#include "lcarsng.h"
-#include <vdr/font.h>
-
 // --- cLCARSNGDisplayMessage ----------------------------------------------
 
 class cLCARSNGDisplayMessage : public cSkinDisplayMessage {

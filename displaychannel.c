@@ -1,27 +1,6 @@
-/*
- * skinlcars.c: A VDR skin with Star Trek's "LCARS" layout
- *
- * See the main source file 'vdr.c' for copyright information and
- * how to reach the author.
- *
- * $Id: skinlcars.c 4.1 2015/09/01 10:07:07 kls Exp $
- */
-
+#include "config.h"
 #include "lcarsng.h"
 #include "displaychannel.h"
-#include "config.h"
-#include <vdr/font.h>
-#include <vdr/menu.h>
-#include <vdr/osd.h>
-#if APIVERSNUM > 20101
-#include <vdr/positioner.h>
-#endif
-#include <vdr/themes.h>
-#include <vdr/thread.h>
-#include <vdr/tools.h>
-#include <vdr/videodir.h>
-#include <sys/statvfs.h>
-#include <string>
 
 cBitmap cLCARSNGDisplayChannel::bmTeletext(teletext_xpm);
 cBitmap cLCARSNGDisplayChannel::bmRadio(radio_xpm);
@@ -227,14 +206,14 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
   if (initial || Seen != lastSeen) {
      int y0 = yc0A - (yc0A - yc0B) / 2 + Gap / 2;
      int y1 = yc0A - ShowSeenExtent;
-     // Fortschrittsbalken
+     // progress bar
      osd->DrawRectangle(xc06, y0, xc11 - 1, y1 - 1, Theme.Color(clrSeen));
      osd->DrawRectangle(xc06 + Seen + 2, y0 + 2, xc11 - 3, y1 - 3, frameColorBg);
-     // Restzeit anzeigen
+     // display time remaining
      cString time = ((Current / 60.0) > 0.1) ? cString::sprintf("-%d", max((int)ceil((Total - Current) / 60.0), 0)) : "";
      int w = cFont::GetFont(fontSml)->Width(time);
      osd->DrawRectangle(xc10 + Margin, yc03 + lineHeight + 2 * Margin + Gap / 2, xc10m - 1 - 2 * Margin, yc04 - Margin, Theme.Color(clrBackground)); //Backgroung time remaining
-     osd->DrawText(xc10 + Margin + (xc10m - xc10 - 1 - 2 * Margin - w), yc03 + lineHeight + 2 * Margin + Gap / 2, time, frameColorFg, textColorBg, cFont::GetFont(fontSml), w, lineHeight - 2 * Margin, taRight | taBorder); // Time remaining
+     osd->DrawText(xc10 + Margin + (xc10m - xc10 - 1 - 2 * Margin - w), yc03 + lineHeight + 2 * Margin + Gap / 2, time, Theme.Color(clrEventShortText), textColorBg, cFont::GetFont(fontSml), w, lineHeight - 2 * Margin, taRight | taBorder); // time remaining
      lastSeen = Seen;
      }
 }
@@ -346,11 +325,11 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
 #endif
               osd->DrawText(xc01, y + y1 + Margin, cString::sprintf("%d", Channel->Number()), frameColorFg, frameColorBg, cFont::GetFont(fontSml), xc02 - xc01 - Gap - 1, lineHeight - 3 * Margin, taRight | taBorder);
               osd->DrawText(xc04, y + y1, cString::sprintf("%s", *Date), timerColor, textColorBg, cFont::GetFont(fontSml), xc06a - xc04 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
-	      int w = cFont::GetFont(fontSml)->Width(Event->Title()) + 4; // Width from fontSml to short
+	      int w = cFont::GetFont(fontSml)->Width(Event->Title()) + 4; // fontSml width to short
               osd->DrawRectangle(xc06a, y + y1, xc06k - 1, y + y1 + lineHeight - Gap / 2, Theme.Color(clrBackground));
               osd->DrawText(xc06a, y + y1, cString::sprintf("%s", Event->Title()), timerColor, textColorBg, cFont::GetFont(fontSml), min(w, xc06k - xc06a - 1), lineHeight - Gap / 2, taLeft | taBorder);
               }
-           if (isRecording) // && Number)
+           if (isRecording)
               osd->DrawText(xc04, y + y1, cString::sprintf("Rec: #%s", *Number), Theme.Color(clrChannelSymbolRecBg), textColorBg, cFont::GetFont(fontSml), xc05 - xc04 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
            i++;
            }
@@ -378,7 +357,7 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
         x -= bmRadio.Width() + SymbolSpacing;
         osd->DrawBitmap(x, yc11 + (yc12 - yc11 - bmRadio.Height()) / 2, bmRadio, Theme.Color(clrChannelSymbolOn), frameColorBr);
         }
-     initial = true; // to have DrawBlinkingRec() refresh the Recording Icon
+     initial = true; // make shure DrawBlinkingRec() refreshs recording icon
      }
   cString ChNumber("");
   cString ChName("");
@@ -480,7 +459,7 @@ void cLCARSNGDisplayChannel::SetPositioner(const cPositioner *Positioner)
      }
   else {
      lastCurrentPosition = -1;
-     initial = true; // to have DrawSeen() refresh the progress bar
+     initial = true; // make shure DrawSeen() refreshs progress bar
      }
   return;
 }

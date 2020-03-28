@@ -1,20 +1,12 @@
-/*
- * skinflat.c: A plugin for the Video Disk Recorder
- *
- * See the README file for copyright information and how to reach the author.
- *
- * $Id$
- */
 #include <getopt.h>
 #include <vdr/plugin.h>
 #include "config.h"
 #include "setup.h"
+#include "lcarsng.h"
 
 #if defined(APIVERSNUM) && APIVERSNUM < 10734
 #error "VDR-1.7.34 API version or greater is required!"
 #endif
-
-#include "lcarsng.h"
 
 static const char *VERSION        = "0.2.7";
 static const char *DESCRIPTION    = "skin lcarsng";
@@ -53,26 +45,10 @@ cPluginLCARSNG::~cPluginLCARSNG() {
 }
 
 const char *cPluginLCARSNG::CommandLineHelp(void) {
-    return NULL; //"  -l <LOGOPATH>, --logopath=<LOGOPATH>       Set directory where Channel Logos are stored.\n"; 
+    return NULL; 
 }
 
 bool cPluginLCARSNG::ProcessArgs(int argc, char *argv[]) {
-    // Implement command line argument processing here if applicable.
-/*    static const struct option long_options[] = {
-        { "logopath", required_argument, NULL, 'l' },
-        { NULL }
-    };
-
-    int c;
-    while ((c = getopt_long(argc, argv, "l:", long_options, NULL)) != -1) {
-        switch (c) {
-            case 'l':
-//                Config.SetLogoPath(cString(optarg));
-                break;
-            default:
-                return false;
-        }
-    } */
     return true;
 }
 
@@ -114,7 +90,6 @@ cOsdObject *cPluginLCARSNG::MainMenuAction(void) {
 
 cMenuSetupPage *cPluginLCARSNG::SetupMenu(void) {
     return new cLCARSNGSetup();
-    return NULL;
 }
 
 bool cPluginLCARSNG::SetupParse(const char *Name, const char *Value) {

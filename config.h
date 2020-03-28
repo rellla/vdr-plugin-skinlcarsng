@@ -1,5 +1,3 @@
-#include <vdr/menu.h>
-
 enum viewMode {
     escaledvideo = 0,
     efullscreen,

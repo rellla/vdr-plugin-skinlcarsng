@@ -1,7 +1,6 @@
 #include "lcarsng.h"
 #include "config.h"
 #include "displayvolume.h"
-#include <vdr/font.h>
 
 // --- cLCARSNGDisplayVolume -----------------------------------------------
 

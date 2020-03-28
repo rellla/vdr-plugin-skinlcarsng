@@ -1,7 +1,3 @@
-/*
- * See the README file for copyright information and how to reach the author.
- */
-
 #include <vdr/plugin.h>
 #include "config.h"
 
@@ -51,7 +47,7 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "ChannelMenue"))    mcChannelScaled    = atoi(Value);
   else if (!strcasecmp(Name, "TimerMenue"))      mcTimerScaled      = atoi(Value);
   else if (!strcasecmp(Name, "RecordingMenue"))  mcRecordingScaled  = atoi(Value);
-//  else if (!strcasecmp(Name, "PluginMenue"))     mcPluginScaled     = atoi(Value);
+  else if (!strcasecmp(Name, "PluginMenue"))     mcPluginScaled     = atoi(Value);
   else if (!strcasecmp(Name, "SetupMenue"))      mcSetupScaled      = atoi(Value);
   else if (!strcasecmp(Name, "CommandMenue"))    mcCommandScaled    = atoi(Value);
   else if (!strcasecmp(Name, "EventMenue"))      mcEventScaled      = atoi(Value);

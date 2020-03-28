@@ -1,7 +1,6 @@
+#include "config.h"
 #include "lcarsng.h"
 #include "displaymessage.h"
-#include "config.h"
-#include <vdr/font.h>
 
 // --- cLCARSNGDisplayMessage ----------------------------------------------
 

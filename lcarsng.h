@@ -1,12 +1,3 @@
-/*
- * skinlcars.h: A VDR skin with Star Trek's "LCARS" layout
- *
- * See the main source file 'vdr.c' for copyright information and
- * how to reach the author.
- *
- * $Id: skinlcars.h 3.0 2012/04/15 13:17:35 kls Exp $
- */
-
 #ifndef __SKINLCARS_H
 #define __SKINLCARS_H
 
@@ -57,7 +48,6 @@
 #include "symbols/volume.xpm"
 
 #define Gap            (Setup.FontOsdSize / 5 & ~1) // must be even
-//#define Margin         (Gap / 2)
 #define TextFrame      (Setup.FontOsdSize / TEXT_ALIGN_BORDER)
 #define TextSpacing    (2 * TextFrame)
 #define SymbolSpacing  TextSpacing
@@ -68,8 +58,7 @@
 #define DISKUSAGEALERTLIMIT 95 // percent of disk usage above which the display goes into alert mode
 #define SIGNALDISPLAYDELTA   2 // seconds between subsequent device signal displays
 
-//extern cTheme Theme;
-cTheme Theme;
+extern cTheme Theme;
 
 // Color domains:
 

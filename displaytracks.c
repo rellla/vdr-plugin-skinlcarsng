@@ -1,7 +1,6 @@
 #include "lcarsng.h"
 #include "displaytracks.h"
 #include "config.h"
-#include <vdr/font.h>
 
 // --- cLCARSNGDisplayTracks -----------------------------------------------
 
