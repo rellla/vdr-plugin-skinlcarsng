@@ -308,7 +308,7 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
         DrawMainFrameChannel();
         DrawMainBracket();
         }
-     else if ((MenuCategory ==  mcMain) || (MenuCategory == mcSetup)) {
+     else if ((MenuCategory ==  mcMain) || ((MenuCategory == mcSetup) && viewmode != efullscreen)) {
         if (viewmode != escaledvideo)
            SetCoordinateY(yt08);
         if (viewmode != efullscreen || (MenuCategory == mcMain)) {
