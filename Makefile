@@ -18,24 +18,23 @@ VERSION = $(shell grep 'static const char \*VERSION *=' $(PLUGIN).c | awk '{ pri
 ### The directory environment:
 
 # Use package data if installed...otherwise assume we're under the VDR source directory:
-PKGCFG = $(if $(VDRDIR),$(shell pkg-config --variable=$(1) $(VDRDIR)/vdr.pc),$(shell pkg-config --variable=$(1) vdr || pkg-config --variable=$(1) ../../../vdr.pc))
+PKGCFG = $(if $(VDRDIR),$(shell pkg-config --variable=$(1) $(VDRDIR)/vdr.pc),$(shell PKG_CONFIG_PATH="$$PKG_CONFIG_PATH:../../.." pkg-config --variable=$(1) vdr))
 LIBDIR = $(call PKGCFG,libdir)
 LOCDIR = $(call PKGCFG,locdir)
-PLGCFG  = $(call PKGCFG,plgcfg)
+PLGCFG = $(call PKGCFG,plgcfg)
 VDRCONFDIR = $(call PKGCFG,configdir)
-PLGRESDIR = $(call PKGCFG,resdir)/plugins/$(PLUGIN)
 TMPDIR ?= /tmp
 
 ### The compiler options:
 export CFLAGS   = $(call PKGCFG,cflags)
 export CXXFLAGS = $(call PKGCFG,cxxflags)
 
+### The version number of VDR's plugin API:
+APIVERSION = $(call PKGCFG,apiversion)
+
 ### Allow user defined options to overwrite defaults:
 
 -include $(PLGCFG)
-
-### The version number of VDR's plugin API:
-APIVERSION = $(call PKGCFG,apiversion)
 
 ### The name of the distribution archive:
 
@@ -71,7 +70,7 @@ all: $(SOFILE) i18n
 MAKEDEP = $(CXX) -MM -MG
 DEPFILE = .dependencies
 $(DEPFILE): Makefile
-	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+	@$(MAKEDEP) $(CXXFLAGS) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
 
 -include $(DEPFILE)
 
@@ -119,11 +118,7 @@ install-themes:
 	mkdir -p $(DESTDIR)$(VDRCONFDIR)/themes
 	cp themes/* $(DESTDIR)$(VDRCONFDIR)/themes
 
-install-icons:
-	mkdir -p $(DESTDIR)$(PLGRESDIR)/icons
-	cp -r icons/* $(DESTDIR)$(PLGRESDIR)/icons
-	
-install: install-lib install-i18n install-themes install-icons
+install: install-lib install-i18n install-themes
 
 dist: $(I18Npo) clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
