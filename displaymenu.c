@@ -1173,7 +1173,6 @@ int cLCARSNGDisplayMenu::MaxItems(void)
 {
   switch (MenuCategory()) {
      case mcMain:
-     case mcSetup:
         return (ym04 - ym03) / lineHeight;
         break;
      case mcChannel:
