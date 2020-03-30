@@ -9,11 +9,12 @@ cLCARSNGSetup::cLCARSNGSetup() {
   tmpConfig = Config;
 
   int currentItem = Current();
-  SetCols(45);
+  SetCols(35);
 
   menuView[0] = tr("scaled video");
-  menuView[1] = tr("fullscreen");
-  menuView[2] = tr("splitscreen");
+  menuView[1] = tr("full screen");
+  menuView[2] = tr("split screen");
+  menuView[3] = tr("thin screen");
 
   Add(new cMenuEditIntItem(tr("Margin"),          &tmpConfig.Margin, 0, 5));
 
@@ -22,7 +23,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
   Add(new cMenuEditStraItem(tr("main menue"),      &tmpConfig.mcMainScaled, 2, menuView));
   Add(new cMenuEditStraItem(tr("schedule menue"),  &tmpConfig.mcScheduleScaled, 3, menuView));
   Add(new cMenuEditStraItem(tr("event menue"),     &tmpConfig.mcEventScaled, 3, menuView));
-  Add(new cMenuEditStraItem(tr("channel menue"),   &tmpConfig.mcChannelScaled, 3, menuView));
+  Add(new cMenuEditStraItem(tr("channel menue"),   &tmpConfig.mcChannelScaled, 4, menuView));
   Add(new cMenuEditStraItem(tr("timer menue"),     &tmpConfig.mcTimerScaled, 3, menuView));
   Add(new cMenuEditStraItem(tr("recording menue"), &tmpConfig.mcRecordingScaled, 3, menuView));
   Add(new cMenuEditStraItem(tr("setup menue"),     &tmpConfig.mcSetupScaled, 3, menuView));

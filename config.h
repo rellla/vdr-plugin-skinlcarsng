@@ -1,7 +1,8 @@
 enum viewMode {
     escaledvideo = 0,
     efullscreen,
-    esplitscreen
+    esplitscreen,
+    esmalscreen
 };
 
 class cLCARSNGConfig {

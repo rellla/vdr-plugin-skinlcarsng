@@ -36,6 +36,7 @@ private:
   cVector<int> lastSignalQuality;
   bool initial;
   int viewmode;
+  int zoom;
   enum eCurrentMode { cmUnknown, cmLive, cmPlay };
   eCurrentMode lastMode;
   cString lastDate;
