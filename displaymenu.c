@@ -312,7 +312,8 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
         if (viewmode != escaledvideo)
            SetCoordinateY(yt08);
         if (viewmode != efullscreen || (MenuCategory == mcMain)) {
-           osd->DrawRectangle(xs00, 0, xa09, yc06 - 1, clrTransparent);
+           if (viewmode == escaledvideo)
+              osd->DrawRectangle(xs00, 0, xa09, yc06 - 1, clrTransparent);
            yi00 = ym03;
            yi01 = ym04;
            xi00 = xm00;
