@@ -644,8 +644,8 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
         }
      }
   if (MenuCategory() == mcSetup) {
-     DrawRectangleOutline(osd, xm02, ys00, xm03 - 1, ys01 - 1, frameColorBr, frameColorBg, 15);
-     osd->DrawText(xm02 + Margin, ys00 + Margin, tr("Setup"), frameColorFg, frameColorBg, font, xm03 - xm02 - 2 * Margin, lineHeight - Margin, taBottom | taLeft | taBorder);
+     DrawRectangleOutline(osd, xm02, ys00, xm08 - 1, ys01 - 1, frameColorBr, frameColorBg, 15);
+     osd->DrawText(xm02 + Margin, ys00 + Margin, tr("Setup"), frameColorFg, frameColorBg, font, xm08 - xm02 - 2 * Margin, lineHeight - Margin, taBottom | taLeft | taBorder);
      }
 //  if (MenuCategory() == mcCommand)
 //     osd->DrawText(xm02, ys00, tr("Commands"), Theme.Color(clrMenuFrameFg), frameColor, font, xm04 - xm02 - Gap, lineHeight, taBottom | taLeft | taBorder);
