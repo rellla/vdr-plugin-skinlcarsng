@@ -500,8 +500,7 @@ void cLCARSNGDisplayChannel::Flush(void)
         DrawSeen(Current, Total);
         DrawTrack();
         DrawEventRec(present, following);
-        if (initial)
-           DrawBlinkingRec();
+        DrawBlinkingRec();
         }
      }
   osd->Flush();

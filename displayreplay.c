@@ -305,8 +305,7 @@ void cLCARSNGDisplayReplay::Flush(void)
   if (!modeOnly) {
      DrawDate();
      DrawTrack();
-     if (initial)
-        DrawBlinkingRec();
+     DrawBlinkingRec();
      }
   osd->Flush();
   initial = false;
