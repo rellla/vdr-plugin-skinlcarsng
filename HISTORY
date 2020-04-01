@@ -1,6 +1,12 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
 
+Version 0.3.2
+- Fixed display with large font size
+- Fixed display background
+- Fixed blinking rec
+- Add .gitignore
+
 Version 0.3.1
 - Bugfix
 
