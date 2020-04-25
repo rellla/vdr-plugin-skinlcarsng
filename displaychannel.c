@@ -44,7 +44,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   xc00m = xc00 + lineHeight / 2;
   xc01 = xc00 + 2 * lineHeight;
   xc02 = xc00 + d;
-  xc02m = xc02 + lineHeight / 2;
+  xc02m = xc02 + lineHeight;
   xc03 = xc02 + lineHeight;
   xc04 = xc02 + d / 4;
   xc05 = xc02 + d;
@@ -67,7 +67,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
 
   yc0B = 0;
   yc0A = yc0B + max(lineHeight, iconHeight) + 2 * Margin;
-  yc00 = yc0A + lineHeight / 2;
+  yc00 = yc0A + lineHeight;
   yc00m = yc0B + 2 * lineHeight;
   yc01 = yc00 + lineHeight + Margin;
   yc02 = yc01 + lineHeight + Margin;
@@ -79,7 +79,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   yc07 = yc06 + Gap;
   yc12 = yc07 + 2.5 * lineHeight + Gap / 2 + 2 * Margin;
   yc11 = yc12 - yc0A;
-  yc10 = yc11 - lineHeight / 2;
+  yc10 = yc11 - lineHeight;
   yc09 = yc11 - (d / 4 - lineHeight / 2);
   yc08 = yc12 - (d / 2 - lineHeight / 2);
 
