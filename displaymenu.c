@@ -1493,6 +1493,9 @@ void cLCARSNGDisplayMenu::Flush(void)
            }
      default:
         if ((viewmode != efullscreen && viewmode != esmalscreen) || (MenuCategory() == mcMain)) {
+#if APIVERSNUM > 20402
+           cMutexLock ControlMutexLock;
+#endif
            if (!Device->Replaying() || Device->Transferring()) {
 #if APIVERSNUM > 20300
               LOCK_CHANNELS_READ;
@@ -1502,7 +1505,11 @@ void cLCARSNGDisplayMenu::Flush(void)
 #endif
               DrawLive(Channel);
               }
+#if APIVERSNUM > 20402
+           else if (cControl *Control = cControl::Control(ControlMutexLock, true))
+#else
            else if (cControl *Control = cControl::Control(true))
+#endif
               DrawPlay(Control);
            }
      }
