@@ -193,6 +193,7 @@ int FreeMB(const char *Base, bool Initial)
 {
   bool Directory = false;
   char *currentBase = NULL;
+  cStateKey recordingsStateKey;
   if (Base) {
      size_t Length = strlen(Base);
      const char *p = strchr(Base, ' ');
@@ -211,7 +212,6 @@ int FreeMB(const char *Base, bool Initial)
      std::string path = cVideoDirectory::Name();
      path += "/";
      char *tmpbase = Directory ? ExchangeChars(strdup(currentBase), true) : NULL;
-//     dsyslog ("%s %s %d %s\n", __FILE__, __func__,  __LINE__, (const char *)tmpbase);
      if (tmpbase)
         path += tmpbase;
      struct stat statdir;
@@ -221,17 +221,19 @@ int FreeMB(const char *Base, bool Initial)
            struct statvfs fsstat;
            if (!statvfs(path.c_str(), &fsstat)) {
               freediskspace = int((double)fsstat.f_bavail / (double)(1024.0 * 1024.0 / fsstat.f_bsize));
-              LOCK_DELETEDRECORDINGS_READ;
-              for (const cRecording *rec = DeletedRecordings->First(); rec; rec = DeletedRecordings->Next(rec)) {
-                 if (!stat(rec->FileName(), &statdir)) {
-                    if (statdir.st_dev == fsid) {
-                       int ds = DirSizeMB(rec->FileName());
-                       if (ds > 0)
-                          freediskspace += ds;
-                       else
-                          esyslog("DirSizeMB(%s) failed!", rec->FileName());
+              if (const cRecordings *DeletedRecordings = cRecordings::GetDeletedRecordingsRead(recordingsStateKey)) {
+                 for (const cRecording *rec = DeletedRecordings->First(); rec; rec = DeletedRecordings->Next(rec)) {
+                    if (!stat(rec->FileName(), &statdir)) {
+                       if (statdir.st_dev == fsid) {
+                          int ds = DirSizeMB(rec->FileName());
+                          if (ds > 0)
+                             freediskspace += ds;
+                          else
+                             esyslog("DirSizeMB(%s) failed!", rec->FileName());
+                          }
                        }
                     }
+                 recordingsStateKey.Remove();
                  }
               }
            else {
