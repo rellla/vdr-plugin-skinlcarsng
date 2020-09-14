@@ -724,15 +724,15 @@ void cLCARSNGDisplayMenu::DrawStatusElbows(void)
 void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
 {
   if (initial) {
-     osd->DrawRectangle(xa00, yb00, xa02 - 1, yb01 - 1, frameColorBr);
+     DrawRectangleOutline(osd, xa00, yb00, xa02 - 1, yb01 - 1, frameColorBr, frameColorBg, 15);
      if (yb02) // DISK
-        osd->DrawRectangle(xa00, yb02, xa02 - 1, yb03 - 1, frameColorBr);
+        DrawRectangleOutline(osd, xa00, yb02, xa02 - 1, yb03 - 1, frameColorBr, frameColorBg, 15);
      if (yb04) // LOAD
-        osd->DrawRectangle(xa00, yb04, xa02 - 1, yb05 - 1, frameColorBr);
+        DrawRectangleOutline(osd, xa00, yb04, xa02 - 1, yb05 - 1, frameColorBr, frameColorBg, 15);
      if (yb06) // RECORDINGS
-        osd->DrawRectangle(xa00, yb06, xa02 - 1, yb07 - 1, frameColorBr);
+        DrawRectangleOutline(osd, xa00, yb06, xa02 - 1, yb07 - 1, frameColorBr, frameColorBg, 15);
      if (yb08) // TIMER
-        osd->DrawRectangle(xa00, yb08, xa02 - 1, yb081 - 1, frameColorBr);
+        DrawRectangleOutline(osd, xa00, yb08, xa02 - 1, yb081 - 1, frameColorBr, frameColorBg, 15);
      if (yb082)
         DrawRectangleOutline(osd, xa00, yb082, xa02 - 1, yb09 - 1, frameColorBr, frameColorBg, 15);
      }
