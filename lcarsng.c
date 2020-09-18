@@ -206,6 +206,8 @@ int FreeMB(const char *Base, bool Initial)
      Directory = (strcmp(currentBase, cString::sprintf("%s", trVDR("Recordings"))) && strcmp(currentBase, cString::sprintf("%s", trVDR("Deleted Recordings")))) ? true : false;
 //     free(p);
      }
+  if (!Directory)
+     return cVideoDiskUsage::FreeMinutes();
   if (Initial || lastFreeMB <= 0 || (time(NULL) - lastDiskSpaceCheck) > DISKSPACECHEK) {
      dev_t fsid = 0;
      int freediskspace = 0;
@@ -254,7 +256,11 @@ int FreeMB(const char *Base, bool Initial)
      lastDiskSpaceCheck = time(NULL);
      }
   free(currentBase);
-  return lastFreeMB;
+  if (lastFreeMB == 0)
+     return cVideoDiskUsage::FreeMinutes();
+  LOCK_RECORDINGS_READ;
+  double MBperMinute = Recordings->MBperMinute();
+  return int(double(lastFreeMB) / (MBperMinute > 0 ? MBperMinute : MB_PER_MINUTE));
 }
 
 // --- cLCARSNG ------------------------------------------------------------

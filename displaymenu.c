@@ -29,6 +29,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   lastLiveIndicatorY = -1;
   lastLiveIndicatorTransferring = false;
   currentTitle = NULL;
+  lastcurrentTitle = NULL;
   lastDiskUsageState = -1;
   lastDiskAlert = false;
   lastSystemLoad = -1;
@@ -558,25 +559,20 @@ void cLCARSNGDisplayMenu::DrawDate(void)
 void cLCARSNGDisplayMenu::DrawDisk(void)
 {
   if (yb02) {
-     if (cVideoDiskUsage::HasChanged(lastDiskUsageState) || initial) { // must call HasChanged() first, or it shows an outdated value in the 'initial' case!
+     if (cVideoDiskUsage::HasChanged(lastDiskUsageState) || initial || currentTitle != lastcurrentTitle) { // must call HasChanged() first, or it shows an outdated value in the 'initial' case!
         const cFont *font = cFont::GetFont(fontOsd);
         int DiskUsage = cVideoDiskUsage::UsedPercent();
         bool DiskAlert = DiskUsage > DISKUSAGEALERTLIMIT;
         tColor ColorFg = DiskAlert ? Theme.Color(clrAlertFg) : frameColorFg;
         tColor ColorBg = DiskAlert ? Theme.Color(clrAlertBg) : frameColorBg;
-        int freemb = FreeMB(currentTitle, initial);
-        int minutes = 0;
+        int minutes = FreeMB(currentTitle, (currentTitle != lastcurrentTitle) ? true : false);
+        lastcurrentTitle = currentTitle;
         if (initial || DiskAlert != lastDiskAlert) {
            DrawRectangleOutline(osd, xa00, yb02, xa02 - 1, yb03 - 1, frameColorBr, frameColorBg, 15);
            osd->DrawText(xa00 + Margin, yb02 + Margin, tr("DISK"), ColorFg, ColorBg, tinyFont, xa02 - xa00 - 2 * Margin, yb03 - yb02 - 2 * Margin, taTop | taLeft | taBorder);
            }
-        {
-        LOCK_RECORDINGS_READ;
-        double MBperMinute = Recordings->MBperMinute();
-        minutes = int(double(freemb) / (MBperMinute > 0 ? MBperMinute : MB_PER_MINUTE));
-        }
         osd->DrawText(xa01, yb02 + Margin, cString::sprintf("%02d%s", DiskUsage, "%"), ColorFg, ColorBg, font, xa02 - xa01 - Margin, lineHeight, taBottom | taRight | taBorder);
-        osd->DrawText(xa00 + Margin, yb03 - lineHeight - Margin, freemb ? cString::sprintf("%02d:%02d", minutes / 60, minutes % 60) : cString::sprintf("%02d:%02d", cVideoDiskUsage::FreeMinutes() / 60, cVideoDiskUsage::FreeMinutes() % 60), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
+        osd->DrawText(xa00 + Margin, yb03 - lineHeight - Margin, cString::sprintf("%02d:%02d", minutes / 60, minutes % 60), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
         lastDiskAlert = DiskAlert;
         }
      }
@@ -1260,7 +1256,6 @@ void cLCARSNGDisplayMenu::Clear(void)
 void cLCARSNGDisplayMenu::SetTitle(const char *Title)
 {
   const cFont *font = cFont::GetFont(fontOsd);
-  initial = true;
   currentTitle = NULL;
   switch (MenuCategory()) {
      case mcMain:

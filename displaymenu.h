@@ -41,6 +41,7 @@ private:
   eCurrentMode lastMode;
   cString lastDate;
   const char *currentTitle;
+  const char *lastcurrentTitle;
   int lastDiskUsageState;
   bool lastDiskAlert;
   double lastSystemLoad;
