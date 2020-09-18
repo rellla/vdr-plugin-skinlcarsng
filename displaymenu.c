@@ -32,6 +32,9 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   lastDiskUsageState = -1;
   lastDiskAlert = false;
   lastSystemLoad = -1;
+  lastCountRecordings = -1;
+  lastNumRecordingsInPath = -1;
+  lastCountTimers = -1;
   const cFont *font = cFont::GetFont(fontOsd);
   lineHeight = font->Height();
   tinyFont = CreateTinyFont(lineHeight);
@@ -538,6 +541,8 @@ void cLCARSNGDisplayMenu::DrawMenuFrame(void)
 void cLCARSNGDisplayMenu::DrawDate(void)
 {
   cString s = DayDateTime();
+  if (initial)
+     DrawRectangleOutline(osd, xa00, yb00, xa02 - 1, yb01 - 1, frameColorBr, frameColorBg, 15);
   if (initial || !*lastDate || strcmp(s, lastDate)) {
      const cFont *font = cFont::GetFont(fontOsd);
      tColor ColorFg = Theme.Color(clrDateFg);
@@ -557,17 +562,19 @@ void cLCARSNGDisplayMenu::DrawDisk(void)
         const cFont *font = cFont::GetFont(fontOsd);
         int DiskUsage = cVideoDiskUsage::UsedPercent();
         bool DiskAlert = DiskUsage > DISKUSAGEALERTLIMIT;
+        tColor ColorFg = DiskAlert ? Theme.Color(clrAlertFg) : frameColorFg;
+        tColor ColorBg = DiskAlert ? Theme.Color(clrAlertBg) : frameColorBg;
         int freemb = FreeMB(currentTitle, initial);
         int minutes = 0;
+        if (initial || DiskAlert != lastDiskAlert) {
+           DrawRectangleOutline(osd, xa00, yb02, xa02 - 1, yb03 - 1, frameColorBr, frameColorBg, 15);
+           osd->DrawText(xa00 + Margin, yb02 + Margin, tr("DISK"), ColorFg, ColorBg, tinyFont, xa02 - xa00 - 2 * Margin, yb03 - yb02 - 2 * Margin, taTop | taLeft | taBorder);
+           }
         {
         LOCK_RECORDINGS_READ;
         double MBperMinute = Recordings->MBperMinute();
         minutes = int(double(freemb) / (MBperMinute > 0 ? MBperMinute : MB_PER_MINUTE));
         }
-        tColor ColorFg = DiskAlert ? Theme.Color(clrAlertFg) : frameColorFg;
-        tColor ColorBg = DiskAlert ? Theme.Color(clrAlertBg) : frameColorBg;
-        if (initial || DiskAlert != lastDiskAlert)
-           osd->DrawText(xa00 + Margin, yb02 + Margin, tr("DISK"), ColorFg, ColorBg, tinyFont, xa02 - xa00 - 2 * Margin, yb03 - yb02 - 2 * Margin, taTop | taLeft | taBorder);
         osd->DrawText(xa01, yb02 + Margin, cString::sprintf("%02d%s", DiskUsage, "%"), ColorFg, ColorBg, font, xa02 - xa01 - Margin, lineHeight, taBottom | taRight | taBorder);
         osd->DrawText(xa00 + Margin, yb03 - lineHeight - Margin, freemb ? cString::sprintf("%02d:%02d", minutes / 60, minutes % 60) : cString::sprintf("%02d:%02d", cVideoDiskUsage::FreeMinutes() / 60, cVideoDiskUsage::FreeMinutes() % 60), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
         lastDiskAlert = DiskAlert;
@@ -580,8 +587,10 @@ void cLCARSNGDisplayMenu::DrawLoad(void)
   if (yb04) {
      tColor ColorFg = frameColorFg;
      tColor ColorBg = frameColorBg;
-     if (initial)
+     if (initial) {
+        DrawRectangleOutline(osd, xa00, yb04, xa02 - 1, yb05 - 1, frameColorBr, frameColorBg, 15);
         osd->DrawText(xa00 + Margin, yb04 + Margin, tr("LOAD"), ColorFg, ColorBg, tinyFont, xa02 - xa00 - 2 * Margin, yb05 - yb04 - 2 * Margin, taTop | taLeft | taBorder);
+        }
      double SystemLoad;
      if (getloadavg(&SystemLoad, 1) > 0) {
         if (initial || SystemLoad != lastSystemLoad) {
@@ -603,7 +612,10 @@ void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
   NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
   }
   if (NumRecordingsInPath > 0)
-     osd->DrawText(xm04 + Margin, yc06 + Margin, cString::sprintf("%i", NumRecordingsInPath), frameColorFg, frameColorBg, font, xm08 - xm04 - 1 - 2 * Margin, lineHeight - Margin, taBottom | taRight | taBorder);
+     if (initial || NumRecordingsInPath != lastNumRecordingsInPath) {
+        osd->DrawText(xm04 + Margin, yc06 + Margin, cString::sprintf("%i", NumRecordingsInPath), frameColorFg, frameColorBg, font, xm08 - xm04 - 1 - 2 * Margin, lineHeight - Margin, taBottom | taRight | taBorder);
+        lastNumRecordingsInPath = NumRecordingsInPath;
+        }
 #endif
 #endif
 }
@@ -615,14 +627,20 @@ void cLCARSNGDisplayMenu::DrawCountRecordings(void)
      tColor ColorFg = frameColorFg;
      tColor ColorBg = frameColorBg;
      int CountRecordings = 0;
+     if (initial) {
+        DrawRectangleOutline(osd, xa00, yb06, xa02 - 1, yb07 - 1, frameColorBr, frameColorBg, 15);
+        osd->DrawText(xa00 + Margin, yb06 + Margin, tr("RECORDINGS"), ColorFg, ColorBg, tinyFont, xa02 - xa00 - 2 * Margin, yb07 - yb06 - 2 * Margin, taTop | taLeft | taBorder);
+        }
      {
 #if APIVERSNUM > 20300
      LOCK_RECORDINGS_READ;
 #endif
      CountRecordings = Recordings->Count();
      }
-     osd->DrawText(xa00 + Margin, yb06 + Margin, tr("RECORDINGS"), ColorFg, ColorBg, tinyFont, xa02 - xa00 - 2 * Margin, yb07 - yb06 - 2 * Margin, taTop | taLeft | taBorder);
-     osd->DrawText(xa00 + Margin, yb07 - lineHeight - Margin, cString::sprintf("%i", CountRecordings), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
+     if (initial || CountRecordings != lastCountRecordings) {
+        osd->DrawText(xa00 + Margin, yb07 - lineHeight - Margin, cString::sprintf("%i", CountRecordings), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
+        lastCountRecordings = CountRecordings;
+        }
      }
 }
 
@@ -633,6 +651,10 @@ void cLCARSNGDisplayMenu::DrawCountTimers(void)
      tColor ColorFg = frameColorFg;
      tColor ColorBg = frameColorBg;
      int CountTimers = 0;
+     if (initial) {
+        DrawRectangleOutline(osd, xa00, yb08, xa02 - 1, yb081 - 1, frameColorBr, frameColorBg, 15);
+        osd->DrawText(xa00 + Margin, yb08 + Margin, tr("TIMER"), ColorFg, ColorBg, tinyFont, xa02 - xa00 - 2 * Margin, yb081 - yb08 - 2 * Margin, taTop | taLeft | taBorder);
+        }
 #if APIVERSNUM > 20300
      LOCK_TIMERS_READ;
      for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
@@ -642,8 +664,10 @@ void cLCARSNGDisplayMenu::DrawCountTimers(void)
         if (Timer->HasFlags(tfActive))
            CountTimers++;
         }
-     osd->DrawText(xa00 + Margin, yb08 + Margin, tr("TIMER"), ColorFg, ColorBg, tinyFont, xa02 - xa00 - 2 * Margin, yb081 - yb08 - 2 * Margin, taTop | taLeft | taBorder);
-     osd->DrawText(xa00 + Margin, yb081 - lineHeight - Margin, itoa(CountTimers), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
+     if (initial || CountTimers != lastCountTimers) {
+        osd->DrawText(xa00 + Margin, yb081 - lineHeight - Margin, itoa(CountTimers), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
+        lastCountTimers = CountTimers;
+        }
      }
 }
 
@@ -724,15 +748,6 @@ void cLCARSNGDisplayMenu::DrawStatusElbows(void)
 void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
 {
   if (initial) {
-     DrawRectangleOutline(osd, xa00, yb00, xa02 - 1, yb01 - 1, frameColorBr, frameColorBg, 15);
-     if (yb02) // DISK
-        DrawRectangleOutline(osd, xa00, yb02, xa02 - 1, yb03 - 1, frameColorBr, frameColorBg, 15);
-     if (yb04) // LOAD
-        DrawRectangleOutline(osd, xa00, yb04, xa02 - 1, yb05 - 1, frameColorBr, frameColorBg, 15);
-     if (yb06) // RECORDINGS
-        DrawRectangleOutline(osd, xa00, yb06, xa02 - 1, yb07 - 1, frameColorBr, frameColorBg, 15);
-     if (yb08) // TIMER
-        DrawRectangleOutline(osd, xa00, yb08, xa02 - 1, yb081 - 1, frameColorBr, frameColorBg, 15);
      if (yb082)
         DrawRectangleOutline(osd, xa00, yb082, xa02 - 1, yb09 - 1, frameColorBr, frameColorBg, 15);
      }

@@ -44,6 +44,9 @@ private:
   int lastDiskUsageState;
   bool lastDiskAlert;
   double lastSystemLoad;
+  int lastCountRecordings;
+  int lastNumRecordingsInPath;
+  int lastCountTimers;
 #if APIVERSNUM > 20300
   cStateKey timersStateKey;
 #else
