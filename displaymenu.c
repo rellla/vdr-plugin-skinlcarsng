@@ -1057,7 +1057,6 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      lastMode = cmLive;
      }
   int w = tallFont->Width(tr("LIVE")) + 2 * Gap;
-  int x1 = (viewmode == escaledvideo) ? xd07 : xd07 - w - lineHeight;
   tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : textColorBg;
   if (initial) {
      DrawMainFrameUpper(channelFrameColorBr, Theme.Color(clrChannelFrameBg));
@@ -1069,6 +1068,7 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
   if (!Channel)
      return;
   if (initial || Channel != lastChannel || strcmp(Channel->Name(), lastChannelName)) {
+     int x1 = (viewmode == escaledvideo) ? xd07 : xd07 - w - lineHeight;
      int y1 = zoom ? yt00 : yt04;
      int y2 = zoom ? yt07 : yt09;
      osd->DrawText(xa00 + Margin, y1 + Margin, itoa(Channel->Number()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), tallFont, xa02 - xa00 - 2 * Margin, 2 * lineHeight, taTop | taRight | taBorder);
@@ -1131,7 +1131,6 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
      lastMode = cmPlay;
      }
   int w = tallFont->Width(tr("PLAY")) + 2 * Gap;
-  int x1 = (viewmode == escaledvideo) ? xd07 : xd07 - w - lineHeight;
   tColor ColorBg = (viewmode == escaledvideo) ? Theme.Color(clrBackground) : textColorBg;
   if (initial) {
      DrawMainFrameUpper(replayFrameColorBr, Theme.Color(clrReplayFrameBg));
@@ -1146,6 +1145,7 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
   if (Control->GetIndex(Current, Total))
      DrawSeen(Current, Total);
   // The current recording:
+  int x1 = (viewmode == escaledvideo) ? xd07 : xd07 - w - lineHeight;
   int y1 = zoom ? yt00 : yt04;
   int y2 = zoom ? yt04 : yt07;
   if (const cRecording *Recording = Control->GetRecording()) {
