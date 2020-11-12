@@ -1,6 +1,15 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
 
+Version 0.3.3
+- VDR-2.4.2 adjustments
+- Corrected array size
+- Substitute LOCK_DELETEDRECORDINGS_READ in FreeMB
+- Correct display some rectangle in cLCARSNGDisplayMenu::DrawFrameDisplay
+- Optimizing displaymenu to avoid flickering
+- Refactor DrawDisk()
+- Prevent "Rec:" from flickering in displaychannel.c
+
 Version 0.3.2
 - Fixed display with large font size
 - Fixed display background
