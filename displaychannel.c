@@ -326,12 +326,12 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
 #endif
               osd->DrawText(xc01, y + y1 + Margin, cString::sprintf("%d", Channel->Number()), frameColorFg, frameColorBg, cFont::GetFont(fontSml), xc02 - xc01 - Gap - 1, lineHeight - 3 * Margin, taRight | taBorder);
               osd->DrawText(xc04, y + y1, cString::sprintf("%s", *Date), timerColor, textColorBg, cFont::GetFont(fontSml), x1 - xc04 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
+	      if (isRecording)
+                 osd->DrawText(xc04, y + y1, cString::sprintf("Rec: #%s", *Number), Theme.Color(clrChannelSymbolRecBg), textColorBg, cFont::GetFont(fontSml), x1 - xc04  - x2 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
               int w = cFont::GetFont(fontSml)->Width(Event->Title()) + 4; // fontSml width to short
               osd->DrawRectangle(x1, y + y1, xc06k - 1, y + y1 + lineHeight - Gap / 2, Theme.Color(clrBackground));
               osd->DrawText(x1, y + y1, cString::sprintf("%s", Event->Title()), timerColor, textColorBg, cFont::GetFont(fontSml), min(w, xc06k - x1 - 1), lineHeight - Gap / 2, taLeft | taBorder);
               }
-           if (isRecording)
-              osd->DrawText(xc04, y + y1, cString::sprintf("Rec: #%s", *Number), Theme.Color(clrChannelSymbolRecBg), textColorBg, cFont::GetFont(fontSml), x1 - xc04  - x2 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
            i++;
            }
         }
