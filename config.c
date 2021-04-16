@@ -6,6 +6,14 @@ cLCARSNGConfig Config;
 cLCARSNGConfig::cLCARSNGConfig(void)
 {
   Margin = 2;
+  displInfoMenuEPG = 0;
+  displInfoMenuTimer = 0;
+  displInfoMenuRec = 0;
+  waitTimeFadein = 1000;
+  waitTimeScroll = 1000;
+  fadeinTime = 300;
+  scrollPixel = 2;
+  framesPerSecond = 25;
   mcUndefinedScaled = efullscreen;
   mcUnknownScaled = efullscreen;
   mcMainScaled = efullscreen;
@@ -42,6 +50,14 @@ cLCARSNGConfig::cLCARSNGConfig(void)
 bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
 {
   if      (!strcasecmp(Name, "Margin"))          Margin             = atoi(Value);
+  else if (!strcasecmp(Name, "DisplInfoMenuEPG"))   displInfoMenuEPG   = atoi(Value);
+  else if (!strcasecmp(Name, "DisplInfoMenuTimer")) displInfoMenuTimer = atoi(Value);
+  else if (!strcasecmp(Name, "DisplInfoMenuRec"))   displInfoMenuRec   = atoi(Value);
+  else if (!strcasecmp(Name, "WaitTimeFadein"))     waitTimeFadein     = atoi(Value);
+  else if (!strcasecmp(Name, "WaitTimeScroll"))     waitTimeScroll     = atoi(Value);
+  else if (!strcasecmp(Name, "FadeInTime"))         fadeinTime         = atoi(Value);
+  else if (!strcasecmp(Name, "ScrollPixel"))        scrollPixel        = atoi(Value);
+  else if (!strcasecmp(Name, "FramesPerSecond"))    framesPerSecond    = atoi(Value);
   else if (!strcasecmp(Name, "MainMenue"))       mcMainScaled       = atoi(Value);
   else if (!strcasecmp(Name, "ScheduleMenue"))   mcScheduleScaled   = atoi(Value);
   else if (!strcasecmp(Name, "ChannelMenue"))    mcChannelScaled    = atoi(Value);

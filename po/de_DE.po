@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.0.2\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2020-04-01 14:50+0200\n"
+"POT-Creation-Date: 2021-04-20 11:41+0200\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: Karl Melscher <kamel5@gmx.net>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -62,6 +62,33 @@ msgstr "Schmales Bild"
 
 msgid "Margin"
 msgstr "Rand"
+
+msgid "Display description:"
+msgstr "Beschreibung anzeigen:"
+
+msgid "In menu epg"
+msgstr "In Menü EPG"
+
+msgid "In menu timer"
+msgstr "In Menü Timer"
+
+msgid "In menu recording"
+msgstr "In Menü Recording"
+
+msgid "Waiting period Fade-in (ms)"
+msgstr "Einblendwartezeit (ms)"
+
+msgid "Waiting period Scroll (ms)"
+msgstr "Scrollwartezeit (ms)"
+
+msgid "Fade-in time (ms)"
+msgstr "Einblendzeit (ms)"
+
+msgid "ScrollPixel"
+msgstr "Pixel pro Schritt"
+
+msgid "Refreshrate (Frames/s)"
+msgstr "Wiederholrate (Bilder/s)"
 
 msgid "Menue view:"
 msgstr "Menü Ansicht"

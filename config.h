@@ -8,6 +8,14 @@ enum viewMode {
 class cLCARSNGConfig {
 public:
   int Margin;
+  int displInfoMenuEPG;
+  int displInfoMenuTimer;
+  int displInfoMenuRec;
+  int waitTimeFadein;
+  int waitTimeScroll;
+  int fadeinTime;
+  int scrollPixel;
+  int framesPerSecond;
   int mcUndefinedScaled;
   int mcUnknownScaled;
   int mcMainScaled;

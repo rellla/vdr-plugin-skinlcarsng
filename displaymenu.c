@@ -15,6 +15,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
 {
   tallFont = cFont::CreateFont(Setup.FontOsd, Setup.FontOsdSize * 1.6);
   initial = true;
+  message = false;
   viewmode = efullscreen;
   zoom = 0;
   lastMode = cmUnknown;
@@ -47,6 +48,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   textColorBg = Theme.Color(clrMenuTextBg);
   currentIndex = -1;
   Margin = Config.Margin;
+  drawDescription = NULL;
 
   // The outer frame:
   d = 5 * lineHeight;
@@ -85,6 +87,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
 
 cLCARSNGDisplayMenu::~cLCARSNGDisplayMenu()
 {
+  delete drawDescription;
   delete tallFont;
   delete tinyFont;
   delete osd;
@@ -321,7 +324,6 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
         default:
            viewmode = Config.mcDefaultScaled;
         }
-
      if (MenuCategory == mcChannel && viewmode == esmalscreen) {
         SetCoordinateY(yt06);
         osd->DrawRectangle(xa00, yt00, xa09 - 1, yb15 - 1, clrTransparent);
@@ -1249,6 +1251,11 @@ int cLCARSNGDisplayMenu::MaxItems(void)
 
 void cLCARSNGDisplayMenu::Clear(void)
 {
+  DELETENULL(drawDescription);
+  animatedInfo.Event = NULL;
+  animatedInfo.Timer = NULL;
+  animatedInfo.Recording = NULL;
+  animatedInfo.Channel = NULL;
   textScroller.Reset();
   osd->DrawRectangle(xi00, yi00, xi03 - 1, yi01 - 1, Theme.Color(clrBackground));
 }
@@ -1305,6 +1312,8 @@ void cLCARSNGDisplayMenu::SetButtons(const char *Red, const char *Green, const c
 void cLCARSNGDisplayMenu::SetMessage(eMessageType Type, const char *Text)
 {
   if (Text) {
+     DELETENULL(drawDescription);
+     message = true;
      tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
      tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
      int x0, x1, y0, y1, lx, ly;
@@ -1318,8 +1327,61 @@ void cLCARSNGDisplayMenu::SetMessage(eMessageType Type, const char *Text)
      DrawRectangleOutline(osd, x0, y0, x1, y1, ColorFg, ColorBg, 15);
      osd->DrawText(x0 + Margin, y0 + Margin, Text, ColorFg, ColorBg, cFont::GetFont(fontSml), lx, ly, taCenter);
      }
-  else
+  else {
      osd->RestoreRegion();
+     message = false;
+     }
+}
+bool cLCARSNGDisplayMenu::SetItemEvent(const cEvent *Event, int Index, bool Current, bool Selectable, const cChannel *Channel, bool WithDate, eTimerMatch TimerMatch, bool TimerActive)
+{
+  if (animatedInfo.Event == Event && !Current) {
+     DELETENULL(drawDescription);
+     animatedInfo.Event = NULL;
+     }
+  if (Current) {
+     animatedInfo.Event = Event;
+     animatedInfo.Index = Index;
+     animatedInfo.Current = Current;
+     animatedInfo.Selectable = Selectable;
+     animatedInfo.Channel = Channel;
+     animatedInfo.WithDate = WithDate;
+     animatedInfo.TimerMatch = TimerMatch;
+     animatedInfo.TimerActive = TimerActive;
+     }
+  return false;
+}
+
+bool cLCARSNGDisplayMenu::SetItemTimer(const cTimer *Timer, int Index, bool Current, bool Selectable)
+{
+  if (animatedInfo.Timer == Timer && !Current) {
+     DELETENULL(drawDescription);
+     animatedInfo.Timer = NULL;
+     }
+  if (Current) {
+     animatedInfo.Timer = Timer;
+     animatedInfo.Index = Index;
+     animatedInfo.Current = Current;
+     animatedInfo.Selectable = Selectable;
+     }
+  return false;
+}
+
+bool cLCARSNGDisplayMenu::SetItemRecording(const cRecording *Recording, int Index, bool Current, bool Selectable, int Level, int Total, int New)
+{
+  if (animatedInfo.Recording == Recording && !Current) {
+     DELETENULL(drawDescription);
+     animatedInfo.Recording = NULL;
+     }
+  if (Current && !Total) {
+     animatedInfo.Recording = Recording;
+     animatedInfo.Index = Index;
+     animatedInfo.Current = Current;
+     animatedInfo.Selectable = Selectable;
+     animatedInfo.Level = Level;
+     animatedInfo.Total = Total;
+     animatedInfo.New = New;
+     }
+  return false;
 }
 
 void cLCARSNGDisplayMenu::SetItem(const char *Text, int Index, bool Current, bool Selectable)
@@ -1491,6 +1553,9 @@ void cLCARSNGDisplayMenu::Flush(void)
      else
         availableRect = cDevice::PrimaryDevice()->CanScaleVideo(cRect::Null);
      }
+  if (drawDescription) {
+     drawDescription->StopFlush();
+     }
   DrawFrameDisplay();
   switch (MenuCategory()) {
      case mcMain:
@@ -1527,5 +1592,231 @@ void cLCARSNGDisplayMenu::Flush(void)
   if (initial) {
      cDevice::PrimaryDevice()->ScaleVideo(availableRect);
      }
+  if (!message && !drawDescription) {
+     if ((Config.displInfoMenuEPG && (MenuCategory() == mcSchedule || MenuCategory() == mcScheduleNow || MenuCategory() == mcScheduleNext) && animatedInfo.Event != NULL)
+         || (Config.displInfoMenuTimer && MenuCategory() == mcTimer && animatedInfo.Timer != NULL)
+         || (Config.displInfoMenuRec && MenuCategory() == mcRecording && animatedInfo.Recording != NULL)) {
+        animatedInfo.x0 = xs00;
+        animatedInfo.x1 = xs11;
+        animatedInfo.y0 = yi00;
+        animatedInfo.y1 = yi00 + (int)((yi01 - yi00) / lineHeight) * lineHeight;
+        animatedInfo.viewmode = viewmode;
+        animatedInfo.textColorBg = textColorBg;
+        animatedInfo.titleColorFg = Theme.Color(clrEventTitle);
+        animatedInfo.shortTextColorFg = Theme.Color(clrEventShortText);
+        animatedInfo.descriptionColorFg = Theme.Color(clrEventDescription);
+        animatedInfo.frameColorBr = frameColorBr;
+        drawDescription = new cDrawDescription(osd, animatedInfo);
+        }
+     }	             
+  if (drawDescription) {
+     drawDescription->StartFlush();
+     }
   initial = false;
+}
+
+// --- cDrawDescription ----------------------------------------------------
+
+cDrawDescription::cDrawDescription(cOsd *osd, AnimatedInfo_t animatedInfo) : cThread("LCARS DisplDesc")
+{
+  this->osd = osd;
+  aI = animatedInfo;
+  lineHeight = cFont::GetFont(fontSml)->Height();
+
+  Start();
+}
+
+cDrawDescription::~cDrawDescription()
+{
+  isAnimated = true;
+  Cancel(2);
+  if (ScrollPixmap)
+     osd->DestroyPixmap(ScrollPixmap);
+  if (BracketPixmap)
+     osd->DestroyPixmap(BracketPixmap);
+  if (BackgroundPixmap)
+     osd->DestroyPixmap(BackgroundPixmap);
+}
+
+void cDrawDescription::DrawBracket(void)
+{
+  int x0 = aI.x0;
+  int x1 = aI.x1;
+  int y0 = aI.y0;
+  int y1 = aI.y1;
+  BackgroundPixmap = osd->CreatePixmap(-1, cRect(x0, y0, x1 - x0, y1 - y0));
+  BackgroundPixmap->SetAlpha(0);
+  BackgroundPixmap->Fill((aI.viewmode == escaledvideo) ? Theme.Color(clrBackground) : aI.textColorBg);
+  BracketPixmap = osd->CreatePixmap(-1, cRect(x0, y0, x1 - x0, y1 - y0));
+  BracketPixmap->SetAlpha(0);
+  BracketPixmap->Fill(clrTransparent);
+  tColor Color = Theme.Color(clrMenuMainBracket);
+  int lineHeight = cFont::GetFont(fontOsd)->Height("A");
+  int x00, x01, x02, y00, y01, y02, y03, y04;
+  x00 = 0;
+  x01 = x00 + lineHeight;
+  x02 = x1 - x01;
+  y00 = 0;
+  y01 = y00 + lineHeight / 2;
+  y02 = y01 + lineHeight / 2;
+  y04 = y1 - y0;
+  y03 = y04 - lineHeight;
+  BracketPixmap->DrawRectangle(cRect(x01, y00, x02, lineHeight / 2), Color);
+  BracketPixmap->DrawEllipse  (cRect(x00, y00, lineHeight, y02), Color, 2);
+  BracketPixmap->DrawEllipse  (cRect(x01, y01, lineHeight / 2, lineHeight / 2), Color, -2);
+  BracketPixmap->DrawRectangle(cRect(x00, y02, lineHeight, y03 - y02), Color);
+  BracketPixmap->DrawEllipse  (cRect(x00, y03, lineHeight, lineHeight), Color, 3);
+  BracketPixmap->DrawEllipse  (cRect(x01, y03, lineHeight / 2, lineHeight / 2), Color, -3);
+  BracketPixmap->DrawRectangle(cRect(x01, y04 - lineHeight / 2, x02, lineHeight / 2), Color);
+}
+
+void cDrawDescription::Draw(void)
+{
+  const cEvent *Event = NULL;
+  const cTimer *Timer = NULL;
+  const cRecording *Recording = NULL;
+  const cRecordingInfo *Info = NULL;
+
+  if (aI.Recording) {
+     Recording = aI.Recording;
+     Info = Recording->Info();
+     if (!Info->Description())
+        return;
+  } else if (aI.Event) {
+     Event = aI.Event;
+     if (!Event->Description())
+        return;
+  } else if (aI.Timer) {
+     Timer = aI.Timer;
+     Event = Timer->Event();
+     if (!Event->Description())
+        return;
+  } else
+     return;
+
+  const char *titel = NULL;
+  const char *shortText = NULL;
+  const char *s = NULL;
+  const cFont *Font = cFont::GetFont(fontSml);
+  BackgroundPixmap->SetAlpha(0);
+  BracketPixmap->SetAlpha(0);
+  tColor textColorBg = clrTransparent;
+
+  if (Recording) {
+     s = Info->Description();                   // text
+     titel = Info->ChannelName();
+     shortText = Info->ShortText();
+     }
+  else {
+     s = Event->Description();                  // text
+     titel = Event->Title();
+     shortText = Event->ShortText();
+     }
+  int x0 = aI.x0 + 1.5 * lineHeight;            // text left
+  int x1 = aI.x1;                               // text right
+  int y0 = aI.y0 + 1.3 * lineHeight;            // text top
+  int y1 = aI.y1 - 1.3 * lineHeight;            // text bottom
+
+  int textwidth = x1 - x0 - lineHeight / 2;
+
+  int x00 = 1.5 * lineHeight;
+  int y00 = 1.3 * lineHeight;
+  if (!isempty(titel)) {
+     BracketPixmap->DrawText(cPoint(x00 + Config.Margin + Gap, y00), titel, aI.titleColorFg, textColorBg, Font, textwidth); // title
+     y00 = y00 + 1.3 * lineHeight;
+     y0 = y0 + 1.3 * lineHeight;
+  }
+
+  if (!isempty(shortText)) {
+     BracketPixmap->DrawText(cPoint(x00 + Config.Margin + Gap, y00), shortText, aI.shortTextColorFg, textColorBg, Font, textwidth); // shorttext
+     y0 = y0 + 1.3 * lineHeight;
+  }
+
+  y0 = y0 + 0.4 * lineHeight;
+
+  wrapper.Set(s, Font, textwidth);
+  int l0 = wrapper.Lines();                    // textlines
+
+  int height = y1 - y0;                        // max height
+  int lines = (int)(height / lineHeight);      // visible lines
+
+  int l1 = min(l0, lines);                     // visible textlines -> scrollwindow
+
+  int pixmapwidth = x1 - x0;
+  int pixmapHeigh = l1 * lineHeight;
+  ScrollPixmap = osd->CreatePixmap(-1, cRect(x0, y0, pixmapwidth, pixmapHeigh), cRect(0, 0, pixmapwidth, l0 * lineHeight));
+  ScrollPixmap->Lock();
+  ScrollPixmap->Fill(clrTransparent);
+  ScrollPixmap->SetAlpha(0);
+
+  for (int i = 0; i < l0; i++) {
+     ScrollPixmap->DrawText(cPoint(Config.Margin + Gap, i * lineHeight), wrapper.GetLine(i), aI.descriptionColorFg, textColorBg, Font, textwidth); // description
+     }
+
+  ScrollPixmap->Unlock();
+  MoveStart = ScrollPixmap->DrawPort().Point();
+
+  int h0 = l0 * lineHeight;                    // text height in pixel
+  int y = (pixmapHeigh - h0);                  // pixel to scroll
+
+  MoveEnd.Set(0, min(0, y));
+  isAnimated = false;
+}
+
+void cDrawDescription::Action(void)
+{
+  DrawBracket();
+  Draw();
+  if (isAnimated)
+     return;
+
+  bool faded = false;
+  int j = 0;
+  int y = Config.scrollPixel;
+  int z = 0;
+  int step = (Config.fadeinTime) ? (255 * Config.framesPerSecond / Config.fadeinTime) : 255;
+  uint64_t Now;
+  uint64_t StartTime = cTimeMs::Now();
+
+  while (Running()) {
+     Now = cTimeMs::Now();
+     if ((int)(Now - StartTime) > Config.waitTimeFadein) {
+        if (ScrollPixmap && !isAnimated) {
+           if (!faded) {
+              BackgroundPixmap->SetLayer(0);
+              BracketPixmap->SetLayer(1);
+              ScrollPixmap->SetLayer(2);
+              z = z + step;
+              if (z <= (255 + step)) {
+                 int alpha = min(z, 255);
+                 BackgroundPixmap->SetAlpha(alpha);
+                 BracketPixmap->SetAlpha(alpha);
+                 ScrollPixmap->SetAlpha(alpha);
+              } else {
+                 faded = true;
+                 StartTime = cTimeMs::Now();
+                 }
+              }
+           if (faded && (int)(Now - StartTime) > Config.waitTimeScroll) {
+              if (j <= MoveEnd.Y()) {
+                 isAnimated = true;
+              } else {
+                 ScrollPixmap->Scroll(cPoint(0, -y));
+                 j = j - y;
+                 }
+              }
+           }
+        }
+     int count = 0;
+     while (!isAnimated && !doflush && count < 200) {
+        cCondWait::SleepMs(10);
+        count++;
+        }
+     if (osd)
+        osd->Flush();
+     if (isAnimated)
+        break;
+     int Rest = (int)(1000 / Config.framesPerSecond) - ((int)(cTimeMs::Now() - Now));
+     cCondWait::SleepMs(max(2, Rest));
+     }
 }

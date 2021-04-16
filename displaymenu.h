@@ -1,3 +1,50 @@
+typedef struct {
+  const cEvent *Event = NULL;
+  const cTimer *Timer = NULL;
+  const cRecording *Recording = NULL;
+  const cChannel *Channel = NULL;
+  int Index = -1;
+  bool Current = false;
+  bool Selectable = false;
+  bool WithDate = false;
+  eTimerMatch TimerMatch = tmNone;
+  bool TimerActive = false;
+  int Level = -1;
+  int Total = -1;
+  int New = -1;
+  int x0 = 0;
+  int x1 = 0;
+  int y0 = 0;
+  int y1 = 0;
+  int viewmode = 0;
+  tColor textColorBg, titleColorFg, shortTextColorFg, descriptionColorFg, frameColorBr;
+} AnimatedInfo_t;
+
+class cDrawDescription : public cThread {
+private:
+  cOsd *osd;
+  AnimatedInfo_t aI;
+  int lineHeight;
+  bool stop = false;
+  bool doflush = false;
+  bool isAnimated = true;
+  cPixmap *BackgroundPixmap = NULL;
+  cPixmap *BracketPixmap = NULL;
+  cPixmap *MovePixmap = NULL;
+  cPixmap *ScrollPixmap = NULL;
+  cPoint MoveStart, MoveEnd;
+  cTextWrapper wrapper;
+  void DrawBracket(void);
+  void Draw(void);
+  void Action(void);
+public:
+  cDrawDescription(cOsd *osd, AnimatedInfo_t animatedInfo);
+  virtual ~cDrawDescription();
+  bool IsRunning(void) { return Running(); };
+  void StartFlush(void) { doflush = true; };
+  void StopFlush(void) { doflush = false; };
+  };
+
 // --- cLCARSNGDisplayMenu -------------------------------------------------
 
 class cLCARSNGDisplayMenu : public cSkinDisplayMenu {
@@ -35,6 +82,7 @@ private:
   cVector<int> lastSignalStrength;
   cVector<int> lastSignalQuality;
   bool initial;
+  bool message;
   int viewmode;
   int zoom;
   enum eCurrentMode { cmUnknown, cmLive, cmPlay };
@@ -60,9 +108,11 @@ private:
   cString lastChannelName;
   const cEvent *lastEvent;
   const cRecording *lastRecording;
+  AnimatedInfo_t animatedInfo;
   cString lastHeader;
   int lastSeen;
   int Margin;
+  cDrawDescription *drawDescription;
   static cBitmap bmArrowUp, bmArrowDown, bmTransferMode;
   void SetCoordinateY(int y);
   void DrawMainFrameUpper(tColor Color, tColor ColorBg);
@@ -92,6 +142,9 @@ private:
   void DrawSeen(int Current, int Total);
   void DrawTextScrollbar(void);
 public:
+#ifdef DEPRECATED_SKIN_SETITEMEVENT
+  using cSkinDisplayMenu::SetItemEvent;
+#endif
   cLCARSNGDisplayMenu(void);
   virtual ~cLCARSNGDisplayMenu();
   virtual void Scroll(bool Up, bool Page);
@@ -101,6 +154,9 @@ public:
   virtual void SetTitle(const char *Title);
   virtual void SetButtons(const char *Red, const char *Green = NULL, const char *Yellow = NULL, const char *Blue = NULL);
   virtual void SetMessage(eMessageType Type, const char *Text);
+  virtual bool SetItemEvent(const cEvent *Event, int Index, bool Current, bool Selectable, const cChannel *Channel, bool WithDate, eTimerMatch TimerMatch, bool TimerActive);
+  virtual bool SetItemTimer(const cTimer *Timer, int Index, bool Current, bool Selectable);
+  virtual bool SetItemRecording(const cRecording *Recording, int Index, bool Current, bool Selectable, int Level, int Total, int New);
   virtual void SetItem(const char *Text, int Index, bool Current, bool Selectable);
   virtual void SetScrollbar(int Total, int Offset);
   virtual void SetEvent(const cEvent *Event);
