@@ -209,6 +209,7 @@ bool DrawDeviceData(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, in
 void DrawDeviceSignal(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &LastSignalStrength, int &LastSignalQuality, bool Initial);
 void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0, int x1, int y1, int &LastCurrent);
 void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Usage = 0);
+void DrawRectangleOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int usage = 0);
 int FreeMB(const char *Base, bool menurecording = false);
 std::string StripXmlTag(std::string &Line, const char *Tag);
 

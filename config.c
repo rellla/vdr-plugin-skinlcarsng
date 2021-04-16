@@ -10,6 +10,8 @@ cLCARSNGConfig::cLCARSNGConfig(void)
   displInfoMenuEPG = 0;
   displInfoMenuTimer = 0;
   displInfoMenuRec = 0;
+  displInfoChannel = 0;
+  infoChanLines = 10;
   waitTimeFadein = 1000;
   waitTimeScroll = 1000;
   fadeinTime = 300;
@@ -55,6 +57,13 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "DisplInfoMenuEPG"))   displInfoMenuEPG   = atoi(Value);
   else if (!strcasecmp(Name, "DisplInfoMenuTimer")) displInfoMenuTimer = atoi(Value);
   else if (!strcasecmp(Name, "DisplInfoMenuRec"))   displInfoMenuRec   = atoi(Value);
+  else if (!strcasecmp(Name, "DisplInfoChannel")) { displInfoChannel   = atoi(Value);
+#ifndef USE_ZAPCOCKPIT
+          if (displInfoChannel > 1)
+             displInfoChannel = 1;
+#endif
+     }
+  else if (!strcasecmp(Name, "InfoChanLines"))      infoChanLines      = atoi(Value);
   else if (!strcasecmp(Name, "WaitTimeFadein"))     waitTimeFadein     = atoi(Value);
   else if (!strcasecmp(Name, "WaitTimeScroll"))     waitTimeScroll     = atoi(Value);
   else if (!strcasecmp(Name, "FadeInTime"))         fadeinTime         = atoi(Value);

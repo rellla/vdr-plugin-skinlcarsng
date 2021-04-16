@@ -16,6 +16,15 @@ cLCARSNGSetup::cLCARSNGSetup() {
   menuView[2] = tr("split screen");
   menuView[3] = tr("thin screen");
 
+#ifdef USE_ZAPCOCKPIT
+  int i = 3;
+#else
+  int i = 2;
+#endif
+  infoChannel[0] = trVDR("nein");
+  infoChannel[1] = tr("auto display");
+  infoChannel[2] = tr("2nd OK");
+
   Add(new cMenuEditIntItem(tr("Margin"),                      &tmpConfig.Margin, 0, 5));
   Add(new cMenuEditBoolItem(tr("Display Error 0"),            &tmpConfig.displayError0));
 
@@ -24,6 +33,9 @@ cLCARSNGSetup::cLCARSNGSetup() {
   Add(new cMenuEditBoolItem(tr("In menu epg"),                &tmpConfig.displInfoMenuEPG));
   Add(new cMenuEditBoolItem(tr("In menu timer"),              &tmpConfig.displInfoMenuTimer));
   Add(new cMenuEditBoolItem(tr("In menu recording"),          &tmpConfig.displInfoMenuRec));
+  Add(new cMenuEditStraItem(tr("In display channel"),         &tmpConfig.displInfoChannel, i, infoChannel));
+//  if (tmpConfig.displInfoChannel)
+  Add(new cMenuEditIntItem(tr("Max. number of info lines"),   &tmpConfig.infoChanLines, 1, 20));
   Add(new cMenuEditIntItem(tr("Waiting period Fade-in (ms)"), &tmpConfig.waitTimeFadein, 0, 5000, trVDR("off")));
   Add(new cMenuEditIntItem(tr("Fade-in time (ms)"),           &tmpConfig.fadeinTime, 0, 1000, trVDR("off")));
   Add(new cMenuEditIntItem(tr("Waiting period Scroll (ms)"),  &tmpConfig.waitTimeScroll, 0, 5000, trVDR("off")));
@@ -58,6 +70,8 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("DisplInfoMenuEPG",   Config.displInfoMenuEPG);
   SetupStore("DisplInfoMenuTimer", Config.displInfoMenuTimer);
   SetupStore("DisplInfoMenuRec",   Config.displInfoMenuRec);
+  SetupStore("DisplInfoChannel",   Config.displInfoChannel);
+  SetupStore("InfoChanLines",      Config.infoChanLines);
   SetupStore("WaitTimeFadein",     Config.waitTimeFadein);
   SetupStore("WaitTimeScroll",     Config.waitTimeScroll);
   SetupStore("FadeInTime",         Config.fadeinTime);

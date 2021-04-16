@@ -12,6 +12,8 @@ public:
   int displInfoMenuEPG;
   int displInfoMenuTimer;
   int displInfoMenuRec;
+  int displInfoChannel;
+  int infoChanLines;
   int waitTimeFadein;
   int waitTimeScroll;
   int fadeinTime;
