@@ -1,6 +1,10 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
 
+Version 0.3.4
+- Automatic display description in menu epg, timer and recording
+- VDR-2.5.3 adjustments
+
 Version 0.3.3
 - VDR-2.4.2 adjustments
 - Corrected array size
