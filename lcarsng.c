@@ -183,7 +183,17 @@ void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0
 void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int usage)
 {
    Osd->DrawRectangle(x1, y1, x2, y2, Color1);
-   Osd->DrawRectangle(x1 + ((usage & muLeft) ? Config.Margin : 0), y1 + ((usage & muTop) ? Config.Margin : 0), x2 - ((usage & muRight) ? Config.Margin : 0), y2 - ((usage & muBottom) ? Config.Margin : 0), Color2);
+   Osd->DrawRectangle(x1 + ((usage & muLeft) ? Config.Margin : 0), y1 + ((usage & muTop) ? Config.Margin : 0),
+                      x2 - ((usage & muRight) ? Config.Margin : 0), y2 - ((usage & muBottom) ? Config.Margin : 0), Color2);
+}
+
+void DrawRectangleOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int usage)
+{
+   Pixmap->DrawRectangle(cRect(x, y, w, h), Color1);
+   Pixmap->DrawRectangle(cRect(x + ((usage & muLeft) ? Config.Margin : 0), y + ((usage & muTop) ? Config.Margin : 0),
+                               w - ((usage & muLeft) ? Config.Margin : 0) -  ((usage & muRight) ? Config.Margin : 0),
+                               h - ((usage & muTop) ? Config.Margin : 0) -  ((usage & muBottom) ? Config.Margin : 0)),
+                               Color2);
 }
 
 static time_t lastDiskSpaceCheck = 0;

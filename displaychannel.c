@@ -13,9 +13,11 @@ cBitmap cLCARSNGDisplayChannel::bmRecording(recording_xpm);
 
 // --- cLCARSNGDisplayChannel ----------------------------------------------
 
-cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS DisplChan")
+cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS DisplChan")
 {
   tallFont = cFont::CreateFont(Setup.FontOsd, Setup.FontOsdSize * 1.8);
+  isAnimated = false;
+  newAnimation = false;
   initial = true;
   present = NULL;
   following = NULL;
@@ -40,9 +42,19 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   lastOn = false;
   On = false;
   Margin = Config.Margin;
+  drawDescription = NULL;
   volumeBox = NULL;
   lastVolume = statusMonitor->GetVolume();
   lastVolumeTime = time(NULL);
+
+#ifdef USE_ZAPCOCKPIT
+  oldZapcockpitUseInfo = Setup.ZapcockpitUseInfo;
+  if (Config.displInfoChannel < 2)
+     Setup.ZapcockpitUseInfo = 0;
+  else
+     Setup.ZapcockpitUseInfo = 1;
+#endif // USE_ZAPCOCKPIT
+
   int d = 5 * lineHeight;
   int d1 = 3 * lineHeight;
   xc00 = 0;
@@ -98,6 +110,16 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
   int y1 = withInfo ? yc12 : yc02;
   int y0 = cOsd::OsdTop() + (Setup.ChannelInfoPos ? 0 : cOsd::OsdHeight() - y1);
   osd = CreateOsd(cOsd::OsdLeft(), y0, xc00, yc0B, xc15 - 1, y1 - 1);
+
+  animatedInfo.x0 = xc10n; // text left
+  animatedInfo.x1 = xc13;  // text right
+  animatedInfo.y0 = -y0  + lineHeight;
+  animatedInfo.y1 = -Gap;
+  animatedInfo.textColorBg = textColorBg;
+  animatedInfo.shortTextColorFg = Theme.Color(clrEventShortText);
+  animatedInfo.frameColorBr = frameColorBr;
+  animatedInfo.frameColorBg = frameColorBg;
+
   if (withInfo) {
      // Rectangles:
      osd->DrawRectangle(xc00, yc0B, xc15 - 1, y1 - 1, Theme.Color(clrBackground)); // Main background
@@ -178,10 +200,14 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
 cLCARSNGDisplayChannel::~cLCARSNGDisplayChannel()
 {
   Cancel(3);
+  delete drawDescription;
   delete volumeBox;
   delete tallFont;
   delete tinyFont;
   delete osd;
+#ifdef USE_ZAPCOCKPIT
+  Setup.ZapcockpitUseInfo = oldZapcockpitUseInfo;
+#endif // USE_ZAPCOCKPIT
 }
 
 void cLCARSNGDisplayChannel::DrawDate(void)
@@ -276,8 +302,6 @@ void cLCARSNGDisplayChannel::DrawBlinkingRec(void)
         }
      }
   else {
-     if (Running())
-        Cancel(3);
      On = false;
      }
   if (initial || On != lastOn) {
@@ -370,6 +394,7 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
 
 void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 {
+  DELETENULL(drawDescription);
   int x = xc13;
   DrawRectangleOutline(osd, xc12, yc11, xc13 - 1, yc12 - 1, frameColorBr, frameColorBg, 15);
   if (Channel && !Channel->GroupSep()) {
@@ -417,6 +442,7 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 
 void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Following)
 {
+  DELETENULL(drawDescription);
   if (!withInfo)
      return;
   if (present != Present)
@@ -444,11 +470,14 @@ void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Foll
          osd->DrawRectangle(xc10m, y, xc13 - 1, y + 2 * lineHeight + 2 * Margin, Theme.Color(clrBackground));
          }
       }
+   if (lastSeen == -1)
+      animatedInfo.Event = Present;
 }
 
 void cLCARSNGDisplayChannel::SetMessage(eMessageType Type, const char *Text)
 {
   if (Text) {
+     DELETENULL(drawDescription);
      DELETENULL(volumeBox);
      tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
      tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
@@ -497,22 +526,76 @@ void cLCARSNGDisplayChannel::SetPositioner(const cPositioner *Positioner)
 }
 #endif
 
-void cLCARSNGDisplayChannel::Action(void)
-{
-  int i = 0;
+void cLCARSNGDisplayChannel::SetInfo(bool showInfo) {
+  if (!Config.displInfoChannel || Setup.ChannelInfoPos)
+     return;
 
-  while (Running()) {
-     i++;
-     if (message || i > 9) {
-        i = 0;
-        On = !On;
-        DrawBlinkingRec();
-        if (osd) osd->Flush();
-        }
-     cCondWait::SleepMs(100);
+  if (showInfo && !message && !drawDescription) {
+     drawDescription = new cDrawChannelDescription(osd, animatedInfo);
+     Start();
+  } else {
+     DELETENULL(drawDescription);
   }
 }
 
+#ifdef USE_ZAPCOCKPIT
+void cLCARSNGDisplayChannel::SetViewType(eDisplaychannelView ViewType) {
+  viewTypeLast = this->viewType;
+  this->viewType = viewType;
+}
+
+int cLCARSNGDisplayChannel::MaxItems(void) {
+/*  initList = true;
+  if (viewType == dcChannelList && channelList)
+     return channelList->NumItems();
+  else if (viewType == dcGroupsList && groupList)
+     return groupList->NumItems();
+  else if (viewType == dcGroupsChannelList && groupChannelList)
+     return groupChannelList->NumItems();*/
+  return 0;
+}
+
+bool cLCARSNGDisplayChannel::KeyRightOpensChannellist(void) {
+//  return view->KeyRightOpensChannellist();
+  return true;
+}
+
+void cLCARSNGDisplayChannel::SetChannelInfo(const cChannel *Channel) {
+  if (!(Config.displInfoChannel == 2))
+     return;
+
+  SetInfo(true);
+}
+
+void cLCARSNGDisplayChannel::SetChannelList(const cChannel *Channel, int Index, bool Current) {
+/*  displayList = true;
+  if (viewType == dcChannelList && channelList) {
+     channelList->Set(channel, index, current);
+  } else if (viewType == dcGroupsChannelList && groupChannelList) {
+     groupChannelList->Set(channel, index, current);
+  }*/
+}
+
+void cLCARSNGDisplayChannel::SetGroupList(const char *Group, int NumChannels, int Index, bool Current) {
+//  view->SetGroupList(Group, NumChannels, Index, Current);
+}
+
+void cLCARSNGDisplayChannel::SetGroupChannelList(const cChannel *Channel, int Index, bool Current) {
+}
+
+void cLCARSNGDisplayChannel::ClearList(void) {
+//  view->ClearList();
+}
+
+void cLCARSNGDisplayChannel::SetNumChannelHints(int Num) {
+//  view->SetNumChannelHints(Num);
+}
+
+void cLCARSNGDisplayChannel::SetChannelHint(const cChannel *Channel) {
+//  view->SetChannelHint(Channel);
+}
+
+#endif //USE_ZAPCOCKPIT
 void cLCARSNGDisplayChannel::DrawVolume(void)
 {
    if (!message) {
@@ -554,6 +637,203 @@ void cLCARSNGDisplayChannel::Flush(void)
         }
      }
   DrawVolume();
-  osd->Flush();
+  if (initial || !(Running()))
+     osd->Flush();
+  if (Config.displInfoChannel == 1 && !drawDescription)
+     SetInfo(true);
   initial = false;
+}
+
+void cLCARSNGDisplayChannel::Action(void)
+{
+  int FrameTime = (int)(1000 / Config.framesPerSecond);
+
+  uint64_t Start = cTimeMs::Now();
+
+  while (Running()) {
+     uint64_t Now = cTimeMs::Now();
+     if (message || (int)(Now - Start) > 1000) {
+        Start = Now;
+        On = !On;
+        DrawBlinkingRec();
+        }
+     if (Running() && drawDescription)
+        drawDescription->Animate();
+     if (Running())
+        osd->Flush();
+     if (!cRecordControls::Active() && !drawDescription)
+        break;
+     int Delta = cTimeMs::Now() - Now;
+     if (Running() && (Delta < FrameTime))
+        cCondWait::SleepMs(FrameTime - Delta);
+     }
+}
+
+// --- cDrawDescription ----------------------------------------------------
+
+cDrawChannelDescription::cDrawChannelDescription(cOsd *osd, AnimatedChannelInfo_t animatedInfo)
+{
+  this->osd = osd;
+  aI = animatedInfo;
+  Margin = Config.Margin;
+
+  Draw();
+}
+
+cDrawChannelDescription::~cDrawChannelDescription()
+{
+  if (TextPixmap) TextPixmap->SetAlpha(0);
+  if (BracketPixmap) BracketPixmap->SetAlpha(0);
+  osd->Flush();
+  osd->DestroyPixmap(TextPixmap);
+  osd->DestroyPixmap(BracketPixmap);
+}
+
+void cDrawChannelDescription::DrawBracket(int height)
+{
+  int lineHeight = cFont::GetFont(fontOsd)->Height();
+  int d = 5 * lineHeight;
+  int xy = lineHeight + 2 * Margin;
+  int yh = (xy - Gap) / 2; //lineHeight / 2 + 2 * Margin;
+  int x0 = 0;              // rectangle left
+  int x6 = aI.x1 - aI.x0;  // rectangle right
+  int x1 = x0 + xy;
+  int x5 = x6 - lineHeight;
+  int x4 = x5 - Gap;
+  int x3 = x4 - 2 * d;
+  int x2 = x3 - Gap; 
+  int y0 = 0;              // rectangle top
+  int y1 = height;         // rectangle bottom
+
+  BracketPixmap = osd->CreatePixmap(2, cRect(aI.x0, aI.y1 - height, aI.x1 - aI.x0, height));
+  if (!BracketPixmap) 
+     return; 
+  
+  BracketPixmap->SetAlpha(255);
+  BracketPixmap->Fill(clrTransparent);
+
+  DrawRectangleOutline(BracketPixmap, x1, 0, x2 - x1, yh, aI.frameColorBr, aI.frameColorBg, 14);
+  DrawRectangleOutline(BracketPixmap, x3, 0, x4 - x3, yh, aI.frameColorBr, aI.frameColorBg, 15);
+  DrawRectangleOutline(BracketPixmap, x3, yh + Gap, x4 - x3, xy - yh - Gap, aI.frameColorBr, aI.frameColorBg, 15);
+  DrawRectangleOutline(BracketPixmap, 0, xy, x1, y1 - y0 - 2 * xy, aI.frameColorBr, aI.frameColorBg, 1);
+  DrawRectangleOutline(BracketPixmap, x1, y1 - y0 - yh, x2 - x1, yh, aI.frameColorBr, aI.frameColorBg, 14);
+  DrawRectangleOutline(BracketPixmap, x3, y1 - y0 - xy, x4 - x3, xy, aI.frameColorBr, aI.frameColorBg, 15);
+
+  // Upper Elbow part 1:
+  BracketPixmap->DrawEllipse(cRect(0, 0, x1, xy), aI.frameColorBr, 2);
+  BracketPixmap->DrawEllipse(cRect(0 + Margin, 0 + Margin, x1 - Margin, xy - Margin), aI.frameColorBg, 2);
+  // Lower Elbow part 1:
+  BracketPixmap->DrawEllipse(cRect(0, y1 - y0 - xy, x1, xy), aI.frameColorBr, 3);
+  BracketPixmap->DrawEllipse(cRect(0 + Margin, y1 - y0 - xy, x1 - Margin, x1 - Margin), aI.frameColorBg, 3);
+
+  BracketPixmap->DrawRectangle(cRect(x1 - Margin, yh, Margin, y1 - y0 - 2 * yh), aI.frameColorBr);
+
+  // Upper Elbow part 2:
+  BracketPixmap->DrawEllipse(cRect(x1 , yh, yh, yh), aI.frameColorBr, -2);
+  BracketPixmap->DrawEllipse(cRect(x1 - Margin, yh - Margin, yh + Margin, yh + Margin), aI.frameColorBg, -2);
+  // Lower Elbow part 2:
+  BracketPixmap->DrawEllipse(cRect(x1, y1 - y0 - 2 * yh, yh, yh), aI.frameColorBr, -3);
+  BracketPixmap->DrawEllipse(cRect(x1 - Margin, y1 - y0 - 2 * yh, yh + Margin, yh + Margin), aI.frameColorBg, -3);
+
+  // Top Right
+  DrawRectangleOutline(BracketPixmap, x5, 0, lineHeight / 2, x1, aI.frameColorBr, aI.frameColorBg, 11);
+//  BracketPixmap->DrawRectangle(cRect(x4 + lineHeight / 2, y0, lineHeight / 2, x1), clrTransparent);
+  BracketPixmap->DrawEllipse(cRect(x5 + lineHeight / 2, 0, lineHeight / 2, xy), aI.frameColorBr, 5);
+  BracketPixmap->DrawEllipse(cRect(x5 + lineHeight / 2, 0 + Margin, lineHeight / 2 - Margin, xy - 2 * Margin), aI.frameColorBg, 5);
+  // Bottom Right
+  DrawRectangleOutline(BracketPixmap, x5, y1 - y0 - xy, lineHeight / 2, xy, aI.frameColorBr, aI.frameColorBg, 11);
+//  BracketPixmap->DrawRectangle(cRect(x4 + lineHeight / 2, y1 - x1, lineHeight / 2, x1), clrTransparent);
+  BracketPixmap->DrawEllipse(cRect(x5 + lineHeight / 2, y1 - xy, lineHeight / 2, xy), aI.frameColorBr, 5);
+  BracketPixmap->DrawEllipse(cRect(x5 + lineHeight / 2, y1 - xy + Margin, lineHeight / 2 - Margin, xy - 2 * Margin), aI.frameColorBg, 5);  
+
+  return;
+
+  BracketPixmap->DrawRectangle(cRect(0, 0, x6, Margin), aI.frameColorBr);                // border oben
+  BracketPixmap->DrawRectangle(cRect(0, y1 - y0 - Margin, x6, Margin), aI.frameColorBr); // border unten
+  BracketPixmap->DrawRectangle(cRect(0, 0, Margin, y1 - y0), aI.frameColorBr);                // border links
+  BracketPixmap->DrawRectangle(cRect(x6 - Margin, 0, Margin, y1 - y0), aI.frameColorBr); // border rechts
+}
+
+void cDrawChannelDescription::Draw(void)
+{
+  if (!(aI.Event && !isempty(aI.Event->Description())))
+     return;
+
+  const char *s = aI.Event->Description();             // text
+  if (!s || isempty(s))
+     return;
+
+  const cFont *Font = cFont::GetFont(fontSml);
+  const int smlLineHeight = Font->Height(s);
+
+  int lineHeight = cFont::GetFont(fontOsd)->Height();
+  int rand = lineHeight + 2 * Margin + Gap;            // Margin + Gap;
+  int x0 = aI.x0 + rand;                               // text left
+  int x1 = aI.x1 - lineHeight - Gap;                   // text right
+
+  int textwidth = x1 - x0;
+
+  wrapper.Set(s, Font, textwidth - 2 * Gap);
+  int l0 = wrapper.Lines();                            // textlines
+  if (l0 == 0)
+     return;
+
+  int l1 = std::min(l0, Config.infoChanLines);         // diplayed lines
+
+  int viewportheight = l1 * smlLineHeight;
+  while ((aI.y1 - viewportheight - 2 * rand) <= aI.y0) {
+     viewportheight = viewportheight - smlLineHeight;
+     }
+
+  DrawBracket(viewportheight + 2 * rand);
+
+  int pixmapwidth = textwidth;
+  int drawportheight = l0 * smlLineHeight;
+  int y1 = aI.y1 - viewportheight - rand;              // text bottom
+
+  if (TextPixmap = osd->CreatePixmap(3, cRect(x0, y1, pixmapwidth, viewportheight), cRect(0, 0, pixmapwidth, drawportheight))) {
+     TextPixmap->Fill(aI.textColorBg);
+     int y = 0;
+     for (int i = 0; i < l0; i++) {
+        TextPixmap->DrawText(cPoint(Gap, y), wrapper.GetLine(i), aI.shortTextColorFg, clrTransparent, Font, textwidth); // textline
+        y += smlLineHeight;
+        }
+     }
+  StartTime = cTimeMs::Now();
+}
+
+void cDrawChannelDescription::Animate(void)
+{
+  if (!TextPixmap)
+     return;
+
+//  int fadeinDelay = Config.waitTimeFadein;
+  int scrollDelay = Config.waitTimeScroll;
+
+  int maxY = std::max(0, TextPixmap->DrawPort().Height() - TextPixmap->ViewPort().Height());
+  if (maxY == 0)
+     return;
+
+  uint64_t Now = cTimeMs::Now();
+  if ((int)(Now - StartTime) < scrollDelay)
+     return;
+
+  // Scroll
+  cPixmap::Lock();
+  int drawPortY = TextPixmap->DrawPort().Y();
+  if (std::abs(drawPortY) < maxY)
+     drawPortY -= Config.scrollPixel;
+  if (std::abs(drawPortY) >= maxY) {
+     if (!dowait) {
+        StartTime = cTimeMs::Now();
+        dowait = true;
+        }
+     else {
+        drawPortY = 0;
+        StartTime = cTimeMs::Now();
+        dowait = false;
+        }
+     }
+  TextPixmap->SetDrawPortPoint(cPoint(0, drawPortY));
+  cPixmap::Unlock();
 }
