@@ -819,14 +819,19 @@ void cLCARSNGDisplayMenu::DrawTimer(const cTimer *Timer, int y, bool MultiRec)
   osd->DrawRectangle(xs00, y, xs03 - 1, y + lineHeight - 1, ColorBg);
   cString Date;
   if (Timer->Recording())
-     Date = cString::sprintf("-%s", *TimeString(Timer->StopTime()));
+     Date = cString::sprintf("-%s", *TimeString(Timer->StopTimeEvent()));
   else {
      time_t Now = time(NULL);
+#if APIVERSNUM > 20502
+     time_t StartTime = Timer->StartTimeEvent();
+#else
+     time_t StartTime = Timer->StartTime();
+#endif
      cString Today = WeekDayName(Now);
-     cString Time = TimeString(Timer->StartTime());
-     cString Day = WeekDayName(Timer->StartTime());
-     if (Timer->StartTime() > Now + 6 * SECSINDAY)
-        Date = DayDateTime(Timer->StartTime());
+     cString Time = TimeString(StartTime);
+     cString Day = WeekDayName(StartTime);
+     if (StartTime > Now + 6 * SECSINDAY)
+        Date = DayDateTime(StartTime);
      else if (strcmp(Day, Today) != 0)
         Date = cString::sprintf("%s %s", *Day, *Time);
      else
