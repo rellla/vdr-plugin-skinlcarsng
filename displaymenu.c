@@ -819,7 +819,11 @@ void cLCARSNGDisplayMenu::DrawTimer(const cTimer *Timer, int y, bool MultiRec)
   osd->DrawRectangle(xs00, y, xs03 - 1, y + lineHeight - 1, ColorBg);
   cString Date;
   if (Timer->Recording())
+#if APIVERSNUM > 20502
      Date = cString::sprintf("-%s", *TimeString(Timer->StopTimeEvent()));
+#else
+     Date = cString::sprintf("-%s", *TimeString(Timer->StopTime()));
+#endif
   else {
      time_t Now = time(NULL);
 #if APIVERSNUM > 20502
