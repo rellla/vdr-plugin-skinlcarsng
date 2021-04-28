@@ -1,3 +1,4 @@
+#include <vdr/plugin.h>
 #include "config.h"
 #include "lcarsng.h"
 #include "displaychannel.h"
@@ -197,6 +198,17 @@ void cLCARSNGDisplayChannel::DrawTrack(void)
      }
 }
 
+int cLCARSNGDisplayChannel::GetLiveBuffer(void) {
+  static cPlugin *pPermashift = cPluginManager::GetPlugin("permashift");
+  if (pPermashift) {
+     int buffer = 0;
+     if (pPermashift->Service("Permashift-GetUsedBufferSecs-v1", &buffer)) {
+        return buffer;
+     }
+  }
+  return -1;
+}
+
 void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
 {
   if (lastCurrentPosition >= 0)
@@ -207,7 +219,14 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
      int y1 = yc0A - ShowSeenExtent;
      // progress bar
      osd->DrawRectangle(xc06, y0, xc11 - 1, y1 - 1, Theme.Color(clrSeen));
-     osd->DrawRectangle(xc06 + Seen + 2, y0 + 2, xc11 - 3, y1 - 3, frameColorBg);
+     osd->DrawRectangle(xc06 + 2 + Seen, y0 + 2, xc11 - 3, y1 - 3, frameColorBg);
+     // timeshift buffer
+     int Buffer = GetLiveBuffer();
+     if (Buffer > 0) {
+        int Timeshift = max(0, int((xc11 - xc06) * double(Current - Buffer) / Total));
+        int x1 = min(xc11 - 3, xc06 + 2 + Seen);
+        osd->DrawRectangle(xc06 + 2 + Timeshift, y0 + 2, x1, y1 - 3, Theme.Color(clrChannelSymbolRecBg));
+        }
      // display time remaining
      cString time = ((Current / 60.0) > 0.1) ? cString::sprintf("-%d", max((int)ceil((Total - Current) / 60.0), 0)) : "";
      int w = cFont::GetFont(fontSml)->Width(time);

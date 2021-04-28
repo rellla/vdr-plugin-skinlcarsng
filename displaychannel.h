@@ -33,6 +33,7 @@ private:
   time_t lastSignalDisplay;
   tTrackId lastTrackId;
   static cBitmap bmTeletext, bmRadio, bmAudio, bmDolbyDigital, bmEncrypted, bmRecording;
+  int GetLiveBuffer(void);
   void Action(void);
   void DrawDate(void);
   void DrawTrack(void);
