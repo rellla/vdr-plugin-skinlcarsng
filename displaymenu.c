@@ -1513,9 +1513,18 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
      Title = Recording->Name();
   ts.Set(osd, xl, y, xi01 - xl, yi01 - y, Title, font, Theme.Color(clrEventTitle), ColorBg);
   y += ts.Height();
+  int w = 0;
+#if (APIVERSNUM >= 20505)
+  if (Info->Errors() >= 0) {
+     cString buffer = cString::sprintf("%s %i ", tr("TS Errors:"), Info->Errors());
+     const cFont *font = cFont::GetFont(fontSml);
+     w = font->Width(buffer);
+     osd->DrawText(xi01 - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
+     }
+#endif
   if (!isempty(Info->ShortText())) {
      const cFont *font = cFont::GetFont(fontSml);
-     ts.Set(osd, xl, y, xi01 - xl, yi01 - y, Info->ShortText(), font, Theme.Color(clrEventShortText), ColorBg);
+     ts.Set(osd, xl, y, xi01 - xl - w, yi01 - y, Info->ShortText(), font, Theme.Color(clrEventShortText), ColorBg);
      y += ts.Height();
      }
   y += font->Height();
@@ -1706,7 +1715,8 @@ void cDrawDescription::Draw(void)
   const char *titel = NULL;
   const char *shortText = NULL;
   const char *s = NULL;
-  const cFont *Font = cFont::GetFont(fontSml);
+  const cFont *font = cFont::GetFont(fontSml);
+  cString parentalRating = "";
   BackgroundPixmap->SetAlpha(0);
   BracketPixmap->SetAlpha(0);
   tColor textColorBg = clrTransparent;
@@ -1715,35 +1725,56 @@ void cDrawDescription::Draw(void)
      s = Info->Description();                   // text
      titel = Info->ChannelName();
      shortText = Info->ShortText();
+     if (Info->GetEvent()->ParentalRating())
+        parentalRating = Info->GetEvent()->GetParentalRatingString();
      }
   else {
      s = Event->Description();                  // text
      titel = Event->Title();
      shortText = Event->ShortText();
+     if (Event->ParentalRating())
+        parentalRating = Event->GetParentalRatingString();
      }
+  
   int x0 = aI.x0 + 1.5 * lineHeight;            // text left
   int x1 = aI.x1;                               // text right
   int y0 = aI.y0 + 1.3 * lineHeight;            // text top
   int y1 = aI.y1 - 1.3 * lineHeight;            // text bottom
 
-  int textwidth = x1 - x0 - lineHeight / 2;
-
-  int x00 = 1.5 * lineHeight;
+  int rand = Config.Margin + Gap;
+  int textwidth = x1 - x0 - rand;
+  int x00 = 1.5 * lineHeight + rand;
   int y00 = 1.3 * lineHeight;
+
+  int w = 0;
+  if (!isempty(parentalRating)) {
+      cString buffer = cString::sprintf(" %s ", *parentalRating);
+      w = font->Width(buffer);
+      BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00), buffer, Theme.Color(clrMenuMainBracket), textColorBg, font, w); // parental rating
+      }
+
   if (!isempty(titel)) {
-     BracketPixmap->DrawText(cPoint(x00 + Config.Margin + Gap, y00), titel, aI.titleColorFg, textColorBg, Font, textwidth); // title
+     BracketPixmap->DrawText(cPoint(x00, y00), titel, aI.titleColorFg, textColorBg, font, textwidth - w); // title
      y00 = y00 + 1.3 * lineHeight;
      y0 = y0 + 1.3 * lineHeight;
-  }
+     }
+
+#if (APIVERSNUM >= 20505)
+  if (Recording && Info->Errors() >= 0) {
+     cString buffer = cString::sprintf("%s %i ", tr("TS Errors:"), Info->Errors());
+     w = font->Width(buffer);
+     BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00), buffer, Theme.Color(clrMenuMainBracket), textColorBg, font, w); // error in recording
+     }
+#endif
 
   if (!isempty(shortText)) {
-     BracketPixmap->DrawText(cPoint(x00 + Config.Margin + Gap, y00), shortText, aI.shortTextColorFg, textColorBg, Font, textwidth); // shorttext
+     BracketPixmap->DrawText(cPoint(x00, y00), shortText, aI.shortTextColorFg, textColorBg, font, textwidth - w); // shorttext
      y0 = y0 + 1.3 * lineHeight;
-  }
+     }
 
   y0 = y0 + 0.4 * lineHeight;
 
-  wrapper.Set(s, Font, textwidth);
+  wrapper.Set(s, font, textwidth);
   int l0 = wrapper.Lines();                    // textlines
 
   int height = y1 - y0;                        // max height
@@ -1759,7 +1790,7 @@ void cDrawDescription::Draw(void)
   ScrollPixmap->SetAlpha(0);
 
   for (int i = 0; i < l0; i++) {
-     ScrollPixmap->DrawText(cPoint(Config.Margin + Gap, i * lineHeight), wrapper.GetLine(i), aI.descriptionColorFg, textColorBg, Font, textwidth); // description
+     ScrollPixmap->DrawText(cPoint(Config.Margin + Gap, i * lineHeight), wrapper.GetLine(i), aI.descriptionColorFg, textColorBg, font, textwidth); // description
      }
 
   ScrollPixmap->Unlock();
