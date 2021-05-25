@@ -211,7 +211,7 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
      // display time remaining
      cString time = ((Current / 60.0) > 0.1) ? cString::sprintf("-%d", max((int)ceil((Total - Current) / 60.0), 0)) : "";
      int w = cFont::GetFont(fontSml)->Width(time);
-     osd->DrawRectangle(xc10 + Margin, yc03 + lineHeight + 2 * Margin + Gap / 2, xc10m - 1 - 2 * Margin, yc04 - Margin, Theme.Color(clrBackground)); //Backgroung time remaining
+     osd->DrawRectangle(xc10 + Margin, yc03 + lineHeight + 2 * Margin + Gap / 2, xc10m - Margin, yc04 - Margin, Theme.Color(clrBackground)); //Backgroung time remaining
      osd->DrawText(xc10 + Margin + (xc10m - xc10 - 1 - 2 * Margin - w), yc03 + lineHeight + 2 * Margin + Gap / 2, time, Theme.Color(clrEventShortText), textColorBg, cFont::GetFont(fontSml), w, lineHeight - 2 * Margin, taRight | taBorder); // time remaining
      lastSeen = Seen;
      }
