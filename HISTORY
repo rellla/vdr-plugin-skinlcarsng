@@ -1,6 +1,10 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
 
+Version 0.3.5
+- Add TS errors to recording info
+- Add timeshift buffer to display channel
+
 Version 0.3.4
 - Automatic display description in menu epg, timer and recording
 - VDR-2.5.3 adjustments
