@@ -1759,19 +1759,23 @@ void cDrawDescription::Draw(void)
      y0 = y0 + 1.3 * lineHeight;
      }
 
+  bool space = false;
 #if (APIVERSNUM >= 20505)
   if (Recording && Info->Errors() >= 0) {
      cString buffer = cString::sprintf("%s %i ", tr("TS Errors:"), Info->Errors());
      w = font->Width(buffer);
      BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00), buffer, Theme.Color(clrMenuMainBracket), textColorBg, font, w); // error in recording
+     space = true;
      }
 #endif
 
   if (!isempty(shortText)) {
      BracketPixmap->DrawText(cPoint(x00, y00), shortText, aI.shortTextColorFg, textColorBg, font, textwidth - w); // shorttext
-     y0 = y0 + 1.3 * lineHeight;
+     space = true;
      }
 
+  if (space)
+     y0 = y0 + 1.3 * lineHeight;
   y0 = y0 + 0.4 * lineHeight;
 
   wrapper.Set(s, font, textwidth);
