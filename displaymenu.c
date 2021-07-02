@@ -1498,11 +1498,25 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
   cString t = cString::sprintf("%s  %s  %s", *DateString(Recording->Start()), *TimeString(Recording->Start()), Info->ChannelName() ? Info->ChannelName() : "");
   ts.Set(osd, xl, y, xi01 - xl, yi01 - y, t, font, Theme.Color(clrEventTime), ColorBg);
   y += ts.Height();
+  int xt = xi01;
   if (Info->GetEvent()->ParentalRating()) {
      cString buffer = cString::sprintf(" %s ", *Info->GetEvent()->GetParentalRatingString());
      const cFont *font = cFont::GetFont(fontSml);
      int w = font->Width(buffer);
-     osd->DrawText(xi01 - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
+     osd->DrawText(xt - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
+     xt -= w + xi02 - xi01;
+     }
+#if (APIVERSNUM >= 20505)
+  if (Info->Errors() > 0) {
+     cString buffer = cString::sprintf(" %d %s ", Info->Errors(), tr("errors"));
+     const cFont *font = cFont::GetFont(fontSml);
+     int w = font->Width(buffer);
+     osd->DrawText(xt - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
+     xt -= w + xi02 - xi01;
+     }
+#endif
+  if (xt != xi01) {
+     const cFont *font = cFont::GetFont(fontSml);
      int yb = y + font->Height();
      osd->DrawRectangle(xi02, y, xi02 + lineHeight / 2 - 1, yb - 1, frameColorBg);
      osd->DrawEllipse  (xi02 + lineHeight / 2, y, xi03 - 1, yb - 1, frameColorBg, 5);
@@ -1513,18 +1527,9 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
      Title = Recording->Name();
   ts.Set(osd, xl, y, xi01 - xl, yi01 - y, Title, font, Theme.Color(clrEventTitle), ColorBg);
   y += ts.Height();
-  int w = 0;
-#if (APIVERSNUM >= 20505)
-  if (Info->Errors() >= 0) {
-     cString buffer = cString::sprintf("%s %i ", tr("TS Errors:"), Info->Errors());
-     const cFont *font = cFont::GetFont(fontSml);
-     w = font->Width(buffer);
-     osd->DrawText(xi01 - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
-     }
-#endif
   if (!isempty(Info->ShortText())) {
      const cFont *font = cFont::GetFont(fontSml);
-     ts.Set(osd, xl, y, xi01 - xl - w, yi01 - y, Info->ShortText(), font, Theme.Color(clrEventShortText), ColorBg);
+     ts.Set(osd, xl, y, xi01 - xl, yi01 - y, Info->ShortText(), font, Theme.Color(clrEventShortText), ColorBg);
      y += ts.Height();
      }
   y += font->Height();
