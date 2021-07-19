@@ -8,6 +8,7 @@ enum viewMode {
 class cLCARSNGConfig {
 public:
   int Margin;
+  int displayError0;
   int displInfoMenuEPG;
   int displInfoMenuTimer;
   int displInfoMenuRec;

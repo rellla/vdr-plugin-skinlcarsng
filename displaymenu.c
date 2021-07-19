@@ -1507,7 +1507,7 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
      xt -= w + xi02 - xi01;
      }
 #if (APIVERSNUM >= 20505)
-  if (Info->Errors() > 0) {
+  if (Info->Errors() >= (1 - Config.displayError0)) {
      cString buffer = cString::sprintf(" %d %s ", Info->Errors(), tr("errors"));
      const cFont *font = cFont::GetFont(fontSml);
      int w = font->Width(buffer);
@@ -1766,7 +1766,7 @@ void cDrawDescription::Draw(void)
 
   bool space = false;
 #if (APIVERSNUM >= 20505)
-  if (Recording && Info->Errors() >= 0) {
+  if (Recording && Info->Errors() >= (1 - Config.displayError0)) {
      cString buffer = cString::sprintf("%s %i ", tr("TS Errors:"), Info->Errors());
      w = font->Width(buffer);
      BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00), buffer, Theme.Color(clrMenuMainBracket), textColorBg, font, w); // error in recording
