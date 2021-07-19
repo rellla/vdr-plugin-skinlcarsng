@@ -1503,23 +1503,28 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
      cString buffer = cString::sprintf(" %s ", *Info->GetEvent()->GetParentalRatingString());
      const cFont *font = cFont::GetFont(fontSml);
      int w = font->Width(buffer);
-     osd->DrawText(xt - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
-     xt -= w + xi02 - xi01;
+     int yb = y + font->Height();
+     DrawRectangleOutline(osd, xt - w - 2 * Margin, y - Margin, xi01 - 1, yb + Margin - 1, frameColorBr, frameColorBg, 15);
+     osd->DrawText(xt - w - Margin, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
+     xt -= w + xi02 - xi01 + 2 * Margin;
      }
 #if (APIVERSNUM >= 20505)
   if (Info->Errors() >= (1 - Config.displayError0)) {
      cString buffer = cString::sprintf(" %d %s ", Info->Errors(), tr("errors"));
      const cFont *font = cFont::GetFont(fontSml);
      int w = font->Width(buffer);
-     osd->DrawText(xt - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
-     xt -= w + xi02 - xi01;
+     int yb = y + font->Height();
+     DrawRectangleOutline(osd, xt - w - 2 * Margin, y - Margin, xt - 1, yb + Margin - 1, frameColorBr, frameColorBg, 15);
+     osd->DrawText(xt - w - Margin, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
+     xt -= w + xi02 - xi01 + 2 * Margin;
      }
 #endif
   if (xt != xi01) {
      const cFont *font = cFont::GetFont(fontSml);
      int yb = y + font->Height();
-     osd->DrawRectangle(xi02, y, xi02 + lineHeight / 2 - 1, yb - 1, frameColorBg);
-     osd->DrawEllipse  (xi02 + lineHeight / 2, y, xi03 - 1, yb - 1, frameColorBg, 5);
+     DrawRectangleOutline(osd, xi02, y - Margin, xi02 + lineHeight / 2 - 1, yb + Margin - 1, frameColorBr, frameColorBg, 11);
+     osd->DrawEllipse  (xi02 + lineHeight / 2, y - Margin, xi03 - 1, yb + Margin - 1, frameColorBr, 5);
+     osd->DrawEllipse  (xi02 + lineHeight / 2, y, xi03 - Margin - 1, yb - 1, frameColorBg, 5);
      }
   y += font->Height();
   const char *Title = Info->Title();
