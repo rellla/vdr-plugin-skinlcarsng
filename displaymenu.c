@@ -1815,6 +1815,7 @@ void cDrawDescription::Draw(void)
      w = font->Width(buffer);
      BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00), buffer, Theme.Color(clrMenuMainBracket), textColorBg, font, w); // error in recording
      space = true;
+     w += Gap;
      }
 #endif
 
@@ -1827,7 +1828,7 @@ void cDrawDescription::Draw(void)
      y0 = y0 + 1.3 * lineHeight;
   y0 = y0 + 0.4 * lineHeight;
 
-  wrapper.Set(s, font, textwidth);
+  wrapper.Set(s, font, textwidth - Gap);
   int l0 = wrapper.Lines();                    // textlines
 
   int height = y1 - y0;                        // max height
