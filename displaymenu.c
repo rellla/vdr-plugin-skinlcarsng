@@ -601,10 +601,16 @@ void cLCARSNGDisplayMenu::DrawLoad(void)
 
 void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
 {
-  const cFont *font = cFont::GetFont(fontOsd);
-  int NumRecordingsInPath = 0;
 #if APIVERSNUM > 20301
 #ifdef NUMRECORDINGSINPATH
+  if (cMenuRecordings::IsDelRecMenu()) {
+     osd->DrawRectangle(xm04 + Margin, yc06 + Margin, xm08 - Margin - 1, yc07 - Margin - 1, frameColorBg);
+     lastNumRecordingsInPath = -1;
+     return;
+     }
+
+  const cFont *font = cFont::GetFont(fontOsd);
+  int NumRecordingsInPath = 0;
   {
   LOCK_RECORDINGS_READ;
   NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
