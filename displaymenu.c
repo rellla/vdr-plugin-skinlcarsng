@@ -1426,13 +1426,46 @@ void cLCARSNGDisplayMenu::SetItem(const char *Text, int Index, bool Current, boo
   for (int i = 0; i < MaxTabs; i++) {
       const char *s = GetTabbedText(Text, i);
       if (s) {
-         int xt = xi00 + TextSpacing + Tab(i);
-         osd->DrawText(xt, y, s, ColorFg, ColorBg, font, xi01 - xt);
+         int xt = xi00 + 2 * TextSpacing + Tab(i);
+         int tabWidth = 0; 
+         if (Tab(i + 1))  
+            tabWidth = Tab(i + 1) - Tab(i);
+         else 
+            tabWidth = xi01 - xt;
+         if (!DrawProgressBar(xt, y, tabWidth - TextSpacing, s, ColorFg, ColorBg)) {
+            osd->DrawText(xt, y, s, ColorFg, ColorBg, font, xi01 - xt);
+            }
          }
       if (!Tab(i + 1))
          break;
       }
   SetEditableWidth(xi02 - xi00 - TextSpacing - Tab(1));
+}
+
+bool cLCARSNGDisplayMenu::DrawProgressBar(int x, int y, int width, const char *text, tColor ColorFg, tColor ColorBg) {
+  if (strlen(text) <= 5 || text[0] != '[' || text[strlen(text) - 1] != ']')
+     return false;
+  const char *p = text + 1;
+  int total = 0;
+  int now = 0;
+  for (; *p != ']'; ++p) {
+     if (*p == ' ' || *p == '|') {
+        ++total;
+        if (*p == '|')
+           ++now;
+        }
+     else {
+        return false;
+        }
+     }
+  int y0 = y + lineHeight / 4;
+  int y1 = y0 + lineHeight / 2;
+  osd->DrawRectangle(x, y, x + width, y + lineHeight - 1, ColorBg);
+  osd->DrawRectangle(x, y0, x + width, y1, ColorFg);
+  osd->DrawRectangle(x + 2, y0 + 2, x + width - 2, y1 - 2, ColorBg);
+  double progress = (double)now / (double)total;
+  osd->DrawRectangle(x + 3, y0 + 3, x + (width - 3) * progress, y1 - 3, ColorFg);
+  return true;
 }
 
 void cLCARSNGDisplayMenu::SetScrollbar(int Total, int Offset)

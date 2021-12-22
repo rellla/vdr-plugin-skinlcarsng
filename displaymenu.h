@@ -141,6 +141,7 @@ private:
   void DrawInfo(const cEvent *Event, bool WithTime);
   void DrawSeen(int Current, int Total);
   void DrawTextScrollbar(void);
+  bool DrawProgressBar(int x, int y, int width, const char *text, tColor ColorFg, tColor ColorBg);
 public:
 #ifdef DEPRECATED_SKIN_SETITEMEVENT
   using cSkinDisplayMenu::SetItemEvent;
