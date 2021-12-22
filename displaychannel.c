@@ -339,6 +339,12 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
            int x1 = xc04 + Gap + 2 + cFont::GetFont(fontSml)->Width("Do. 00.00. 00:00");
            int x2 = cFont::GetFont(fontSml)->Width(" - 00:00");
            if (Channel && Event) {
+              const char *File = Event->Title();
+              if (isRecording) {
+                 const char *recName  = Timer->File();
+                 if (recName && *recName == '@')
+                    File = recName;
+                 }
               tColor timerColor = Theme.Color(clrEventShortText);
 #ifdef SWITCHONLYPATCH
               if (Timer->HasFlags(tfSwitchOnly)) timerColor = Theme.Color(clrSwitchTimer);
@@ -347,9 +353,9 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
               osd->DrawText(xc04, y + y1, cString::sprintf("%s", *Date), timerColor, textColorBg, cFont::GetFont(fontSml), x1 - xc04 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
 	      if (isRecording)
                  osd->DrawText(xc04, y + y1, cString::sprintf("Rec: #%s", *Number), Theme.Color(clrChannelSymbolRecBg), textColorBg, cFont::GetFont(fontSml), x1 - xc04  - x2 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
-              int w = cFont::GetFont(fontSml)->Width(Event->Title()) + 4; // fontSml width to short
+              int w = cFont::GetFont(fontSml)->Width(File) + 4; // fontSml width to short
               osd->DrawRectangle(x1, y + y1, xc06k - 1, y + y1 + lineHeight - Gap / 2, Theme.Color(clrBackground));
-              osd->DrawText(x1, y + y1, cString::sprintf("%s", Event->Title()), timerColor, textColorBg, cFont::GetFont(fontSml), min(w, xc06k - x1 - 1), lineHeight - Gap / 2, taLeft | taBorder);
+              osd->DrawText(x1, y + y1, cString::sprintf("%s", File), timerColor, textColorBg, cFont::GetFont(fontSml), min(w, xc06k - x1 - 1), lineHeight - Gap / 2, taLeft | taBorder);
               }
            i++;
            }
