@@ -2,6 +2,7 @@
 #include <vdr/plugin.h>
 #include "config.h"
 #include "setup.h"
+#include "status.h"
 #include "lcarsng.h"
 
 #if defined(APIVERSNUM) && APIVERSNUM < 10734
@@ -39,9 +40,11 @@ class cPluginLCARSNG : public cPlugin {
 
 cPluginLCARSNG::cPluginLCARSNG(void) {
     lcarsng = NULL;
+    statusMonitor = NULL;
 }
 
 cPluginLCARSNG::~cPluginLCARSNG() {
+    delete statusMonitor;
 }
 
 const char *cPluginLCARSNG::CommandLineHelp(void) {
@@ -64,6 +67,7 @@ bool cPluginLCARSNG::Start(void) {
         dsyslog("skinlcarsng: TrueColor OSD found");
     cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
     lcarsng = new cLCARSNG;
+    statusMonitor = new cLCARSNGStatusMonitor;
     return lcarsng;
 }
 

@@ -1,6 +1,7 @@
 #include "config.h"
 #include "lcarsng.h"
 #include "displaymenu.h"
+#include "status.h"
 
 cBitmap cLCARSNGDisplayMenu::bmArrowUp(arrowup_xpm);
 cBitmap cLCARSNGDisplayMenu::bmArrowDown(arrowdown_xpm);
@@ -49,6 +50,9 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   currentIndex = -1;
   Margin = Config.Margin;
   drawDescription = NULL;
+  volumeBox = NULL;
+  lastVolume = statusMonitor->GetVolume();
+  lastVolumeTime = time(NULL);
 
   // The outer frame:
   d = 5 * lineHeight;
@@ -88,6 +92,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
 cLCARSNGDisplayMenu::~cLCARSNGDisplayMenu()
 {
   delete drawDescription;
+  delete volumeBox;
   delete tallFont;
   delete tinyFont;
   delete osd;
@@ -1328,6 +1333,7 @@ void cLCARSNGDisplayMenu::SetMessage(eMessageType Type, const char *Text)
 {
   if (Text) {
      DELETENULL(drawDescription);
+     DELETENULL(volumeBox);
      message = true;
      tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
      tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
@@ -1604,6 +1610,24 @@ const cFont *cLCARSNGDisplayMenu::GetTextAreaFont(bool FixedFont) const
   return font;
 }
 
+void cLCARSNGDisplayMenu::DrawVolume(void)
+{
+   if (!message) {
+      int volume = statusMonitor->GetVolume();
+      if (volume != lastVolume) {
+         if (!volumeBox)
+            volumeBox = new cLCARSNGVolumeBox(osd, cRect(0, yb15 - lineHeight, xa09, lineHeight));
+         volumeBox->SetVolume(volume, MAXVOLUME, volume ? false : true);
+         lastVolumeTime = time(NULL);
+	 lastVolume = volume;
+         }
+      else {
+         if (volumeBox && (time(NULL) - lastVolumeTime > 2))
+            DELETENULL(volumeBox);
+      }
+   }
+}
+
 void cLCARSNGDisplayMenu::Flush(void)
 {
   int Width;
@@ -1655,6 +1679,7 @@ void cLCARSNGDisplayMenu::Flush(void)
               DrawPlay(Control);
            }
      }
+  DrawVolume();
   osd->Flush();
   if (initial) {
      cDevice::PrimaryDevice()->ScaleVideo(availableRect);

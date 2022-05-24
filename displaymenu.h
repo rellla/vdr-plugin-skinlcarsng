@@ -1,3 +1,5 @@
+#include "volumebox.h"
+
 typedef struct {
   const cEvent *Event = NULL;
   const cTimer *Timer = NULL;
@@ -112,7 +114,10 @@ private:
   cString lastHeader;
   int lastSeen;
   int Margin;
+  int lastVolume;
+  time_t lastVolumeTime;
   cDrawDescription *drawDescription;
+  cLCARSNGVolumeBox *volumeBox;
   static cBitmap bmArrowUp, bmArrowDown, bmTransferMode;
   void SetCoordinateY(int y);
   void DrawMainFrameUpper(tColor Color, tColor ColorBg);
@@ -140,6 +145,7 @@ private:
   void DrawPlay(cControl *Control);
   void DrawInfo(const cEvent *Event, bool WithTime);
   void DrawSeen(int Current, int Total);
+  void DrawVolume(void);
   void DrawTextScrollbar(void);
   bool DrawProgressBar(int x, int y, int width, const char *text, tColor ColorFg, tColor ColorBg);
 public:
