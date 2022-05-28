@@ -14,7 +14,7 @@ static const char *DESCRIPTION    = "skin lcarsng";
 
 class cPluginLCARSNG : public cPlugin {
     private:
-        cLCARSNG *lcarsng;
+        // Add any member variables or functions you may need here.
     public:
         cPluginLCARSNG(void);
         virtual ~cPluginLCARSNG();
@@ -39,7 +39,6 @@ class cPluginLCARSNG : public cPlugin {
 };
 
 cPluginLCARSNG::cPluginLCARSNG(void) {
-    lcarsng = NULL;
     statusMonitor = NULL;
 }
 
@@ -63,12 +62,11 @@ bool cPluginLCARSNG::Start(void) {
     if (!cOsdProvider::SupportsTrueColor()) {
         esyslog("skinlcarsng: No TrueColor OSD found! Aborting!");
         return false;
-    } else
-        dsyslog("skinlcarsng: TrueColor OSD found");
+    }
+    dsyslog("skinlcarsng: TrueColor OSD found");
     cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
-    lcarsng = new cLCARSNG;
     statusMonitor = new cLCARSNGStatusMonitor;
-    return lcarsng;
+    return new cLCARSNG();
 }
 
 void cPluginLCARSNG::Stop(void) {
