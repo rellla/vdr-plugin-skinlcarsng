@@ -263,6 +263,22 @@ int FreeMB(const char *Base, bool Initial)
   return int(double(lastFreeMB) / (MBperMinute > 0 ? MBperMinute : MB_PER_MINUTE));
 }
 
+std::string StripXmlTag(std::string &Line, const char *Tag) {
+  // set the search strings
+  std::stringstream strStart, strStop;
+  strStart << "<" << Tag << ">";
+  strStop << "</" << Tag << ">";
+  // find the strings
+  std::string::size_type locStart = Line.find(strStart.str());
+  std::string::size_type locStop = Line.find(strStop.str());
+  if (locStart == std::string::npos || locStop == std::string::npos)
+     return "";
+  // extract relevant text
+  int pos = locStart + strStart.str().size();
+  int len = locStop - pos;
+  return len < 0 ? "" : Line.substr(pos, len);
+}
+
 // --- cLCARSNG ------------------------------------------------------------
 
 cLCARSNG::cLCARSNG(void)

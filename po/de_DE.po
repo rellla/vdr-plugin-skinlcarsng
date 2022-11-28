@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.0.2\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2021-07-19 12:30+0200\n"
+"POT-Creation-Date: 2022-11-28 13:55+0100\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: Karl Melscher <kamel5@gmx.net>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -47,6 +47,18 @@ msgstr "WIEDERGABE"
 
 msgid "errors"
 msgstr "Fehler"
+
+msgid "Search timer:"
+msgstr "Suchtimer:"
+
+msgid "caused by:"
+msgstr "Ausgelöst durch:"
+
+msgid "reason:"
+msgstr "Grund:"
+
+msgid "search pattern:"
+msgstr "Suchmuster:"
 
 msgid "TS Errors:"
 msgstr "TS Fehler:"

@@ -1583,10 +1583,42 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
      y += ts.Height();
      }
   y += font->Height();
+  std::stringstream sstrInfo;
   if (!isempty(Info->Description())) {
+     sstrInfo << Info->Description() << std::endl;
+     }
+  const char *aux = NULL;
+  aux = Info->Aux();
+  if (aux) {
+     std::string strAux = aux;
+     std::string auxEpgsearch = StripXmlTag(strAux, "epgsearch");
+     if (!auxEpgsearch.empty()) {
+        std::string searchTimer = StripXmlTag(auxEpgsearch, "searchtimer");
+        if (!searchTimer.empty()) {
+           sstrInfo << std::endl << tr("Search timer:") << " " << searchTimer;
+           }
+        }
+     std::string str_tvscraper = StripXmlTag(strAux, "tvscraper");
+     if (!str_tvscraper.empty()) {
+        std::string causedby = StripXmlTag(str_tvscraper, "causedBy");
+        std::string reason = StripXmlTag(str_tvscraper, "reason");
+        if (!causedby.empty() && !reason.empty()) {
+           sstrInfo << std::endl << "TVScraper: " << tr("caused by:") << " " << causedby << ", "
+                                 << tr("reason:") << " " << reason;
+           }
+        }
+     std::string str_vdradmin = StripXmlTag(strAux, "vdradmin-am");
+     if (!str_vdradmin.empty()) {
+        std::string pattern = StripXmlTag(str_vdradmin, "pattern");
+        if (!pattern.empty()) {
+           sstrInfo << std::endl << "VDRadmin-AM: " << tr("search pattern:") << " " << pattern;
+           }
+        }
+     }
+  if (!isempty(sstrInfo.str().c_str())) {
      int yt = y;
      int yb = yi01;
-     textScroller.Set(osd, xl, yt, xi01 - xl, yb - yt, Info->Description(), font, Theme.Color(clrEventDescription), ColorBg);
+     textScroller.Set(osd, xl, yt, xi01 - xl, yb - yt, sstrInfo.str().c_str(), font, Theme.Color(clrEventDescription), ColorBg);
      DrawTextScrollbar();
      }
 }
