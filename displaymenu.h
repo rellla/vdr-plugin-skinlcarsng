@@ -27,24 +27,18 @@ private:
   cOsd *osd;
   AnimatedInfo_t aI;
   int lineHeight;
-  bool stop = false;
-  bool doflush = false;
-  bool isAnimated = true;
   cPixmap *BackgroundPixmap = NULL;
   cPixmap *BracketPixmap = NULL;
-  cPixmap *MovePixmap = NULL;
-  cPixmap *ScrollPixmap = NULL;
-  cPoint MoveStart, MoveEnd;
+  cPixmap *TextPixmap = NULL;
   cTextWrapper wrapper;
   void DrawBracket(void);
   void Draw(void);
+  void DoSleep(int duration);
   void Action(void);
 public:
   cDrawDescription(cOsd *osd, AnimatedInfo_t animatedInfo);
   virtual ~cDrawDescription();
   bool IsRunning(void) { return Running(); };
-  void StartFlush(void) { doflush = true; };
-  void StopFlush(void) { doflush = false; };
   };
 
 // --- cLCARSNGDisplayMenu -------------------------------------------------

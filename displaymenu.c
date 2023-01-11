@@ -1676,9 +1676,6 @@ void cLCARSNGDisplayMenu::Flush(void)
      else
         availableRect = cDevice::PrimaryDevice()->CanScaleVideo(cRect::Null);
      }
-  if (drawDescription) {
-     drawDescription->StopFlush();
-     }
   DrawFrameDisplay();
   switch (MenuCategory()) {
      case mcMain:
@@ -1712,7 +1709,8 @@ void cLCARSNGDisplayMenu::Flush(void)
            }
      }
   DrawVolume();
-  osd->Flush();
+  if (!(drawDescription && drawDescription->IsRunning()))
+     osd->Flush();
   if (initial) {
      cDevice::PrimaryDevice()->ScaleVideo(availableRect);
      }
@@ -1733,9 +1731,6 @@ void cLCARSNGDisplayMenu::Flush(void)
         drawDescription = new cDrawDescription(osd, animatedInfo);
         }
      }	             
-  if (drawDescription) {
-     drawDescription->StartFlush();
-     }
   initial = false;
 }
 
@@ -1752,10 +1747,9 @@ cDrawDescription::cDrawDescription(cOsd *osd, AnimatedInfo_t animatedInfo) : cTh
 
 cDrawDescription::~cDrawDescription()
 {
-  isAnimated = true;
   Cancel(2);
-  if (ScrollPixmap)
-     osd->DestroyPixmap(ScrollPixmap);
+  if (TextPixmap)
+     osd->DestroyPixmap(TextPixmap);
   if (BracketPixmap)
      osd->DestroyPixmap(BracketPixmap);
   if (BackgroundPixmap)
@@ -1768,10 +1762,15 @@ void cDrawDescription::DrawBracket(void)
   int x1 = aI.x1;
   int y0 = aI.y0;
   int y1 = aI.y1;
-  BackgroundPixmap = osd->CreatePixmap(-1, cRect(x0, y0, x1 - x0, y1 - y0));
-  BackgroundPixmap->SetAlpha(0);
-  BackgroundPixmap->Fill((aI.viewmode == escaledvideo) ? Theme.Color(clrBackground) : aI.textColorBg);
+  if (BackgroundPixmap = osd->CreatePixmap(-1, cRect(x0, y0, x1 - x0, y1 - y0))) {
+     BackgroundPixmap->SetAlpha(0);
+     BackgroundPixmap->Fill((aI.viewmode == escaledvideo) ? Theme.Color(clrBackground) : aI.textColorBg);
+     }
+
   BracketPixmap = osd->CreatePixmap(-1, cRect(x0, y0, x1 - x0, y1 - y0));
+  if (!BracketPixmap)
+     return;
+
   BracketPixmap->SetAlpha(0);
   BracketPixmap->Fill(clrTransparent);
   tColor Color = Theme.Color(clrMenuMainBracket);
@@ -1796,6 +1795,9 @@ void cDrawDescription::DrawBracket(void)
 
 void cDrawDescription::Draw(void)
 {
+  if (!BracketPixmap)
+     return;
+
   const cEvent *Event = NULL;
   const cTimer *Timer = NULL;
   const cRecording *Recording = NULL;
@@ -1895,79 +1897,102 @@ void cDrawDescription::Draw(void)
 
   int pixmapwidth = x1 - x0;
   int pixmapHeigh = l1 * lineHeight;
-  ScrollPixmap = osd->CreatePixmap(-1, cRect(x0, y0, pixmapwidth, pixmapHeigh), cRect(0, 0, pixmapwidth, l0 * lineHeight));
-  ScrollPixmap->Lock();
-  ScrollPixmap->Fill(clrTransparent);
-  ScrollPixmap->SetAlpha(0);
 
-  for (int i = 0; i < l0; i++) {
-     ScrollPixmap->DrawText(cPoint(Config.Margin + Gap, i * lineHeight), wrapper.GetLine(i), aI.descriptionColorFg, textColorBg, font, textwidth); // description
+  TextPixmap = osd->CreatePixmap(-1, cRect(x0, y0, pixmapwidth, pixmapHeigh), cRect(0, 0, pixmapwidth, l0 * lineHeight));
+  if (!TextPixmap) {
+     return;
      }
 
-  ScrollPixmap->Unlock();
-  MoveStart = ScrollPixmap->DrawPort().Point();
+  TextPixmap->Fill(clrTransparent);
+  TextPixmap->SetAlpha(0);
 
-  int h0 = l0 * lineHeight;                    // text height in pixel
-  int y = (pixmapHeigh - h0);                  // pixel to scroll
+  for (int i = 0; i < l0; i++) {
+     TextPixmap->DrawText(cPoint(Config.Margin + Gap, i * lineHeight), wrapper.GetLine(i), aI.descriptionColorFg, textColorBg, font, textwidth); // description
+     }
 
-  MoveEnd.Set(0, min(0, y));
-  isAnimated = false;
+}
+
+void cDrawDescription::DoSleep(int duration) {
+  int sleepSlice = 10;
+  for (int i = 0; Running() && (i * sleepSlice < duration); i++)
+     cCondWait::SleepMs(sleepSlice);
 }
 
 void cDrawDescription::Action(void)
 {
   DrawBracket();
   Draw();
-  if (isAnimated)
+
+  if (!(BackgroundPixmap && BracketPixmap && TextPixmap))
      return;
 
-  bool faded = false;
-  int j = 0;
-  int y = Config.scrollPixel;
-  int z = 0;
-  int step = (Config.fadeinTime) ? (255 * Config.framesPerSecond / Config.fadeinTime) : 255;
-  uint64_t Now;
-  uint64_t StartTime = cTimeMs::Now();
+  int fadeinDelay = Config.waitTimeFadein;
+  int scrollDelay = Config.waitTimeScroll;
 
+  DoSleep(fadeinDelay);
+
+  //FadeIn
+  if (Config.fadeinTime) {
+     int FadeTime = Config.fadeinTime;
+     int FadeFrameTime = FadeTime / 10;
+     uint64_t Start = cTimeMs::Now();
+     while (Running()) {
+        uint64_t Now = cTimeMs::Now();
+        double t = std::min(double(Now - Start) / FadeTime, 1.0);
+        int Alpha = t * ALPHA_OPAQUE;
+        cPixmap::Lock();
+        BackgroundPixmap->SetLayer(0);
+        BracketPixmap->SetLayer(1);
+        TextPixmap->SetLayer(2);
+        BackgroundPixmap->SetAlpha(Alpha);
+        BracketPixmap->SetAlpha(Alpha);
+        TextPixmap->SetAlpha(Alpha);
+        cPixmap::Unlock();
+        if (Running() && osd)
+           osd->Flush();
+        int Delta = cTimeMs::Now() - Now;
+        if (Running() && (Delta < FadeFrameTime))
+           cCondWait::SleepMs(FadeFrameTime - Delta);
+        if ((int)(Now - Start) > FadeTime)
+           break;
+        }
+     }
+
+  int maxY = std::max(0, TextPixmap->DrawPort().Height() - TextPixmap->ViewPort().Height());
+  if (maxY == 0)
+     return;
+
+  int drawPortY = 0;
+  int FrameTime = (int)(1000 / Config.framesPerSecond);
+  bool doSleep = false;
+
+  DoSleep(scrollDelay);
+
+  // Scroll
   while (Running()) {
-     Now = cTimeMs::Now();
-     if ((int)(Now - StartTime) > Config.waitTimeFadein) {
-        if (ScrollPixmap && !isAnimated) {
-           if (!faded) {
-              BackgroundPixmap->SetLayer(0);
-              BracketPixmap->SetLayer(1);
-              ScrollPixmap->SetLayer(2);
-              z = z + step;
-              if (z <= (255 + step)) {
-                 int alpha = min(z, 255);
-                 BackgroundPixmap->SetAlpha(alpha);
-                 BracketPixmap->SetAlpha(alpha);
-                 ScrollPixmap->SetAlpha(alpha);
-              } else {
-                 faded = true;
-                 StartTime = cTimeMs::Now();
-                 }
-              }
-           if (faded && (int)(Now - StartTime) > Config.waitTimeScroll) {
-              if (j <= MoveEnd.Y()) {
-                 isAnimated = true;
-              } else {
-                 ScrollPixmap->Scroll(cPoint(0, -y));
-                 j = j - y;
-                 }
-              }
-           }
+     uint64_t Now = cTimeMs::Now();
+     cPixmap::Lock();
+     drawPortY = TextPixmap->DrawPort().Y();
+     drawPortY -= Config.scrollPixel;
+     cPixmap::Unlock();
+     if (std::abs(drawPortY) > maxY) {
+        doSleep = true;
+        DoSleep(scrollDelay);
+        drawPortY = 0;
         }
-     int count = 0;
-     while (!isAnimated && !doflush && count < 200) {
-        cCondWait::SleepMs(10);
-        count++;
-        }
-     if (osd)
+     cPixmap::Lock();
+     if (Running())
+        TextPixmap->SetDrawPortPoint(cPoint(0, drawPortY));
+     cPixmap::Unlock();
+     if (Running() && osd) {
         osd->Flush();
-     if (isAnimated)
-        break;
-     int Rest = (int)(1000 / Config.framesPerSecond) - ((int)(cTimeMs::Now() - Now));
-     cCondWait::SleepMs(max(2, Rest));
+        }
+     if (doSleep) {
+        doSleep = false;
+        DoSleep(scrollDelay);
+        }
+     int Delta = cTimeMs::Now() - Now;
+     if (Running() && (Delta < FrameTime))
+        cCondWait::SleepMs(FrameTime - Delta);
      }
 }
