@@ -25,8 +25,8 @@ cLCARSNGSetup::cLCARSNGSetup() {
   Add(new cMenuEditBoolItem(tr("In menu timer"),              &tmpConfig.displInfoMenuTimer));
   Add(new cMenuEditBoolItem(tr("In menu recording"),          &tmpConfig.displInfoMenuRec));
   Add(new cMenuEditIntItem(tr("Waiting period Fade-in (ms)"), &tmpConfig.waitTimeFadein, 0, 5000, trVDR("off")));
-  Add(new cMenuEditIntItem(tr("Waiting period Scroll (ms)"),  &tmpConfig.waitTimeScroll, 0, 5000, trVDR("off")));
   Add(new cMenuEditIntItem(tr("Fade-in time (ms)"),           &tmpConfig.fadeinTime, 0, 1000, trVDR("off")));
+  Add(new cMenuEditIntItem(tr("Waiting period Scroll (ms)"),  &tmpConfig.waitTimeScroll, 0, 5000, trVDR("off")));
   Add(new cMenuEditIntItem(tr("ScrollPixel"),                 &tmpConfig.scrollPixel, 1, 10));
   Add(new cMenuEditIntItem(tr("Refreshrate (Frames/s)"),      &tmpConfig.framesPerSecond, 10, 60));
 
