@@ -22,7 +22,7 @@ cLCARSNGVolumeBox::cLCARSNGVolumeBox(cOsd *Osd, const cRect &Rect) {
   x5 = x6 - lineHeight / 2;
   x4 = x5 - Gap;
   y0 = 0;
-  y1 = lineHeight;
+  y1 = Rect.Height();
   pixmapBackground->DrawRectangle(cRect(x0, y0, x7 - 1, y1), Theme.Color(clrBackground));
   pixmapBackground->DrawRectangle(cRect(x0, y0, x1 - 1, y1), clrTransparent);
   pixmapBackground->DrawEllipse  (cRect(x0, y0, x1, y1), frameColor, 7);

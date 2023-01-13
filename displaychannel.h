@@ -1,3 +1,5 @@
+#include "volumebox.h"
+
 // --- cLCARSNGDisplayChannel ----------------------------------------------
 
 class cLCARSNGDisplayChannel : public cSkinDisplayChannel, cThread {
@@ -12,6 +14,9 @@ private:
   bool lastOn;
   bool On;
   int Margin;
+  int lastVolume;
+  time_t lastVolumeTime;
+  cLCARSNGVolumeBox *volumeBox = NULL;
   cFont *tinyFont;
   cFont *tallFont;
   tColor frameColorFg;
@@ -43,6 +48,7 @@ private:
   void DrawBlinkingRec(void);
   void DrawEventRec(const cEvent *Present, const cEvent *Following);
   void DrawTimer(void);
+  void DrawVolume(void);
 public:
   cLCARSNGDisplayChannel(bool WithInfo);
   virtual ~cLCARSNGDisplayChannel();
