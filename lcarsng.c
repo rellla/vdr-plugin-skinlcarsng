@@ -189,26 +189,29 @@ void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Colo
 static time_t lastDiskSpaceCheck = 0;
 static int lastFreeMB = -1;
 
-int FreeMB(const char *Base, bool Initial)
+int FreeMB(const char *Base, bool menurecording)
 {
+  if (!menurecording)
+     return cVideoDiskUsage::FreeMinutes();
+
   bool Directory = false;
-  char *currentBase = NULL;
-  cStateKey recordingsStateKey;
-  if (Base) {
-     size_t Length = strlen(Base);
-     const char *p = strchr(Base, ' ');
-     int l = p - Base;
-     if (l < 0)
-        return 0;
-     currentBase = MALLOC(char, Length - l);
-     strncpy(currentBase, &Base[l + 1], Length - l -1);
-     currentBase[Length - l -1] = '\0';
+  char *currentBase = Base ? strdup(Base) : NULL;
+
+  if (currentBase) {
+     const char *p = strchr(currentBase, ' ');
+     if (p) {
+        int n = p - currentBase;
+        if (n == 3 || n == 6) {
+           strshift(currentBase, n + 1);
+           }
+        }
      Directory = (strcmp(currentBase, cString::sprintf("%s", trVDR("Recordings"))) && strcmp(currentBase, cString::sprintf("%s", trVDR("Deleted Recordings")))) ? true : false;
-//     free(p);
      }
   if (!Directory)
      return cVideoDiskUsage::FreeMinutes();
-  if (Initial || lastFreeMB <= 0 || (time(NULL) - lastDiskSpaceCheck) > DISKSPACECHEK) {
+
+  cStateKey recordingsStateKey;
+  if (lastFreeMB <= 0 || (time(NULL) - lastDiskSpaceCheck) > DISKSPACECHEK) {
      dev_t fsid = 0;
      int freediskspace = 0;
      std::string path = cVideoDirectory::Name();

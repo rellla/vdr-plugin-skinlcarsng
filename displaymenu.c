@@ -572,7 +572,7 @@ void cLCARSNGDisplayMenu::DrawDisk(void)
         bool DiskAlert = DiskUsage > DISKUSAGEALERTLIMIT;
         tColor ColorFg = DiskAlert ? Theme.Color(clrAlertFg) : frameColorFg;
         tColor ColorBg = DiskAlert ? Theme.Color(clrAlertBg) : frameColorBg;
-        int minutes = FreeMB(currentTitle, (currentTitle != lastcurrentTitle) ? true : false);
+        int minutes = FreeMB(currentTitle, (MenuCategory() == mcRecording));
         lastcurrentTitle = currentTitle;
         if (initial || DiskAlert != lastDiskAlert) {
            DrawRectangleOutline(osd, xa00, yb02, xa02 - 1, yb03 - 1, frameColorBr, frameColorBg, 15);
