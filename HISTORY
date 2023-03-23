@@ -1,5 +1,14 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
+Version 0.3.8
+- Add info from epgsearch, tvscraper and vdradmin-am in the detail view
+- Rework of animation in displaymenu
+- Rearrange setup
+- Add volume bar to display channel
+- Update FreeMB()
+- Always show remaining and total time in display recording
+
+Version 0.3.7
 - Don't show NumRecordingsInPath if recodings menu shows deleted recordings
 - Changed the name of an Instant Recording timer in the display channel
 - Replace "[||  ]" with graphics if a item has tabbed text
