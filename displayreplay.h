@@ -10,12 +10,15 @@ private:
   bool modeOnly;
   int iconHeight;
   int lineHeight;
+  int current = 0;
+  int total = 0;
   tColor frameColorFg;
   tColor frameColorBg;
   tColor frameColorBr;
   tColor textColorBg;
   int lastCurrentWidth;
   int lastTotalWidth;
+  int lastRestWidth;
   cString lastDate;
   tTrackId lastTrackId;
   bool message;
