@@ -196,15 +196,21 @@ int FreeMB(const char *Base, bool menurecording)
 
   bool Directory = false;
   char *currentBase = Base ? strdup(Base) : NULL;
-  cStateKey recordingsStateKey;
+
   if (currentBase) {
-     if (*currentBase == ' ')
-        strshift(currentBase, 1);
+     const char *p = strchr(currentBase, ' ');
+     if (p) {
+        int n = p - currentBase;
+        if (n == 3 || n == 6) {
+           strshift(currentBase, n + 1);
+           }
+        }
      Directory = (strcmp(currentBase, cString::sprintf("%s", trVDR("Recordings"))) && strcmp(currentBase, cString::sprintf("%s", trVDR("Deleted Recordings")))) ? true : false;
      }
   if (!Directory)
      return cVideoDiskUsage::FreeMinutes();
 
+  cStateKey recordingsStateKey;
   if (lastFreeMB <= 0 || (time(NULL) - lastDiskSpaceCheck) > DISKSPACECHEK) {
      dev_t fsid = 0;
      int freediskspace = 0;

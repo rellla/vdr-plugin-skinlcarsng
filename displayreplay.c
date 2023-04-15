@@ -24,6 +24,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
   Margin = Config.Margin;
   lastCurrentWidth = 0;
   lastTotalWidth = 0;
+  lastRestWidth = 0;
   memset(&lastTrackId, 0, sizeof(lastTrackId));
   initial = true;
   lastOn = false;
@@ -154,6 +155,7 @@ void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
 
 void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
 {
+  fps = Recording->FramesPerSecond();
   const cRecordingInfo *RecordingInfo = Recording->Info();
   if (!RecordingInfo)
      return;
@@ -176,10 +178,11 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
   }
   if (!isRecording)
      return;
+
   const cEvent *Event = RecordingInfo->GetEvent();
   if (!Event)
      return;
-  fps = Recording->FramesPerSecond();
+
   time_t liveEventStop = Event->EndTime();
   time_t recordingStart = time(0) - Recording->LengthInSeconds();
   framesTotal = (liveEventStop - recordingStart) * fps;
@@ -208,12 +211,14 @@ void cLCARSNGDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
 
 void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
 {
+  current = Current;
+  total = Total;
   int x = 0;
   int lH = lineHeight / 4;
   if (timshiftMode) {
      cString tM = "TimeshiftMode";
      int w = font->Width(tM);
-     osd->DrawText(xp13 - w, yp01, tM, Theme.Color(clrReplayPosition), textColorBg, font, w, 0, taRight);
+     osd->DrawText(xp03, yp01, tM, Theme.Color(clrReplayPosition), textColorBg, font, w, 0, taRight);
   }
   if (isRecording) {
      int w = font->Width(endTime);
@@ -245,13 +250,26 @@ void cLCARSNGDisplayReplay::SetCurrent(const char *Current)
   if (lastCurrentWidth > w)
      osd->DrawRectangle(xp03 + lastCurrentWidth - (lastCurrentWidth - w), yp04, xp03 + lastCurrentWidth, yp04 + lineHeight, Theme.Color(clrBackground));
   lastCurrentWidth = w;
+
+  // Display remaining time below progressbar
+  int rest = current - total;
+  cString restTime = cString::sprintf("%s", *IndexToHMSF(rest, false, fps));
+  int wR = font->Width(*restTime);
+  osd->DrawText(xp13 - wR, yp04, *restTime, Theme.Color(clrReplayPosition), textColorBg, font, max(lastRestWidth, wR), 0, taTop | taRight);
+  lastRestWidth = wR;
+
+  // Display total time above progressbar
+  if (isRecording)
+     return;
+
+  endTime = cString::sprintf("%s: %s", tr("length"), *IndexToHMSF(total, false, fps));
+  int wT = font->Width(*endTime);
+  osd->DrawText(xp13 - wT, yp02, *endTime, Theme.Color(clrReplayPosition), textColorBg, font, max(lastTotalWidth, wT), 0, taTop | taRight);
+  lastTotalWidth = wT;
 }
 
 void cLCARSNGDisplayReplay::SetTotal(const char *Total)
 {
-  int w = font->Width(Total);
-  osd->DrawText(xp13 - w, yp04, Total, Theme.Color(clrReplayPosition), textColorBg, font, max(lastTotalWidth, w), 0, taTop | taRight);
-  lastTotalWidth = w;
 }
 
 void cLCARSNGDisplayReplay::SetJump(const char *Jump)
