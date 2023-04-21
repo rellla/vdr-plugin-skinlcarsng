@@ -1,6 +1,7 @@
 #include "config.h"
 #include "lcarsng.h"
 #include "displayreplay.h"
+#include "status.h"
 
 cBitmap cLCARSNGDisplayReplay::bmTeletext(teletext_xpm);
 cBitmap cLCARSNGDisplayReplay::bmRadio(radio_xpm);
@@ -35,6 +36,9 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
   fps = DEFAULTFRAMESPERSECOND;
   framesTotal = 0;
   pbinit = true;
+  volumeBox = NULL;
+  lastVolume = statusMonitor->GetVolume();
+  lastVolumeTime = time(NULL);
   int d = 5 * lineHeight;
   xp00 = 0;
   xp01 = xp00 + d / 2;
@@ -105,6 +109,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
 cLCARSNGDisplayReplay::~cLCARSNGDisplayReplay()
 {
   Cancel(3);
+  delete volumeBox;
   delete osd;
 }
 
@@ -282,6 +287,7 @@ void cLCARSNGDisplayReplay::SetJump(const char *Jump)
 void cLCARSNGDisplayReplay::SetMessage(eMessageType Type, const char *Text)
 {
   if (Text) {
+     DELETENULL(volumeBox);
      tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
      tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
      int x0, x1, y0, y1, lx, ly;
@@ -318,6 +324,24 @@ void cLCARSNGDisplayReplay::Action(void)
   }
 }
 
+void cLCARSNGDisplayReplay::DrawVolume(void)
+{ 
+  if (!message) {
+     int volume = statusMonitor->GetVolume();
+     if (volume != lastVolume) {
+        if (!volumeBox)
+           volumeBox = new cLCARSNGVolumeBox(osd, cRect(0, yp08, xp15, yp09 - yp08));
+        volumeBox->SetVolume(volume, MAXVOLUME, volume ? false : true);
+        lastVolumeTime = time(NULL);
+        lastVolume = volume;
+        }
+     else {
+        if (volumeBox && (time(NULL) - lastVolumeTime > 2))
+           DELETENULL(volumeBox);
+        }
+     }
+}
+
 void cLCARSNGDisplayReplay::Flush(void)
 {
   if (!modeOnly) {
@@ -325,6 +349,7 @@ void cLCARSNGDisplayReplay::Flush(void)
      DrawTrack();
      DrawBlinkingRec();
      }
+  DrawVolume();
   osd->Flush();
   initial = false;
 }
