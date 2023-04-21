@@ -1,3 +1,5 @@
+#include "volumebox.h"
+
 // --- cLCARSNGDisplayReplay -----------------------------------------------
 
 class cLCARSNGDisplayReplay : public cSkinDisplayReplay, cThread {
@@ -21,6 +23,9 @@ private:
   int lastRestWidth;
   cString lastDate;
   tTrackId lastTrackId;
+  int lastVolume;
+  time_t lastVolumeTime;
+  cLCARSNGVolumeBox *volumeBox = NULL;
   bool message;
   bool isRecording;
   int framesTotal;
@@ -31,6 +36,7 @@ private:
   void DrawDate(void);
   void DrawTrack(void);
   void DrawBlinkingRec(void);
+  void DrawVolume(void);
   bool initial;
   bool lastOn;
   bool On;
