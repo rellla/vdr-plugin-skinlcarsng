@@ -135,7 +135,8 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
      osd->DrawEllipse  (xc06n, yc06 - lineHeight - 1, xc07 - lineHeight / 2 - 1, yc06 - lineHeight / 2 - 1, frameColorBr, -1);
      osd->DrawEllipse  (xc06n + Margin, yc06 - lineHeight - 1 - Margin, xc07 - lineHeight / 2 - 1 + Margin, yc06 - lineHeight / 2 - 1 - Margin, frameColorBg, -1);
      // Middle left bottom
-     DrawRectangleOutline(osd, xc06n, yc11, xc07 - 1, yc12 - 1, frameColorBr, frameColorBg, 15);
+     osd->DrawEllipse  (xc06n, yc11, xc07 - 1, yc12 - 1, frameColorBr, 4);
+     osd->DrawEllipse  (xc06n + Margin, yc11 + Margin, xc07 - 1 - Margin, yc12 - 1 - Margin, frameColorBg, 4);
      DrawRectangleOutline(osd, xc07 - lineHeight / 2, yc07, xc07 - 1, yc11 + Margin, frameColorBr, frameColorBg, 7);
      osd->DrawEllipse  (xc06n, yc11 - lineHeight / 2, xc07 - lineHeight / 2 - 1, yc11, frameColorBr, -4);
      osd->DrawEllipse  (xc06n + Margin, yc11 - lineHeight / 2 + Margin, xc07 - lineHeight / 2 - 1 + Margin, yc11 + Margin, frameColorBg, -4);
@@ -153,7 +154,8 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
      osd->DrawEllipse  (xc08 + lineHeight / 2 - Margin, yc06 - lineHeight - 1 - Margin, xc09 - 1 - Margin, yc06 - lineHeight / 2 - 1 - Margin, frameColorBg, -2);
      osd->DrawRectangle(xc08 + Margin, yc05 + Margin, xc08 + lineHeight / 2 - 1 - Margin, yc06 - 1 - Margin, frameColorBg);
      // Middle right bottom
-     DrawRectangleOutline(osd, xc08, yc11, xc09 - 1, yc12 - 1, frameColorBr, frameColorBg, 15);
+     osd->DrawEllipse  (xc08, yc11, xc09 - 1, yc12 - 1, frameColorBr, 3);
+     osd->DrawEllipse  (xc08 + Margin, yc11 + Margin, xc09 - 1 - Margin, yc12 - 1 - Margin, frameColorBg, 3);
      DrawRectangleOutline(osd, xc08, yc07, xc08 + lineHeight / 2 - 1, yc11 + Margin, frameColorBr, frameColorBg, 7);
      osd->DrawEllipse  (xc08 + lineHeight / 2, yc11 - lineHeight / 2, xc09 - 1, yc11, frameColorBr, -3);
      osd->DrawEllipse  (xc08 + lineHeight / 2 - Margin, yc11 - lineHeight / 2 + Margin, xc09 - 1 - Margin, yc11 + Margin, frameColorBg, -3);
