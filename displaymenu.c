@@ -242,18 +242,19 @@ void cLCARSNGDisplayMenu::SetCoordinateY(int y)
   int yd = (MenuCategory() == mcChannel && viewmode == esmalscreen) ? yb15 : yc04;
   int r = lineHeight;
   xd07 = xd - Gap;
-  xd06 = xd07 - ((zoom > 1) ? 0.5 : 1) * r;
-  xd05 = xd06 - (6 - zoom) * r;
-  xd04 = xd05 - ((zoom > 1) ? 0.5 : 1) * r;
+  int fac = (zoom > 1) ? 0.75 : 1;
+  xd06 = xd07 - (fac * 0.5 * r);
+  xd05 = xd06 - (7 - zoom - ((zoom > 1) ? 1 : 0)) * r;
+  xd04 = xd05 - (fac * 0.5 * r);
   xd03 = xd04 - Gap;
-  xd02 = xd03 - ((zoom > 1) ? 0.5 : 1) * r;
-  xd01 = xd02 - (6 - zoom) * r;
-  xd00 = xd01 - ((zoom > 1) ? 0.5 : 1) * r;
+  xd02 = xd03 - (fac * 0.5 * r);
+  xd01 = xd02 - (7 - zoom - ((zoom > 1) ? 1 : 0)) * r;
+  xd00 = xd01 - (fac * 0.5 * r);
   yd00 = yt00;
   yd05 = yd - 3 * Gap;
-  yd04 = yd05 - ((zoom > 1) ? 0.75 : 1) * r; // Button in der Mitte
+  yd04 = yd05 - fac * r; // Button in der Mitte
   yd03 = yd04 - Gap;
-  yd02 = yd03 - ((zoom > 1) ? 0.75 : 1) * r; // Button in der Mitte
+  yd02 = yd03 - fac * r; // Button in der Mitte
   yd01 = yd02 - Gap;
 
   xs = 0;
