@@ -1815,7 +1815,7 @@ void cDrawDescription::Draw(void)
   } else if (aI.Timer) {
      Timer = aI.Timer;
      Event = Timer->Event();
-     if (!Event->Description())
+     if (!Event || !Event->Description())
         return;
   } else
      return;
