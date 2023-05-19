@@ -1957,7 +1957,7 @@ void cDrawDescription::Draw(void)
   if (aI.Recording) {
      Recording = aI.Recording;
      Info = Recording->Info();
-     if (!Info->Description())
+     if (!Info || !Info->Description())
         return;
   } else if (aI.Event) {
      Event = aI.Event;
@@ -1966,7 +1966,7 @@ void cDrawDescription::Draw(void)
   } else if (aI.Timer) {
      Timer = aI.Timer;
      Event = Timer->Event();
-     if (!Event->Description())
+     if (!Event || !Event->Description())
         return;
   } else
      return;
@@ -2040,6 +2040,9 @@ void cDrawDescription::Draw(void)
 
   wrapper.Set(s, font, textwidth - Gap);
   int l0 = wrapper.Lines();                    // textlines
+
+  if (!s || isempty(s))
+    return;
 
   int height = y1 - y0;                        // max height
   int lines = (int)(height / lineHeight);      // visible lines
