@@ -1887,6 +1887,9 @@ void cDrawDescription::Draw(void)
      y0 = y0 + 1.3 * lineHeight;
   y0 = y0 + 0.4 * lineHeight;
 
+  if (!s || isempty(s))
+     return;
+
   wrapper.Set(s, font, textwidth - Gap);
   int l0 = wrapper.Lines();                    // textlines
 
