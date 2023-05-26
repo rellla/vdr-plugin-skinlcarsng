@@ -5,6 +5,7 @@ typedef struct {
   const cTimer *Timer = NULL;
   const cRecording *Recording = NULL;
   const cChannel *Channel = NULL;
+  bool Fast = false;
   int Index = -1;
   bool Current = false;
   bool Selectable = false;
@@ -19,24 +20,31 @@ typedef struct {
   int y0 = 0;
   int y1 = 0;
   int viewmode = 0;
+  int drawPortY = 0;
+  int delayScroll = 0;
+  int delayTop = 0;
+  int delayBottom = 0;
+  bool doSleep = false;
   tColor textColorBg, titleColorFg, shortTextColorFg, descriptionColorFg, frameColorBr;
 } AnimatedInfo_t;
 
 class cDrawDescription : public cThread {
 private:
   cOsd *osd;
-  AnimatedInfo_t aI;
+  AnimatedInfo_t *aI;
   int lineHeight;
   cPixmap *BackgroundPixmap = NULL;
   cPixmap *BracketPixmap = NULL;
   cPixmap *TextPixmap = NULL;
   cTextWrapper wrapper;
+  void SetLayer(bool show = false);
+  void SetAlpha(int alpha = 255);
   void DrawBracket(void);
   void Draw(void);
-  void DoSleep(int duration);
+  int DoSleep(int duration);
   void Action(void);
 public:
-  cDrawDescription(cOsd *osd, AnimatedInfo_t animatedInfo);
+  cDrawDescription(cOsd *osd, AnimatedInfo_t *animatedInfo);
   virtual ~cDrawDescription();
   bool IsRunning(void) { return Running(); };
   };
@@ -102,6 +110,7 @@ private:
   bool lastLiveIndicatorTransferring;
   const cChannel *lastChannel;
   cString lastChannelName;
+  const cRecording *lastSetRecording = NULL;
   const cEvent *lastEvent;
   const cRecording *lastRecording;
   AnimatedInfo_t animatedInfo;
@@ -142,6 +151,7 @@ private:
   void DrawVolume(void);
   void DrawTextScrollbar(void);
   bool DrawProgressBar(int x, int y, int width, const char *text, tColor ColorFg, tColor ColorBg);
+  void DescriptionClear(void);
 public:
 #ifdef DEPRECATED_SKIN_SETITEMEVENT
   using cSkinDisplayMenu::SetItemEvent;
