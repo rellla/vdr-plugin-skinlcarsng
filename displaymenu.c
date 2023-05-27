@@ -469,7 +469,7 @@ void cLCARSNGDisplayMenu::DrawMainFrameLower(void)
      }
   DrawRectangleOutline(osd, xm08 + Gap, yc06, xs00 - Gap - 1, yc07 - 1, frameColorBr, frameColorBg, 15);
   // VDR version:
-  osd->DrawRectangle(xa00, yb10, xa02 - 1, yb15 - 1, frameColorBr);
+  DrawRectangleOutline(osd, xa00, yb10, xa02 - 1, yb15 - 1, frameColorBr, frameColorBg, 15);
   osd->DrawText(xa00 + Margin, yb10 + Margin, cString::sprintf("%s-%s", "VDR", VDRVERSION), frameColorFg, frameColorBg, font, xa02 - xa00 - 2 * Margin, yb15 - yb10 - 2 * Margin, taTop | taRight | taBorder);
   osd->DrawText(xa00 + Margin, yb15 - lineHeight - Margin, "LCARSNG", frameColorFg, frameColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
 }
@@ -492,9 +492,8 @@ void cLCARSNGDisplayMenu::DrawMainFrameChannel(void)
   osd->DrawEllipse  (xm07 + lineHeight / 2, yt00 + Margin, xm08 - 1 - Margin, yt01 - 1 - Margin, frameColorBg, 5);
   // Center part:
   DrawRectangleOutline(osd, xa00, yc00, xa02 - 1, yc11 - 1, frameColorBr, frameColorBg, 15);
-//  DrawRectangleOutline(osd, xa00, yt06 + Gap, xa02 - 1, yb00 - 1 - Gap, frameColorBr, frameColorBg, 15);
   // VDR version:
-  osd->DrawRectangle(xa00, yb10, xa02 - 1, yb15 - 1, frameColorBr);
+  DrawRectangleOutline(osd, xa00, yb10, xa02 - 1, yb15 - 1, frameColorBr, frameColorBg, 15);
   osd->DrawText(xa00 + Margin, yb10 + Margin, cString::sprintf("%s-%s", "VDR", VDRVERSION), frameColorFg, frameColorBg, font, xa02 - xa00 - 2 * Margin, yb15 - yb10 - 2 * Margin, taTop | taRight | taBorder);
   osd->DrawText(xa00 + Margin, yb15 - lineHeight - Margin, "LCARSNG", frameColorFg, frameColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
 }
@@ -524,7 +523,6 @@ void cLCARSNGDisplayMenu::DrawMenuFrame(void)
   osd->DrawEllipse  (xa08 + lineHeight / 2, yt00 + Margin, xa09 - 1 - Margin, yt01 - 1 - Margin, frameColorBg, 5);
   // Center part:
   DrawRectangleOutline(osd, xa00, yc00, xa02 - 1, yc11 - 1, frameColorBr, frameColorBg, 15);
-//  DrawRectangleOutline(osd, xa00, yt06 + Gap, xa02 - 1, yb00 - 1 - Gap, frameColorBr, frameColorBg, 15);
   // Lower elbow:
   DrawRectangleOutline(osd, xa00, yb10, xa01 - 1, yb11 - 1, frameColorBr, frameColorBg, 3);
   DrawRectangleOutline(osd, xa01, yb10, xa02 - 1, yb15 - 1, frameColorBr, frameColorBg, 14);
@@ -1097,7 +1095,6 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      w = tallFont->Width(Channel->Name());
      osd->DrawRectangle(xa03, y1  + Margin, x1, y1  + Margin + tallFont->Height(), Theme.Color(clrBackground));
      osd->DrawText(xa03, y1  + Margin, Channel->Name(), Theme.Color(clrChannelName), ColorBg, tallFont, min(w, x1 - xa03), tallFont->Height(), taTop | taLeft);
-//     int x = xa00 + (yc03 - yc02); // compensate for the arc
      osd->DrawText(xa00 + 3 * Margin, y2 + Margin, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - xa00 - 4 * Margin, lineHeight, taTop | taRight | taBorder);
      lastChannel = Channel;
      lastChannelName = Channel->Name();
