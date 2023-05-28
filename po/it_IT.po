@@ -1,10 +1,10 @@
 # VDR plugin language source file.
-# Copyright (C) 2008 Martin Schirrmacher <vdr.skinflat@schirrmacher.eu>
-# This file is distributed under the same license as the skinflat package.
+# Copyright (C) 2018 kamel5 <vdr.kamel5@gmx.net>
+# This file is distributed under the same license as the skinlcarsng package.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SkinLcarsng 0.0.2\n"
+"Project-Id-Version: SkinLcarsng 0.4.0\n"
 "Report-Msgid-Bugs-To: <see README>\n"
 "POT-Creation-Date: 2023-06-22 13:19+0200\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
