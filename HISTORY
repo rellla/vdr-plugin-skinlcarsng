@@ -1,7 +1,17 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
+Version 0.3.9
+- Fix a segfault in cDrawDescription::Draw() (thx to @rell at vdr-portal.de)
+- Add volume bar to display replay
+- Optimize drawDescription in display menu
+- Add info of current event to displaychannel
+- Add screenresolution to status area
+- Some optical optimization
+- Add messagebox.*
+- Cleanup coordinates in display channel
+
 Version 0.3.8
-- Add info from epgsearch, tvscraper and vdradmin-am in the detail view
+- Add timer info from epgsearch, tvscraper and vdradmin-am in the detail view of recordings
 - Rework of animation in displaymenu
 - Rearrange setup
 - Add volume bar to display channel
