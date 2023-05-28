@@ -24,8 +24,12 @@ The skin has no command line parameter.
 
 Installation 
 ------------
- make
- make install
+- make
+- make install
+
+or for debugging of coordinates
+- DRAWGRID=1 make
+- make install
 
 Select this Skin in Menu -> Setup -> OSD.
 
@@ -36,6 +40,7 @@ The skin colors can be changed by themes.
 Included themes are:
 - lcarsng-Light.theme
 - lcarsng-Dark.theme
+- lcarsng-Classic.theme
 
 All LCARS themes included with the VDR can also be used here by links:
 ln -s lcars-default.theme lcarsng-default.theme
@@ -44,12 +49,29 @@ But the colors can vary then.
 If you switch from new themes to themes from LCARS
 you have to restart the VDR to display the correct colors.
 
+Font
+----
+If you want a real Star Trek feeling, you can install the Font Antonio from here:
+https://fonts.google.com/specimen/Antonio
+
+zapcockpit.patch
+----------------
+If the zapcockpit.patch from the skindesigner is active, the description in the
+channel display can also be displayed with a 2nd OK, otherwise it will be
+displayed automatically (this can be configured in the setup)
+
 Setup
 -----
-The menu view mode can be changed in plugin setup.
+The following things can be changed via the setup:
+- Margin around the graphics
+- Show error sign from 0 or 1 error
+- Style of the volume bar: LCARS like, flat color, blended color
+- Display description in various views with parameters
+- Menu view mode: full screen, split screen thin screen (only for channels),
+  scaled video window small, scaled video window large
+- Display grid (only wenn compiled with DRAWGRID=1)
 
 Included patch
 --------------
 patches/numrecordingsinpath.patch:
-
-This patch is needed to display the number of recordings in current path in recordings menu.
+This patch is needed to display the number of recordings in the current path in the recordings menu.
