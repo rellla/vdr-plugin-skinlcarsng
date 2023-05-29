@@ -1800,23 +1800,24 @@ void cDrawDescription::DrawBracket(void)
   BracketPixmap->SetAlpha(0);
   BracketPixmap->Fill(clrTransparent);
   tColor Color = Theme.Color(clrMenuMainBracket);
-  int lineHeight = cFont::GetFont(fontOsd)->Height("A");
-  int x00, x01, x02, y00, y01, y02, y03, y04;
+  int lineHeight = cFont::GetFont(fontOsd)->Height();
+  int x00, x01, x02, y00, y01, y02, y03, y04, y05;
   x00 = 0;
   x01 = x00 + lineHeight;
   x02 = x1 - x01;
   y00 = 0;
   y01 = y00 + lineHeight / 2;
   y02 = y01 + lineHeight / 2;
-  y04 = y1 - y0;
-  y03 = y04 - lineHeight;
+  y05 = y1 - y0;
+  y04 = y05 - lineHeight / 2;
+  y03 = y04 - lineHeight / 2;
   BracketPixmap->DrawRectangle(cRect(x01, y00, x02, lineHeight / 2), Color);
   BracketPixmap->DrawEllipse  (cRect(x00, y00, lineHeight, y02), Color, 2);
   BracketPixmap->DrawEllipse  (cRect(x01, y01, lineHeight / 2, lineHeight / 2), Color, -2);
   BracketPixmap->DrawRectangle(cRect(x00, y02, lineHeight, y03 - y02), Color);
   BracketPixmap->DrawEllipse  (cRect(x00, y03, lineHeight, lineHeight), Color, 3);
   BracketPixmap->DrawEllipse  (cRect(x01, y03, lineHeight / 2, lineHeight / 2), Color, -3);
-  BracketPixmap->DrawRectangle(cRect(x01, y04 - lineHeight / 2, x02, lineHeight / 2), Color);
+  BracketPixmap->DrawRectangle(cRect(x01, y04, x02, lineHeight / 2), Color);
 }
 
 void cDrawDescription::Draw(void)
