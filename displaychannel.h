@@ -51,10 +51,10 @@ private:
   cDrawChannelDescription *drawDescription = NULL;
   cLCARSNGVolumeBox *volumeBox = NULL;
   uint64_t StartTime = 0;
-  bool isAnimated;
-  bool newAnimation;
-  cFont *tinyFont;
-  cFont *tallFont;
+  const cFont *osdFont;
+  const cFont *tinyFont;
+  const cFont *tallFont;
+  const cFont *smlFont;
   tColor frameColorFg;
   tColor frameColorBg;
   tColor frameColorBr;
@@ -87,7 +87,6 @@ private:
   void DrawEventRec(const cEvent *Present, const cEvent *Following);
   void DrawTimer(void);
   void DrawVolume(void);
-  void DrawDescription(const cEvent *Event);
   void SetInfo(bool showInfo);
 #ifdef USE_ZAPCOCKPIT
 /*  cVeDcChannelHints           *veChannelHints;
