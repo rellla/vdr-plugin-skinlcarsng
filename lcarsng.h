@@ -212,6 +212,7 @@ void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Colo
 void DrawRectangleOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int usage = 0);
 int FreeMB(const char *Base, bool menurecording = false);
 std::string StripXmlTag(std::string &Line, const char *Tag);
+cString GetScreenResolutionIcon(void);
 
 class cLCARSNG : public cSkin {
 public:
