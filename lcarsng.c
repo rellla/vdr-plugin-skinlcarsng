@@ -292,6 +292,35 @@ std::string StripXmlTag(std::string &Line, const char *Tag) {
   return len < 0 ? "" : Line.substr(pos, len);
 }
 
+cString GetScreenResolutionIcon(void) {
+  int screenWidth = 0;
+  int screenHeight = 0;
+  double aspect = 0;
+  cDevice::PrimaryDevice()->GetVideoSize(screenWidth, screenHeight, aspect);
+  cString iconName("");
+  switch (screenHeight) {
+     case 4320: // 7680 x 4320 = 8K UHD
+     case 2160: // 3840 x 2160 = 4K UHD
+                iconName = "UHD4k";
+                break;
+     case 1440: // 2560 x 1440 = QHD
+     case 1080: // "HD1080i"; // 'i' is default, 'p' can't be detected currently
+                iconName = "HD1080";
+                break;
+     case 720:  // "HD720p"; // 'i' is not defined in standards
+                iconName = "HD720p";
+                break;
+     case 576:  // "SD576i"; // assumed 'i'
+                iconName = "SD576i";
+                break;
+     case 480:  // "SD480i"; // assumed 'i'
+                iconName = "SD480i";
+                break;
+     default:   break;
+     }
+  return iconName;
+}
+
 // --- cLCARSNG ------------------------------------------------------------
 
 cLCARSNG::cLCARSNG(void)
