@@ -20,6 +20,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
   lineHeight = osdFont->Height();
   tinyFont = CreateTinyFont(lineHeight);
   smlFont = cFont::GetFont(fontSml);
+  textBorder = lineHeight * TEXT_ALIGN_BORDER / 100;
   initial = true;
   present = NULL;
   following = NULL;
@@ -43,6 +44,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
   Margin = Config.Margin;
   lastVolume = statusMonitor->GetVolume();
   lastVolumeTime = time(NULL);
+  oldResolution = "";
 
 #ifdef USE_ZAPCOCKPIT
   oldZapcockpitUseInfo = Setup.ZapcockpitUseInfo;
@@ -77,7 +79,11 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
   xc10m = xc10 + d1;
   xc10n = xc10m + lineHeight;
   xc11 = (xc10 + xc13 + Gap) / 2;
+  xc10o = xc11 - 2 * lineHeight;
+  xc10p = xc10o + Gap;
   xc12 = xc11 + Gap;
+
+  leftIcons = xc13;
 
   yc0B = 0;
   yc0A = yc0B + max(lineHeight, iconHeight) + 2 * Margin;
@@ -141,7 +147,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
      osd->DrawEllipse  (xc02 - 1, yc10, xc02m - 1, yc11 - 1, frameColorBr, -3);
      osd->DrawEllipse  (xc02 - 1 - Margin, yc10, xc02m - 1, yc11 - 1 + Margin, frameColorBg, -3);
      // Status area:
-     DrawRectangleOutline(osd, xc10, yc11, xc11 - 1, yc12 - 1, frameColorBr, frameColorBg, 15);
+     DrawRectangleOutline(osd, xc10, yc11, xc10o - 1, yc12 - 1, frameColorBr, frameColorBg, 15);
      DrawRectangleOutline(osd, xc14, yc11, xc14 + lineHeight / 2 - 1, yc12 - 1, frameColorBr, frameColorBg, 11);
      osd->DrawRectangle(xc14 + lineHeight / 2, yc11 + lineHeight / 2, xc15 - 1, yc12 - 1, clrTransparent);
      osd->DrawEllipse  (xc14 + lineHeight / 2, yc11, xc15 - 1, yc12 - 1, frameColorBr, 5);
@@ -221,7 +227,7 @@ void cLCARSNGDisplayChannel::DrawTrack(void)
   cDevice *Device = cDevice::PrimaryDevice();
   const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
   if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
-     osd->DrawText(xc10 + Margin, yc11 + Margin, Track ? Track->description : "", Theme.Color(clrTrackName), frameColorBg, osdFont, xc11 - xc10 - 1 - 2 * Margin, yc12 - yc11 - 2 * Margin, taTop | taRight | taBorder);
+     osd->DrawText(xc10 + Margin, yc11 + Margin, Track ? Track->description : "", Theme.Color(clrTrackName), frameColorBg, osdFont, xc10o - xc10 - 1 - 2 * Margin, yc12 - yc11 - 2 * Margin, taTop | taLeft | taBorder);
      strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
      }
 }
@@ -282,6 +288,20 @@ void cLCARSNGDisplayChannel::DrawSignal(void)
   if (Now != lastSignalDisplay) {
      DrawDeviceSignal(osd, cDevice::ActualDevice(), xs + lineHeight / 2, yc11, xc06m, yc12, lastSignalStrength, lastSignalQuality, initial);
      lastSignalDisplay = Now;
+     }
+}
+
+void cLCARSNGDisplayChannel::DrawScreenResolution(void)
+{
+  cString resolution = GetScreenResolutionIcon();
+  if (!(strcmp(resolution, oldResolution) == 0)) {
+     if (strcmp(resolution, "") == 0) {
+        osd->DrawRectangle(xc10 + Margin, yc11 + Margin, leftIcons, yc12 - Margin, frameColorBg);
+        }
+     int w = osdFont->Width(*resolution) + 2 * textBorder;
+     int x = leftIcons - w - SymbolSpacing;
+     osd->DrawText(x, yc11 + Margin, cString::sprintf("%s", *resolution), Theme.Color(clrChannelSymbolOn), frameColorBr, osdFont, w, yc12 - yc11 - 2 * Margin, taRight | taBorder);
+     oldResolution = resolution;
      }
 }
 
@@ -393,7 +413,7 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 {
   DELETENULL(drawDescription);
   int x = xc13;
-  DrawRectangleOutline(osd, xc12, yc11, xc13 - 1, yc12 - 1, frameColorBr, frameColorBg, 15);
+  DrawRectangleOutline(osd, xc10p, yc11, xc13 - 1, yc12 - 1, frameColorBr, frameColorBg, 15);
   if (Channel && !Channel->GroupSep()) {
      x -= bmRecording.Width() + SymbolSpacing;
      x -= bmEncrypted.Width() + SymbolSpacing;
@@ -412,6 +432,8 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
         }
      initial = true; // make shure DrawBlinkingRec() refreshs recording icon
      }
+  leftIcons = x;
+
   cString ChNumber("");
   cString ChName("");
   if (Channel) {
@@ -630,6 +652,7 @@ void cLCARSNGDisplayChannel::Flush(void)
            }
         DrawSeen(Current, Total);
         DrawTrack();
+        DrawScreenResolution();
         DrawEventRec(present, following);
         DrawBlinkingRec();
         }
