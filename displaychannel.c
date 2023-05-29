@@ -16,8 +16,10 @@ cBitmap cLCARSNGDisplayChannel::bmRecording(recording_xpm);
 cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS DisplChan")
 {
   tallFont = cFont::CreateFont(Setup.FontOsd, Setup.FontOsdSize * 1.8);
-  isAnimated = false;
-  newAnimation = false;
+  osdFont = cFont::GetFont(fontOsd);
+  lineHeight = osdFont->Height();
+  tinyFont = CreateTinyFont(lineHeight);
+  smlFont = cFont::GetFont(fontSml);
   initial = true;
   present = NULL;
   following = NULL;
@@ -29,10 +31,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
   lastSignalQuality = -1;
   lastSignalDisplay = 0;
   memset(&lastTrackId, 0, sizeof(lastTrackId));
-  const cFont *font = cFont::GetFont(fontOsd);
   withInfo = WithInfo;
-  lineHeight = font->Height();
-  tinyFont = CreateTinyFont(lineHeight);
   frameColorBg = Theme.Color(clrChannelFrameBg);
   frameColorFg = Theme.Color(clrChannelFrameFg);
   frameColorBr = (Theme.Color(clrChannelFrameBr) == CLR_BLACK) ? frameColorBg : Theme.Color(clrChannelFrameBr);
@@ -42,8 +41,6 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
   lastOn = false;
   On = false;
   Margin = Config.Margin;
-  drawDescription = NULL;
-  volumeBox = NULL;
   lastVolume = statusMonitor->GetVolume();
   lastVolumeTime = time(NULL);
 
@@ -183,7 +180,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
      DrawRectangleOutline(osd, xc10, yc03, xc10m - 1, yc04 - lineHeight - 1, frameColorBr, frameColorBg, 15); // "Time 1"
      DrawRectangleOutline(osd, xc10, yc05, xc10m - 1, yc06 - lineHeight - 1, frameColorBr, frameColorBg, 15); // "Time 2"
      DrawRectangleOutline(osd, xc06l, yc05, xc06m - 1, yc06 - lineHeight - 1, frameColorBr, frameColorBg, 15); // "Timer"
-     osd->DrawText(xc06l + Margin, yc05 + Margin, "Timer", frameColorFg, frameColorBg, cFont::GetFont(fontOsd), xc06m - xc06l - 1 - 2 * Margin, lineHeight - 2 * Margin, taLeft | taBorder);
+     osd->DrawText(xc06l + Margin, yc05 + Margin, "Timer", frameColorFg, frameColorBg, osdFont, xc06m - xc06l - 1 - 2 * Margin, lineHeight - 2 * Margin, taLeft | taBorder);
      // Top Right:
      DrawRectangleOutline(osd, xc14, yc0B, xc14 + lineHeight / 2 - 1, yc0A - 1, frameColorBr, frameColorBg, 11);
      osd->DrawRectangle(xc14 + lineHeight / 2, yc0B, xc15 - 1, yc0B + lineHeight / 2 - 1, clrTransparent);
@@ -214,7 +211,7 @@ void cLCARSNGDisplayChannel::DrawDate(void)
 {
   cString s = DayDateTime();
   if (initial || !*lastDate || strcmp(s, lastDate)) {
-     osd->DrawText(xc12, yc0B, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), cFont::GetFont(fontOsd), xc13 - xc12, yc0A, taRight | taBorder);
+     osd->DrawText(xc12, yc0B, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, xc13 - xc12, yc0A, taRight | taBorder);
      lastDate = s;
      }
 }
@@ -224,7 +221,7 @@ void cLCARSNGDisplayChannel::DrawTrack(void)
   cDevice *Device = cDevice::PrimaryDevice();
   const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
   if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
-     osd->DrawText(xc10 + Margin, yc11 + Margin, Track ? Track->description : "", Theme.Color(clrTrackName), frameColorBg, cFont::GetFont(fontOsd), xc11 - xc10 - 1 - 2 * Margin, yc12 - yc11 - 2 * Margin, taTop | taRight | taBorder);
+     osd->DrawText(xc10 + Margin, yc11 + Margin, Track ? Track->description : "", Theme.Color(clrTrackName), frameColorBg, osdFont, xc11 - xc10 - 1 - 2 * Margin, yc12 - yc11 - 2 * Margin, taTop | taRight | taBorder);
      strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
      }
 }
@@ -260,9 +257,9 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
         }
      // display time remaining
      cString time = ((Current / 60.0) > 0.1) ? cString::sprintf("-%d", max((int)ceil((Total - Current) / 60.0), 0)) : "";
-     int w = cFont::GetFont(fontSml)->Width(time);
+     int w = smlFont->Width(time);
      osd->DrawRectangle(xc10 + Margin, yc03 + lineHeight + 2 * Margin + Gap / 2, xc10m - Margin, yc04 - Margin, Theme.Color(clrBackground)); //Backgroung time remaining
-     osd->DrawText(xc10 + Margin + (xc10m - xc10 - 1 - 2 * Margin - w), yc03 + lineHeight + 2 * Margin + Gap / 2, time, Theme.Color(clrEventShortText), textColorBg, cFont::GetFont(fontSml), w, lineHeight - 2 * Margin, taRight | taBorder); // time remaining
+     osd->DrawText(xc10 + Margin + (xc10m - xc10 - 1 - 2 * Margin - w), yc03 + lineHeight + 2 * Margin + Gap / 2, time, Theme.Color(clrEventShortText), textColorBg, smlFont, w, lineHeight - 2 * Margin, taRight | taBorder); // time remaining
      lastSeen = Seen;
      }
 }
@@ -365,8 +362,8 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
            const cChannel *Channel = Timer->Channel();
            const cEvent *Event = Timer->Event();
            int y1 = i * Gap / 2;
-           int x1 = xc04 + Gap + 2 + cFont::GetFont(fontSml)->Width("Do. 00.00. 00:00");
-           int x2 = cFont::GetFont(fontSml)->Width(" - 00:00");
+           int x1 = xc04 + Gap + 2 + smlFont->Width("Do. 00.00. 00:00");
+           int x2 = smlFont->Width(" - 00:00");
            if (Channel && Event) {
               const char *File = Event->Title();
               if (isRecording) {
@@ -378,13 +375,13 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
 #ifdef SWITCHONLYPATCH
               if (Timer->HasFlags(tfSwitchOnly)) timerColor = Theme.Color(clrSwitchTimer);
 #endif
-              osd->DrawText(xc01, y + y1 + Margin, cString::sprintf("%d", Channel->Number()), frameColorFg, frameColorBg, cFont::GetFont(fontSml), xc02 - xc01 - Gap - 1, lineHeight - 3 * Margin, taRight | taBorder);
-              osd->DrawText(xc04, y + y1, cString::sprintf("%s", *Date), timerColor, textColorBg, cFont::GetFont(fontSml), x1 - xc04 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
+              osd->DrawText(xc01, y + y1 + Margin, cString::sprintf("%d", Channel->Number()), frameColorFg, frameColorBg, smlFont, xc02 - xc01 - Gap - 1, lineHeight - 3 * Margin, taRight | taBorder);
+              osd->DrawText(xc04, y + y1, cString::sprintf("%s", *Date), timerColor, textColorBg, smlFont, x1 - xc04 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
 	      if (isRecording)
-                 osd->DrawText(xc04, y + y1, cString::sprintf("Rec: #%s", *Number), Theme.Color(clrChannelSymbolRecBg), textColorBg, cFont::GetFont(fontSml), x1 - xc04  - x2 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
-              int w = cFont::GetFont(fontSml)->Width(File) + 4; // fontSml width to short
+                 osd->DrawText(xc04, y + y1, cString::sprintf("Rec: #%s", *Number), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc04  - x2 - Gap - 1, lineHeight - Gap / 2, taRight | taBorder);
+              int w = smlFont->Width(File) + 4; // smlFont width to short
               osd->DrawRectangle(x1, y + y1, xc06k - 1, y + y1 + lineHeight - Gap / 2, Theme.Color(clrBackground));
-              osd->DrawText(x1, y + y1, cString::sprintf("%s", File), timerColor, textColorBg, cFont::GetFont(fontSml), min(w, xc06k - x1 - 1), lineHeight - Gap / 2, taLeft | taBorder);
+              osd->DrawText(x1, y + y1, cString::sprintf("%s", File), timerColor, textColorBg, smlFont, min(w, xc06k - x1 - 1), lineHeight - Gap / 2, taLeft | taBorder);
               }
            i++;
            }
@@ -434,7 +431,7 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
   if (withInfo) {
      if (Channel) {
 //        int x = xc00 + (yc10 - yc09); // compensate for the arc
-        osd->DrawText(xc02, yc11 + Margin, cSource::ToString(Channel->Source()), frameColorFg, frameColorBg, cFont::GetFont(fontOsd), xc05 - xc02 - Gap, yc12 - yc11 - 2 * Margin, taRight | taBorder);
+        osd->DrawText(xc02, yc11 + Margin, cSource::ToString(Channel->Source()), frameColorFg, frameColorBg, osdFont, xc05 - xc02 - Gap, yc12 - yc11 - 2 * Margin, taRight | taBorder);
         }
      DrawDevice();
      }
@@ -445,6 +442,7 @@ void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Foll
   DELETENULL(drawDescription);
   if (!withInfo)
      return;
+
   if (present != Present)
      lastSeen = -1;
   present = Present;
@@ -455,15 +453,15 @@ void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Foll
       int y = !i ? yc03 : yc05;
       if (e) {
 //       draw Time:
-         osd->DrawText(xc10 + Margin, y  + Margin, e->GetTimeString(), frameColorFg, frameColorBg, cFont::GetFont(fontOsd), xc10m - xc10 - 1 - 2 * Margin, lineHeight, taRight | taBorder);
+         osd->DrawText(xc10 + Margin, y  + Margin, e->GetTimeString(), frameColorFg, frameColorBg, osdFont, xc10m - xc10 - 1 - 2 * Margin, lineHeight, taRight | taBorder);
 //       draw Title:
-         int w = cFont::GetFont(fontOsd)->Width(e->Title());
+         int w = osdFont->Width(e->Title());
          osd->DrawRectangle(x, y + Margin, xc13, y + Margin + lineHeight, Theme.Color(clrBackground));
-         osd->DrawText(x, y + Margin, e->Title(), Theme.Color(clrEventTitle), textColorBg, cFont::GetFont(fontOsd), min(w, xc13 - x), lineHeight);
+         osd->DrawText(x, y + Margin, e->Title(), Theme.Color(clrEventTitle), textColorBg, osdFont, min(w, xc13 - x), lineHeight);
 //       draw ShortText:
-         w = cFont::GetFont(fontSml)->Width(e->ShortText());
+         w = smlFont->Width(e->ShortText());
          osd->DrawRectangle(x, y + lineHeight + 2 * Margin + Gap / 2, xc13, y + 2 * lineHeight + Gap / 2, Theme.Color(clrBackground));
-         osd->DrawText(x, y + lineHeight + 2 * Margin + Gap / 2, e->ShortText(), Theme.Color(clrEventShortText), textColorBg, cFont::GetFont(fontSml), min(w, xc13 - x), lineHeight - 2 * Margin, taBorder);
+         osd->DrawText(x, y + lineHeight + 2 * Margin + Gap / 2, e->ShortText(), Theme.Color(clrEventShortText), textColorBg, smlFont, min(w, xc13 - x), lineHeight - 2 * Margin, taBorder);
          }
       else {
          DrawRectangleOutline(osd, xc10, y, xc10m - 1, y + lineHeight - 1 + 2 * Margin, frameColorBr, frameColorBg, 15);
@@ -502,7 +500,7 @@ void cLCARSNGDisplayChannel::SetMessage(eMessageType Type, const char *Text)
      if (withInfo)
         osd->DrawRectangle(x0, y0, xc06m, y1 - 1, Theme.Color(clrBackground)); // clears the "seen" bar
      DrawRectangleOutline(osd, x0, y1, x1, y2, ColorFg, ColorBg, 15);
-     osd->DrawText(x0 + Margin, y1 + Margin, Text, ColorFg, ColorBg, cFont::GetFont(fontSml), lx, ly, taCenter);
+     osd->DrawText(x0 + Margin, y1 + Margin, Text, ColorFg, ColorBg, smlFont, lx, ly, taCenter);
      }
   else {
      osd->RestoreRegion();
