@@ -49,6 +49,9 @@ private:
   void DrawEventRec(const cEvent *Present, const cEvent *Following);
   void DrawTimer(void);
   void DrawVolume(void);
+#ifdef DRAWGRID
+  void DrawGrid(void);
+#endif
 public:
   cLCARSNGDisplayChannel(bool WithInfo);
   virtual ~cLCARSNGDisplayChannel();

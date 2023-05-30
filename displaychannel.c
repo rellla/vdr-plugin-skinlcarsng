@@ -134,6 +134,11 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo):cThread("LCARS Dis
      DrawRectangleOutline(osd, xc07 - lineHeight / 2, yc05 + lineHeight + Margin, xc07 - 1, yc06 - 1, frameColorBr, frameColorBg, 13);
      osd->DrawEllipse  (xc06n, yc06 - lineHeight - 1, xc07 - lineHeight / 2 - 1, yc06 - lineHeight / 2 - 1, frameColorBr, -1);
      osd->DrawEllipse  (xc06n + Margin, yc06 - lineHeight - 1 - Margin, xc07 - lineHeight / 2 - 1 + Margin, yc06 - lineHeight / 2 - 1 - Margin, frameColorBg, -1);
+     // Middle left bottom/middle
+     osd->DrawEllipse  (xc06n, yc07, xc07 - 1, yc07 + lineHeight + 2 * Margin - 1, frameColorBr, 1);
+     osd->DrawEllipse  (xc06n + Margin, yc07 + Margin, xc07 - 1 - Margin, yc07 + lineHeight + Margin - 1, frameColorBg, 1);
+     osd->DrawEllipse  (xc06n, yc07 + lineHeight + 2 * Margin - 1, xc07 - lineHeight / 2 - 1, yc07 + lineHeight + lineHeight / 2 + 2 * Margin - 1, frameColorBr, -1);
+     osd->DrawEllipse  (xc06n, yc07 + lineHeight + Margin - 1, xc07 - lineHeight / 2 - 1, yc07 + lineHeight + lineHeight / 2 + Margin - 1, frameColorBr, -1);
      // Middle left bottom
      osd->DrawEllipse  (xc06n, yc11, xc07 - 1, yc12 - 1, frameColorBr, 4);
      osd->DrawEllipse  (xc06n + Margin, yc11 + Margin, xc07 - 1 - Margin, yc12 - 1 - Margin, frameColorBg, 4);
@@ -533,6 +538,48 @@ void cLCARSNGDisplayChannel::DrawVolume(void)
    }
 }
 
+#ifdef DRAWGRID
+void cLCARSNGDisplayChannel::DrawGrid(void)
+{
+  int left = xc00;
+  int right = xc15 - 1;
+  int top = 0;
+  int offset = lineHeight / 2;
+  int bottom = withInfo ? yc12 : yc02;
+  tColor gridColor = Theme.Color(clrDeviceFg);
+  cFont *TinyFont = cFont::CreateFont(Setup.FontOsd, 14);
+
+  int xc[25] = { xs, xc00, xc00m, xc01, xc02, xc02m, xc03, xc04, xc05, xc06,
+                 xc06k, xc06l, xc06m, xc06n, xc07, xc08, xc09, xc10, xc10m,
+                 xc10n, xc11, xc12, xc13, xc14, xc15};
+  int yc[16] = { yc0B, yc0A, yc00, yc00m, yc01, yc02, yc03, yc04, yc05, yc06,
+                 yc07, yc08, yc09, yc10, yc11, yc12 };
+
+  char strxc[25][6] = { "xs", "xc00", "xc00m", "xc01", "xc02", "xc02m", "xc03", "xc04", "xc05", "xc06",
+                       "xc06k", "xc06l", "xc06m", "xc06n", "xc07", "xc08", "xc09", "xc10", "xc10m",
+                       "xc10n", "xc11", "xc12", "xc13", "xc14", "xc15"};
+  char stryc[16][6] = { "yc0B", "yc0A", "yc00", "yc00m", "yc01", "yc02", "yc03", "yc04", "yc05", "yc06",
+                       "yc07", "yc08", "yc09", "yc10", "yc11", "yc12" };
+
+  for (int i = 0; strxc[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = lineHeight / 2;
+    osd->DrawRectangle(xc[i], top, xc[i] + 1, bottom, gridColor);
+    osd->DrawText(xc[i], top + offset, cString(strxc[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  offset = 0;
+  for (int i = 0; stryc[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(left, yc[i], right, yc[i] + 1, gridColor);
+    osd->DrawText(left + offset, yc[i], cString(stryc[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+}
+#endif
+
 void cLCARSNGDisplayChannel::Flush(void)
 {
   if (withInfo) {
@@ -556,6 +603,9 @@ void cLCARSNGDisplayChannel::Flush(void)
         }
      }
   DrawVolume();
+#ifdef DRAWGRID
+  DrawGrid();
+#endif
   osd->Flush();
   initial = false;
 }

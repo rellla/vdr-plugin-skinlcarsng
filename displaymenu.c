@@ -1710,6 +1710,9 @@ void cLCARSNGDisplayMenu::Flush(void)
            }
      }
   DrawVolume();
+#ifdef DRAWGRID
+  DrawGrid();
+#endif
   if (!(drawDescription && drawDescription->IsRunning()))
      osd->Flush();
   if (initial) {
@@ -1734,6 +1737,153 @@ void cLCARSNGDisplayMenu::Flush(void)
      }	             
   initial = false;
 }
+
+#ifdef DRAWGRID
+void cLCARSNGDisplayMenu::DrawGrid(void)
+{
+  int left = xa00;
+  int right = xa09 - 1;
+  int top = yt00;
+  int offset = lineHeight / 2;
+  int bottom = yb15 - 1;
+  tColor gridColor = Theme.Color(clrDeviceFg);
+  cFont *TinyFont = cFont::CreateFont(Setup.FontOsd, 14);
+
+  int xa[10] = { xa00, xa01, xa02, xa03, xa04, xa05, xa06, xa07, xa08, xa09 };
+  int yt[11] = { yt00, yt01, yt02, yt03, yt04, yt05, yt06, yt07, yt08, yt09, yt10 };
+  int yc[12] = { yc00, yc01, yc02, yc03, yc04, yc05, yc06, yc07, yc08, yc09, yc10, yc11 };
+  int yb[18] = { yb00, yb01, yb02, yb03, yb04, yb05, yb06, yb07, yb08, yb081, yb082, yb09, yb10, yb11, yb12, yb13, yb14, yb15 };
+  int xm[9] = { xm00, xm01, xm02, xm03, xm04, xm05, xm06, xm07, xm08 };
+  int ym[8] = { ym00, ym01, ym02, ym03, ym04, ym05, ym06, ym07 };
+  int xs[15] = { xs00, xs01, xs02, xs03, xs04, xs05, xs06, xs07, xs08, xs09, xs10, xs11, xs12, xs13, *xs };
+  int ys[6] = { ys00, ys01, ys02, ys03, ys04, ys05 };
+  int xi[4] = { xi00, xi01, xi02, xi03 };
+  int yi[2] = { yi00, yi01 };
+  int xb[16] = { xb00, xb01, xb02, xb03, xb04, xb05, xb06, xb07, xb08, xb09, xb10, xb11, xb12, xb13, xb14, xb15 };
+  int xd[8] = { xd00, xd01, xd02, xd03, xd04, xd05, xd06, xd07 };
+  int yd[6] = { yd00, yd01, yd02, yd03, yd04, yd05 };
+
+  char strxa[10][6] = { "xa00", "xa01", "xa02", "xa03", "xa04", "xa05", "xa06", "xa07", "xa08", "xa09" };
+  char strxm[9][6] = { "xm00", "xm01", "xm02", "xm03", "xm04", "xm05", "xm06", "xm07", "xm08" };
+  char strxs[15][6] = { "xs00", "xs01", "xs02", "xs03", "xs04", "xs05", "xs06", "xs07", "xs08", "xs09", "xs10", "xs11", "xs12", "xs13", "xs" };
+  char strxi[4][6] = { "xi00", "xi01", "xi02", "xi03" };
+  char strxb[16][6] = { "xb00", "xb01", "xb02", "xb03", "xb04", "xb05", "xb06", "xb07", "xb08", "xb09", "xb10", "xb11", "xb12", "xb13", "xb14", "xb15" };
+  char strxd[8][6] = { "xd00", "xd01", "xd02", "xd03", "xd04", "xd05", "xd06", "xd07" };
+
+  for (int i = 0; strxa[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(xa[i], top, xa[i] + 1, bottom, gridColor);
+    osd->DrawText(xa[i], top + offset, cString(strxa[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; strxm[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(xm[i], top, xm[i] + 1, bottom, gridColor);
+    osd->DrawText(xm[i], top + offset, cString(strxm[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; strxs[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(xs[i], top, xs[i] + 1, bottom, gridColor);
+    osd->DrawText(xs[i], top + offset, cString(strxs[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; strxi[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(xi[i], top, xi[i] + 1, bottom, gridColor);
+    osd->DrawText(xi[i], top + offset, cString(strxi[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; strxb[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(xb[i], top, xb[i] + 1, bottom, gridColor);
+    osd->DrawText(xb[i], top + offset, cString(strxb[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; strxd[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(xd[i], top, xd[i] + 1, bottom, gridColor);
+    osd->DrawText(xd[i], top + offset, cString(strxd[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  char stryt[11][6] = { "yt00", "yt01", "yt02", "yt03", "yt04", "yt05", "yt06", "yt07", "yt08", "yt09", "yt10" };
+  char stryc[12][6] = { "yc00", "yc01", "yc02", "yc03", "yc04", "yc05", "yc06", "yc07", "yc08", "yc09", "yc10", "yc11" };
+  char stryb[18][6] = { "yb00", "yb01", "yb02", "yb03", "yb04", "yb05", "yb06", "yb07", "yb08", "yb081", "yb082", "yb09", "yb10", "yb11", "yb12", "yb13", "yb14", "yb15" };
+  char strym[8][6] = { "ym00", "ym01", "ym02", "ym03", "ym04", "ym05", "ym06", "ym07" };
+  char strys[6][6] = { "ys00", "ys01", "ys02", "ys03", "ys04", "ys05" };
+  char stryi[2][6] = { "yi00", "yi01" };
+  char stryd[6][6] = { "yd00", "yd01", "yd02", "yd03", "yd04", "yd05" };
+
+  offset = 0;
+  for (int i = 0; stryt[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(left, yt[i], right, yt[i] + 1, gridColor);
+    osd->DrawText(left + offset, yt[i], cString(stryt[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; stryc[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(left, yc[i], right, yc[i] + 1, gridColor);
+    osd->DrawText(left + offset, yc[i], cString(stryc[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; stryb[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(left, yb[i], right, yb[i] + 1, gridColor);
+    osd->DrawText(left + offset, yb[i], cString(stryb[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; strym[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(left, ym[i], right, ym[i] + 1, gridColor);
+    osd->DrawText(left + offset, ym[i], cString(strym[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; strys[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(left, ys[i], right, ys[i] + 1, gridColor);
+    osd->DrawText(left + offset, ys[i], cString(strys[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; stryi[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(left, yi[i], right, yi[i] + 1, gridColor);
+    osd->DrawText(left + offset, yi[i], cString(stryi[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+
+  for (int i = 0; stryd[i][0]; i++) {
+    if ((i % 3) == 0)
+      offset = 0;
+    osd->DrawRectangle(left, yd[i], right, yd[i] + 1, gridColor);
+    osd->DrawText(left + offset, yd[i], cString(stryd[i]), gridColor, clrTransparent, TinyFont);
+    offset = offset + lineHeight;
+  }
+}
+#endif
 
 // --- cDrawDescription ----------------------------------------------------
 
