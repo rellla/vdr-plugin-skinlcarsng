@@ -37,8 +37,8 @@ class cLCARSNGDisplayChannel : public cSkinDisplayChannel, cThread {
 #endif
 private:
   cOsd *osd;
-  int xc00, yc00a, xc00m, xc01, xc02, xc02m, xc03, xc04, xc05, xc06, xc06k, xc06l, xc06m, xc06n, xc07, xc08, xc09, xc10, xc10m, xc10n, xc10o, xc10p, xc11, xc12, xc13, xc14, xc15;
-  int yc0B, yc0A, yc00, yc00m, yc01, yc02, yc03, yc04, yc05, yc06, yc07, yc08, yc09, yc10, yc11, yc12;
+  int xc00, xc01, xc02, xc03, xc04, xc05, xc06, xc07, xc08, xc09, xc10, xc11, xc12, xc13, xc14, xc15, xc16, xc17, xc18, xc19, xc20, xc21, xc22, xc23;
+  int yc00, yc01, yc02, yc03, yc04, yc05, yc06, yc07, yc08, yc09, yc10, yc11, yc12, yc13, yc14;
   int xs; // starting column for signal display
   bool withInfo;
   int iconHeight;
@@ -94,6 +94,7 @@ private:
   void DrawTimer(void);
   void DrawVolume(void);
   void SetInfo(bool showInfo);
+  void DrawRaster(void);
 #ifdef USE_ZAPCOCKPIT
 /*  cVeDcChannelHints           *veChannelHints;
   cVeDcChannelDetail          *veChannelDetail;
