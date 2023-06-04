@@ -127,7 +127,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
      // Rectangles:
      osd->DrawRectangle(xc00, yc0B, xc15 - 1, y1 - 1, Theme.Color(clrBackground)); // Main background
      DrawRectangleOutline(osd, xc00, yc05, xc02 - 1, yc06 - 1, frameColorBr, frameColorBg, 15); // Left middle
-     DrawRectangleOutline(osd, xc06, yc0B, xc11 - 1, (yc0A - yc0B) / 2 - 1, frameColorBr, frameColorBg, 15); // Top middle
+     DrawRectangleOutline(osd, xc06, yc0B, xc11 - 1, (lineHeight + 2 * Margin - Gap) / 2 - 1, frameColorBr, frameColorBg, 15); // Top middle
      // Upper Elbow:
      DrawRectangleOutline(osd, xc00, yc0B, xc02 - 1, yc0A - 1, frameColorBr, frameColorBg, 3);
      DrawRectangleOutline(osd, xc00, yc0A, xc02 - 1, yc02 - 1, frameColorBr, frameColorBg, 13);
@@ -249,8 +249,8 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
      return; // to not interfere with SetPositioner()
   int Seen = (Total > 0) ? min(xc11 - xc06, int((xc11 - xc06) * double(Current) / Total)) : 0;
   if (initial || Seen != lastSeen) {
-     int y0 = yc0A - (yc0A - yc0B) / 2 + Gap / 2;
-     int y1 = yc0A - ShowSeenExtent;
+     int y0 = (lineHeight + 2 * Margin) / 2;
+     int y1 = y0 + lineHeight / 3;
      // progress bar
      osd->DrawRectangle(xc06, y0, xc11 - 1, y1 - 1, Theme.Color(clrSeen));
      osd->DrawRectangle(xc06 + 2 + Seen, y0 + 2, xc11 - 3, y1 - 3, frameColorBg);
