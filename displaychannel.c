@@ -504,28 +504,27 @@ void cLCARSNGDisplayChannel::SetMessage(eMessageType Type, const char *Text)
      DELETENULL(volumeBox);
      tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
      tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
-     int x0, x1, y0, y1, y2, lx, ly;
+     int x0, x1, y0, y1, lx, ly;
      if (withInfo) {
         x0 = xc06;
-        x1 = xc13 - 1;
-        y0 = yc11 - ShowSeenExtent;
-        y1 = yc11;
-        y2 = yc12 - 1;
+        x1 = xc11;
+        y0 = yc0B;
+        y1 = yc0A;
         }
      else {
         x0 = xc03;
-        x1 = xc13 - 1;
-        y0 = y1 = yc00;
-        y2 = yc02 - 1;
+        x1 = xc13;
+        y0 = yc00;
+        y1 = yc02;
         }
-     lx = x1 - x0 - 2 * Margin;
-     ly = y2 - y1 - 2 * Margin;
+     lx = x1 - x0 - 2 * Margin - 1;
+     ly = y1 - y0 - 2 * Margin - 1;
      message = true;
-     osd->SaveRegion(x0, y0, x1, y2);
+     osd->SaveRegion(x0, y0, x1, y1);
      if (withInfo)
-        osd->DrawRectangle(x0, y0, xc06m, y1 - 1, Theme.Color(clrBackground)); // clears the "seen" bar
-     DrawRectangleOutline(osd, x0, y1, x1, y2, ColorFg, ColorBg, 15);
-     osd->DrawText(x0 + Margin, y1 + Margin, Text, ColorFg, ColorBg, smlFont, lx, ly, taCenter);
+        osd->DrawRectangle(x0, y0, x1 - 1, y1 - 1, Theme.Color(clrBackground)); // clears the "seen" bar
+     DrawRectangleOutline(osd, x0, y0, x1 - 1, y1 - 1, ColorFg, ColorBg, 15);
+     osd->DrawText(x0 + Margin, y0 + Margin, Text, ColorFg, ColorBg, smlFont, lx, ly, taCenter);
      }
   else {
      osd->RestoreRegion();
