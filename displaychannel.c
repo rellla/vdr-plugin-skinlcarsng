@@ -196,7 +196,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
   else {
      // Rectangles:
      osd->DrawRectangle(xc00, yc00, xc15 - 1, y1 - 1, Theme.Color(clrBackground));
-     osd->DrawRectangle(xc00, yc00, xc02 - 1, yc02 - 1, frameColorFg);
+     DrawRectangleOutline(osd, xc00, yc00, xc02 - 1, yc02 - 1, frameColorBr, frameColorBg, 15);
      }
 }
 
@@ -445,11 +445,14 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
      ChNumber = cString::sprintf("%d-", Number);
   else
      ChName = ChannelString(NULL, 0);
+
+  int xR = (withInfo) ? xc06m : xc13;
   int w = tallFont->Width(ChName);
-  osd->DrawText(xc00m + Margin, yc00 + Margin, ChNumber, frameColorFg, frameColorBg, tallFont, xc02 - xc00m - 2 * Margin, yc02 - yc00 - 2 * Margin, taTop | taRight | taBorder);
-  osd->DrawRectangle(xc03, yc00, xc06m - 1, yc02 - 1, Theme.Color(clrBackground));
-  osd->DrawText(xc03, yc00, ChName, Theme.Color(clrChannelName), textColorBg, tallFont, min(w, xc06m - xc03 - 1), 0, taTop | taLeft);
+  osd->DrawText(xc00 + Margin, yc00 + Margin, ChNumber, frameColorFg, frameColorBg, tallFont, xc02 - xc00 - 2 * Margin, yc02 - yc00 - 2 * Margin, taCenter | taRight | taBorder);
+  osd->DrawRectangle(xc03, yc00, xR - 1, yc02 - 1, Theme.Color(clrBackground));
+  osd->DrawText(xc03, yc00 + Margin, ChName, Theme.Color(clrChannelName), textColorBg, tallFont, min(w, xR - xc03 - 1), yc02 - yc00 - 2 * Margin, taCenter | taLeft);
   lastSignalDisplay = 0;
+
   if (withInfo) {
      if (Channel) {
 //        int x = xc00 + (yc10 - yc09); // compensate for the arc
