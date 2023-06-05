@@ -621,11 +621,11 @@ void cLCARSNGDisplayChannel::SetChannelHint(const cChannel *Channel) {
 #endif //USE_ZAPCOCKPIT
 void cLCARSNGDisplayChannel::DrawVolume(void)
 {
-   if (!message) {
+   if (!message && withInfo) {
       int volume = statusMonitor->GetVolume();
       if (volume != lastVolume) {
          if (!volumeBox)
-            volumeBox = new cLCARSNGVolumeBox(osd, cRect(0, yc11, xc15, yc12 - yc11));
+            volumeBox = new cLCARSNGVolumeBox(osd, cRect(xc06, yc0B, xc11 - xc06, yc0A - yc0B), false);
          volumeBox->SetVolume(volume, MAXVOLUME, volume ? false : true);
          lastVolumeTime = time(NULL);
          lastVolume = volume;
