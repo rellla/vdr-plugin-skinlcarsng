@@ -2,7 +2,7 @@
 #include "lcarsng.h"
 #include "volumebox.h"
 
-cLCARSNGVolumeBox::cLCARSNGVolumeBox(cOsd *Osd, const cRect &Rect) {
+cLCARSNGVolumeBox::cLCARSNGVolumeBox(cOsd *Osd, const cRect &Rect, bool Full) {
   osd = Osd;
   pixmap = osd->CreatePixmap(7, Rect);
   pixmap->Fill(clrTransparent);
@@ -13,24 +13,30 @@ cLCARSNGVolumeBox::cLCARSNGVolumeBox(cOsd *Osd, const cRect &Rect) {
   int lineHeight = font->Height();
   frameColor = Theme.Color(clrVolumeFrame);
   mute = -1;
+  full = Full;
   x0 = 0;
   x1 = lineHeight / 2;
   x2 = lineHeight;
   x3 = x2 + Gap;
-  x7 = cOsd::OsdWidth();
+  x7 = Rect.Width();
   x6 = x7 - lineHeight / 2;
   x5 = x6 - lineHeight / 2;
   x4 = x5 - Gap;
   y0 = 0;
   y1 = Rect.Height();
-  pixmapBackground->DrawRectangle(cRect(x0, y0, x7 - 1, y1), Theme.Color(clrBackground));
-  pixmapBackground->DrawRectangle(cRect(x0, y0, x1 - 1, y1), clrTransparent);
-  pixmapBackground->DrawEllipse  (cRect(x0, y0, x1, y1), frameColor, 7);
-  pixmapBackground->DrawRectangle(cRect(x1, y0, x1 - 1, y1), frameColor);
-  pixmapBackground->DrawRectangle(cRect(x3, y0, x4 - x3 - 1, y1), frameColor);
-  pixmapBackground->DrawRectangle(cRect(x5, y0, x6 - x5, y1), frameColor);
-  pixmapBackground->DrawRectangle(cRect(x6, y0, x7 - x6 - 1, y1), clrTransparent);
-  pixmapBackground->DrawEllipse  (cRect(x6, y0, x7 - x6 - 1, y1), frameColor, 5);  
+  if (Full) {
+     pixmapBackground->DrawRectangle(cRect(x0, y0, x7, y1), Theme.Color(clrBackground));
+     pixmapBackground->DrawRectangle(cRect(x0, y0, x1, y1), clrTransparent);
+     pixmapBackground->DrawEllipse  (cRect(x0, y0, x1, y1), frameColor, 7);
+     pixmapBackground->DrawRectangle(cRect(x1, y0, x1, y1), frameColor);
+     pixmapBackground->DrawRectangle(cRect(x3, y0, x4 - x3, y1), frameColor);
+     pixmapBackground->DrawRectangle(cRect(x5, y0, x6 - x5, y1), frameColor);
+     pixmapBackground->DrawRectangle(cRect(x6, y0, x7 - x6, y1), clrTransparent);
+     pixmapBackground->DrawEllipse  (cRect(x6, y0, x7 - x6, y1), frameColor, 5);
+     }
+  else {
+     pixmapBackground->DrawRectangle(cRect(x0, y0, x7, y1), frameColor);
+     }
 }
 
 cLCARSNGVolumeBox::~cLCARSNGVolumeBox() {
@@ -39,12 +45,12 @@ cLCARSNGVolumeBox::~cLCARSNGVolumeBox() {
 }
 
 void cLCARSNGVolumeBox::SetVolume(int Current, int Total, bool Mute) {
-  int xl = x3 + TextSpacing;
-  int xr = x4 - TextSpacing;
+  int xl = (full ? x3 : x0) + TextSpacing;
+  int xr = (full ? x4 : x7) - TextSpacing;
   int yt = y0 + TextFrame;
   int yb = y1 - TextFrame;
   if (mute != Mute) {
-     pixmap->DrawRectangle(cRect(x3, y0, x4 - x3 - 1, y1), frameColor);
+     pixmap->DrawRectangle(cRect(xl, y0, xr - xl, y1), frameColor);
      mute = Mute;
      }
   cBitmap bm(Mute ? mute_xpm : volume_xpm);
@@ -59,7 +65,7 @@ void cLCARSNGVolumeBox::SetVolume(int Current, int Total, bool Mute) {
      for (int i = 0; i < n; i++) {
          if (Total * i >= Current * n)
             Color = Theme.Color(clrVolumeBarUpper);
-         pixmap->DrawRectangle(cRect(x, yt, w - 1, yb - yt - 1), Color);
+         pixmap->DrawRectangle(cRect(x, yt, w, yb - yt), Color);
          x += w + d;
          }
      }
