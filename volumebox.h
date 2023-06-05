@@ -11,9 +11,10 @@ private:
   int x0, x1, x2, x3, x4, x5, x6, x7;
   int y0, y1;
   tColor frameColor;
+  bool full;
   int mute;
 public:
-  cLCARSNGVolumeBox(cOsd *Osd, const cRect &Rect);
+  cLCARSNGVolumeBox(cOsd *Osd, const cRect &Rect, bool Full = true);
   ~cLCARSNGVolumeBox();
   void SetVolume(int Current = 0, int Total = 0, bool Mute = false);
   };
