@@ -328,7 +328,7 @@ void cLCARSNGDisplayReplay::DrawVolume(void)
      int volume = statusMonitor->GetVolume();
      if (volume != lastVolume) {
         if (!volumeBox)
-           volumeBox = new cLCARSNGVolumeBox(osd, cRect(0, yp08, xp15, yp09 - yp08));
+           volumeBox = new cLCARSNGVolumeBox(osd, cRect(xv00, yv00, xv01 - xv00, yv01 - yv00), false);
         volumeBox->SetVolume(volume, MAXVOLUME, volume ? false : true);
         lastVolumeTime = time(NULL);
         lastVolume = volume;
