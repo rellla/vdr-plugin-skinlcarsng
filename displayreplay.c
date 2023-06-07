@@ -69,6 +69,12 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
   yp06 = yp08 - d / 4;
   yp05 = yp09 - d / 2;
 
+  // message and volume box
+  xv00 = xp06;
+  xv01 = xp11;
+  yv00 = yp00A;
+  yv01 = yp00;
+
   osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop() + cOsd::OsdHeight() - yp09, xp00, yp00A, xp15 - 1, yp09 - 1);
   osd->DrawRectangle(xp00, yp00, xp15 - 1, yp09 - 1, modeOnly ? clrTransparent : Theme.Color(clrBackground));
   // Rectangles:
@@ -109,6 +115,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
 cLCARSNGDisplayReplay::~cLCARSNGDisplayReplay()
 {
   Cancel(3);
+  delete messageBox;
   delete volumeBox;
   delete osd;
 }
@@ -288,22 +295,13 @@ void cLCARSNGDisplayReplay::SetMessage(eMessageType Type, const char *Text)
 {
   if (Text) {
      DELETENULL(volumeBox);
-     tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
-     tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
-     int x0, x1, y0, y1, lx, ly;
-     x0 = xp06;
-     x1 = xp13 - 1;
-     y0 = yp08;
-     y1 = yp09 - 1;
-     lx = x1 - x0 - 2 * Margin;
-     ly = y1 - y0 - 2 * Margin;
      message = true;
-     osd->SaveRegion(x0, y0, x1, y1);
-     DrawRectangleOutline(osd, x0, y0, x1, y1, ColorFg, ColorBg, 15);
-     osd->DrawText(x0 + Margin, y0 + Margin, Text, ColorFg, ColorBg, cFont::GetFont(fontSml), lx, ly, taCenter);
+     if (!messageBox)
+        messageBox = new cLCARSNGMessageBox(osd, cRect(xv00, yv00, xv01 - xv00, yv01 - yv00), false);
+     messageBox->SetMessage(Type, Text);
      }
   else {
-     osd->RestoreRegion();
+     DELETENULL(messageBox);
      message = false;
      }
 }

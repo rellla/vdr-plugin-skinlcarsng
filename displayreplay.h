@@ -1,3 +1,4 @@
+#include "messagebox.h"
 #include "volumebox.h"
 
 // --- cLCARSNGDisplayReplay -----------------------------------------------
@@ -9,6 +10,7 @@ private:
   int Margin;
   int xp00, xp01, xp02, xp03, xp04, xp05, xp06, xp07, xp08, xp09, xp10, xp11, xp12, xp13, xp14, xp15;
   int yp00A, yp00, yp01, yp02, yp03, yp04, yp05, yp06, yp07, yp08, yp09;
+  int xv00, xv01, yv00, yv01;
   bool modeOnly;
   int iconHeight;
   int lineHeight;
@@ -25,6 +27,7 @@ private:
   tTrackId lastTrackId;
   int lastVolume;
   time_t lastVolumeTime;
+  cLCARSNGMessageBox *messageBox = NULL;
   cLCARSNGVolumeBox *volumeBox = NULL;
   bool message;
   bool isRecording;
