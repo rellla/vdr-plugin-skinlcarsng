@@ -27,6 +27,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
   lastTotalWidth = 0;
   lastRestWidth = 0;
   memset(&lastTrackId, 0, sizeof(lastTrackId));
+  textBorder = lineHeight * TEXT_ALIGN_BORDER / 100;
   initial = true;
   lastOn = false;
   On = false;
@@ -39,7 +40,10 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
   volumeBox = NULL;
   lastVolume = statusMonitor->GetVolume();
   lastVolumeTime = time(NULL);
+  oldResolution = "";
+
   int d = 5 * lineHeight;
+
   xp00 = 0;
   xp01 = xp00 + d / 2;
   xp02 = xp00 + d;
@@ -50,6 +54,8 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
   xp15 = cOsd::OsdWidth();
   xp14 = xp15 - lineHeight;
   xp13 = xp14 - Gap;
+  xp16 = xp13 - 2 * d;
+  xp17 = xp16 - Gap;
   xp07 = (xp15 + xp00) / 2;
   xp08 = xp07 + Gap;
   xp09 = xp08 + lineHeight;
@@ -71,9 +77,11 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
 
   // message and volume box
   xv00 = xp06;
-  xv01 = xp11;
+  xv01 = xp17;
   yv00 = yp00A;
   yv01 = yp00;
+
+  leftIcons = 0;
 
   osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop() + cOsd::OsdHeight() - yp09, xp00, yp00A, xp15 - 1, yp09 - 1);
   osd->DrawRectangle(xp00, yp00, xp15 - 1, yp09 - 1, modeOnly ? clrTransparent : Theme.Color(clrBackground));
@@ -124,7 +132,7 @@ void cLCARSNGDisplayReplay::DrawDate(void)
 {
   cString s = DayDateTime();
   if (!*lastDate || strcmp(s, lastDate)) {
-     osd->DrawText(xp12, yp00A, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), font, xp13 - xp12 - Margin - 1, yp00, taRight | taBorder);
+     osd->DrawText(xp16, yp00A, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), font, xp13 - xp16 - Margin - 1, yp00, taRight | taBorder);
      lastDate = s;
      }
 }
@@ -136,6 +144,20 @@ void cLCARSNGDisplayReplay::DrawTrack(void)
   if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
      osd->DrawText(xp10 + Margin, yp08 + Margin, Track ? Track->description : "", Theme.Color(clrTrackName), clrTransparent, font, xp11 - xp10 - 2 * Margin, yp09 - yp08 - 2 * Margin, taRight | taBorder);
      strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
+     }
+}
+
+void cLCARSNGDisplayReplay::DrawScreenResolution(void)
+{
+  cString resolution = GetScreenResolutionIcon();
+  if (!(strcmp(resolution, oldResolution) == 0)) {
+     if (strcmp(resolution, "") == 0) {
+        osd->DrawRectangle(xp11 + Margin, yp08 + Margin, leftIcons, yp09 - Margin, frameColorBg);
+        }
+     int w = font->Width(*resolution) + 2 * textBorder;
+     int x = leftIcons - w - SymbolSpacing;
+     osd->DrawText(x, yp08 + Margin, cString::sprintf("%s", *resolution), Theme.Color(clrChannelSymbolOn), frameColorBr, font, w, yp09 - yp08 - 2 * Margin, taRight | taBorder);
+     oldResolution = resolution;
      }
 }
 
@@ -160,8 +182,9 @@ void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
   if (initial || On != lastOn) { 
      int x = xp13;
      x -= bmRecording.Width() + SymbolSpacing;
-     osd->DrawBitmap(x - Margin, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColorBr : frameColorBr);
+     osd->DrawBitmap(x, yp08 + (yp09 - yp08 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColorBr : frameColorBr);
      lastOn = On;
+     leftIcons = x;
      }
 }
 
@@ -346,6 +369,7 @@ void cLCARSNGDisplayReplay::Flush(void)
      DrawDate();
      DrawTrack();
      DrawBlinkingRec();
+     DrawScreenResolution();
      }
   DrawVolume();
   osd->Flush();
