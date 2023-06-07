@@ -8,7 +8,7 @@ private:
   cOsd *osd;
   const cFont *font;
   int Margin;
-  int xp00, xp01, xp02, xp03, xp04, xp05, xp06, xp07, xp08, xp09, xp10, xp11, xp12, xp13, xp14, xp15;
+  int xp00, xp01, xp02, xp03, xp04, xp05, xp06, xp07, xp08, xp09, xp10, xp11, xp12, xp13, xp14, xp15, xp16, xp17;
   int yp00A, yp00, yp01, yp02, yp03, yp04, yp05, yp06, yp07, yp08, yp09;
   int xv00, xv01, yv00, yv01;
   bool modeOnly;
@@ -20,6 +20,8 @@ private:
   tColor frameColorBg;
   tColor frameColorBr;
   tColor textColorBg;
+  int textBorder;
+  cString oldResolution;
   int lastCurrentWidth;
   int lastTotalWidth;
   int lastRestWidth;
@@ -29,6 +31,7 @@ private:
   time_t lastVolumeTime;
   cLCARSNGMessageBox *messageBox = NULL;
   cLCARSNGVolumeBox *volumeBox = NULL;
+  int leftIcons;
   bool message;
   bool isRecording;
   int framesTotal;
@@ -39,6 +42,7 @@ private:
   void DrawDate(void);
   void DrawTrack(void);
   void DrawBlinkingRec(void);
+  void DrawScreenResolution(void);
   void DrawVolume(void);
   bool initial;
   bool lastOn;
