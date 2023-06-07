@@ -1,11 +1,11 @@
+#include "messagebox.h"
+
 // --- cLCARSNGDisplayMessage ----------------------------------------------
 
 class cLCARSNGDisplayMessage : public cSkinDisplayMessage {
 private:
   cOsd *osd;
-  int x0, x1, x2, x3, x4, x5, x6, x7;
-  int y0, y1;
-  int Margin;
+  cLCARSNGMessageBox *messageBox = NULL;
 public:
   cLCARSNGDisplayMessage(void);
   virtual ~cLCARSNGDisplayMessage();
