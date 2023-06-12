@@ -1,3 +1,4 @@
+#include "messagebox.h"
 #include "volumebox.h"
 
 typedef struct {
@@ -49,6 +50,7 @@ private:
   time_t lastVolumeTime;
   AnimatedChannelInfo_t animatedInfo;
   cDrawChannelDescription *drawDescription = NULL;
+  cLCARSNGMessageBox *messageBox = NULL;
   cLCARSNGVolumeBox *volumeBox = NULL;
   uint64_t StartTime = 0;
   const cFont *osdFont;
