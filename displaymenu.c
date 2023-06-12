@@ -76,6 +76,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   // The color buttons in the main menu:
   int r = lineHeight;
   xd07 = xa09 - Gap;
+  xd08 = xd07; // right border of DrawLive()/ DrawPlay()
   xd00 = xd07 - Gap - 16 * r;
   if ((float)(xd07 - xd00) / (float)xa09 > 0.33)
      zoom = 1;
@@ -242,6 +243,7 @@ void cLCARSNGDisplayMenu::SetCoordinateY(int y)
   int yd = (MenuCategory() == mcChannel && viewmode == esmalscreen) ? yb15 : yc04;
   int r = lineHeight;
   xd07 = xd - Gap;
+  xd08 = xa09 - Gap;
   int fac = (zoom > 1) ? 0.75 : 1;
   xd06 = xd07 - (fac * 0.5 * r);
   xd05 = xd06 - (7 - zoom - ((zoom > 1) ? 1 : 0)) * r;
@@ -1084,7 +1086,7 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      if (zoom && (viewmode == escaledvideo))
         osd->DrawText(xa01, yc04  + Margin, tr("LIVE"), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa05 - xa01 - Margin, lineHeight - Margin, taRight | taBorder);
      else
-        osd->DrawText(xd07 - w, yd00, tr("LIVE"), channelFrameColorBr, ColorBg, tallFont, w, tallFont->Height(), taRight | taBorder);
+        osd->DrawText(xd08 - w, yd00, tr("LIVE"), channelFrameColorBr, clrTransparent, tallFont, w, tallFont->Height(), taRight | taBorder);
      }
   if (!Channel)
      return;
@@ -1157,7 +1159,7 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
      if (zoom && (viewmode == escaledvideo))
         osd->DrawText(xa01, yc04  + Margin, tr("PLAY"), Theme.Color(clrReplayFrameFg), Theme.Color(clrReplayFrameBg), cFont::GetFont(fontOsd), xa05 - xa01 - Margin, lineHeight - Margin, taRight | taBorder);
      else
-        osd->DrawText(xd07 - w, yd00, tr("PLAY"), replayFrameColorBr, ColorBg, tallFont, w, tallFont->Height(), taRight | taBorder);
+        osd->DrawText(xd08 - w, yd00, tr("PLAY"), replayFrameColorBr, ColorBg, tallFont, w, tallFont->Height(), taRight | taBorder);
      }
   // The current progress:
   int Current = 0;
