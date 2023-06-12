@@ -58,7 +58,7 @@ private:
   int xi00, xi01, xi02, xi03;
   int yi00, yi01;
   int xb00, xb01, xb02, xb03, xb04, xb05, xb06, xb07, xb08, xb09, xb10, xb11, xb12, xb13, xb14, xb15;
-  int xd00, xd01, xd02, xd03, xd04, xd05, xd06, xd07;
+  int xd00, xd01, xd02, xd03, xd04, xd05, xd06, xd07, xd08;
   int yd00, yd01, yd02, yd03, yd04, yd05;
   int xs; // starting column for signal display
   int lineHeight;
