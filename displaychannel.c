@@ -217,6 +217,7 @@ cLCARSNGDisplayChannel::~cLCARSNGDisplayChannel()
 {
   Cancel(3);
   delete drawDescription;
+  delete messageBox;
   delete volumeBox;
   delete tallFont;
   delete tinyFont;
@@ -520,32 +521,26 @@ void cLCARSNGDisplayChannel::SetMessage(eMessageType Type, const char *Text)
   if (Text) {
      DELETENULL(drawDescription);
      DELETENULL(volumeBox);
-     tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
-     tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
-     int x0, x1, y0, y1, lx, ly;
-     if (withInfo) {
-        x0 = xc06;
-        x1 = xc11;
-        y0 = yc0B;
-        y1 = yc0A;
-        }
-     else {
-        x0 = xc03;
-        x1 = xc13;
-        y0 = yc0B;
-        y1 = yc00;
-        }
-     lx = x1 - x0 - 2 * Margin - 1;
-     ly = y1 - y0 - 2 * Margin - 1;
      message = true;
-     osd->SaveRegion(x0, y0, x1, y1);
-     if (withInfo)
-        osd->DrawRectangle(x0, y0, x1 - 1, y1 - 1, Theme.Color(clrBackground)); // clears the "seen" bar
-     DrawRectangleOutline(osd, x0, y0, x1 - 1, y1 - 1, ColorFg, ColorBg, 15);
-     osd->DrawText(x0 + Margin, y0 + Margin, Text, ColorFg, ColorBg, smlFont, lx, ly, taCenter);
+     int xv00, xv01, yv00, yv01;
+     if (withInfo) {
+        xv00 = xc06;
+        xv01 = xc11;
+        yv00 = yc0B;
+        yv01 = yc0A;
+        } 
+     else {
+        xv00 = xc03;
+        xv01 = xc13;
+        yv00 = yc0B;
+        yv01 = yc00;
+        }
+     if (!messageBox)
+        messageBox = new cLCARSNGMessageBox(osd, cRect(xv00, yv00, xv01 - xv00, yv01 - yv00), false);
+     messageBox->SetMessage(Type, Text);
      }
   else {
-     osd->RestoreRegion();
+     DELETENULL(messageBox);
      message = false;
      }
 }
