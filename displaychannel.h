@@ -7,6 +7,8 @@ typedef struct {
   int x1 = 0;
   int y0 = 0;
   int y1 = 0;
+  int d = 0;
+  int zoom = 0;
   tColor textColorBg, shortTextColorFg, frameColorBr, frameColorBg;
 } AnimatedChannelInfo_t;
 
@@ -39,10 +41,13 @@ private:
   cOsd *osd;
   int xc00, xc01, xc02, xc03, xc04, xc05, xc06, xc07, xc08, xc09, xc10, xc11, xc12, xc13, xc14, xc15, xc16, xc17, xc18, xc19, xc20, xc21, xc22, xc23;
   int yc00, yc01, yc02, yc03, yc04, yc05, yc06, yc07, yc08, yc09, yc10, yc11, yc12, yc13, yc14;
+  int xv00, xv01, yv00, yv01;
   int xs; // starting column for signal display
   bool withInfo;
   int iconHeight;
   int lineHeight;
+  int smlLineHeight;
+  int zoom;
   bool lastOn;
   bool On;
   int Margin;
