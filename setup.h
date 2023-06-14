@@ -2,7 +2,7 @@
 
 class cLCARSNGSetup : public cMenuSetupPage {
 private:
-  const char *menuView[4];
+  const char *menuView[5];
   const char *infoChannel[3];
 protected:
   virtual void Store(void);

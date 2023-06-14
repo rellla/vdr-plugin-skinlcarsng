@@ -11,10 +11,11 @@ cLCARSNGSetup::cLCARSNGSetup() {
   int currentItem = Current();
   SetCols(35);
 
-  menuView[0] = tr("scaled video");
-  menuView[1] = tr("full screen");
-  menuView[2] = tr("split screen");
-  menuView[3] = tr("thin screen");
+  menuView[0] = tr("scaled video large");
+  menuView[1] = tr("scaled video small");
+  menuView[2] = tr("full screen");
+  menuView[3] = tr("split screen");
+  menuView[4] = tr("thin screen");
 
 #ifdef USE_ZAPCOCKPIT
   int i = 3;
@@ -44,19 +45,19 @@ cLCARSNGSetup::cLCARSNGSetup() {
 
   Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Menue view:"),                         osUnknown, false));
-  Add(new cMenuEditStraItem(tr("main menue"),                 &tmpConfig.mcMainScaled, 2, menuView));
-  Add(new cMenuEditStraItem(tr("schedule menue"),             &tmpConfig.mcScheduleScaled, 3, menuView));
-  Add(new cMenuEditStraItem(tr("event menue"),                &tmpConfig.mcEventScaled, 3, menuView));
-  Add(new cMenuEditStraItem(tr("channel menue"),              &tmpConfig.mcChannelScaled, 4, menuView));
-  Add(new cMenuEditStraItem(tr("timer menue"),                &tmpConfig.mcTimerScaled, 3, menuView));
-  Add(new cMenuEditStraItem(tr("recording menue"),            &tmpConfig.mcRecordingScaled, 3, menuView));
-  Add(new cMenuEditStraItem(tr("setup menue"),                &tmpConfig.mcSetupScaled, 3, menuView));
-  Add(new cMenuEditStraItem(tr("command menue"),              &tmpConfig.mcCommandScaled, 3, menuView));
-  Add(new cMenuEditStraItem(tr("plugin menue"),               &tmpConfig.mcPluginScaled, 3, menuView));
+  Add(new cMenuEditStraItem(tr("main menue"),                 &tmpConfig.mcMainScaled, 3, menuView));
+  Add(new cMenuEditStraItem(tr("schedule menue"),             &tmpConfig.mcScheduleScaled, 4, menuView));
+  Add(new cMenuEditStraItem(tr("event menue"),                &tmpConfig.mcEventScaled, 4, menuView));
+  Add(new cMenuEditStraItem(tr("channel menue"),              &tmpConfig.mcChannelScaled, 5, menuView));
+  Add(new cMenuEditStraItem(tr("timer menue"),                &tmpConfig.mcTimerScaled, 4, menuView));
+  Add(new cMenuEditStraItem(tr("recording menue"),            &tmpConfig.mcRecordingScaled, 4, menuView));
+  Add(new cMenuEditStraItem(tr("setup menue"),                &tmpConfig.mcSetupScaled, 4, menuView));
+  Add(new cMenuEditStraItem(tr("command menue"),              &tmpConfig.mcCommandScaled, 4, menuView));
+  Add(new cMenuEditStraItem(tr("plugin menue"),               &tmpConfig.mcPluginScaled, 4, menuView));
 //  Add(new cMenuEditStraItem(tr("Text menue"),                 &tmpConfig.mcTextScaled));
 //  Add(new cMenuEditStraItem(tr("Folder menue"),               &tmpConfig.mcFolderScaled));
 //  Add(new cMenuEditStraItem(tr("Cam menue"),                  &tmpConfig.mcCamScaled));
-  Add(new cMenuEditStraItem(tr("Default view"),               &tmpConfig.mcDefaultScaled, 3, menuView));
+  Add(new cMenuEditStraItem(tr("Default view"),               &tmpConfig.mcDefaultScaled, 4, menuView));
 
   SetCurrent(Get(currentItem));
   Display();
