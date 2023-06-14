@@ -1,5 +1,6 @@
 enum viewMode {
     escaledvideo = 0,
+    escaledvideosmall,
     efullscreen,
     esplitscreen,
     esmalscreen
