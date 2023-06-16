@@ -151,6 +151,7 @@ private:
   void DrawVolume(void);
   void DrawTextScrollbar(void);
   bool DrawProgressBar(int x, int y, int width, const char *text, tColor ColorFg, tColor ColorBg);
+  void DrawGrid(void);
   void DescriptionClear(void);
 public:
 #ifdef DEPRECATED_SKIN_SETITEMEVENT
