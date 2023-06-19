@@ -1756,7 +1756,10 @@ void cLCARSNGDisplayMenu::Flush(void)
            }
      }
   DrawVolume();
-//  DrawGrid();
+#ifdef DRAWGRID
+  if (Config.displayGrid)
+     DrawGrid();
+#endif
   if (!(drawDescription && drawDescription->IsRunning()))
      if (!animatedInfo.Fast)
         osd->Flush();
@@ -1783,7 +1786,7 @@ void cLCARSNGDisplayMenu::Flush(void)
   initial = false;
 }
 
-//#ifdef DRAWGRID
+#ifdef DRAWGRID
 void cLCARSNGDisplayMenu::DrawGrid(void)
 {
   int left = xa00;
@@ -1943,7 +1946,7 @@ void cLCARSNGDisplayMenu::DrawGrid(void)
      }
 
 }
-//#endif
+#endif
 
 // --- cDrawDescription ----------------------------------------------------
 

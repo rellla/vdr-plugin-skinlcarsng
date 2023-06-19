@@ -48,6 +48,7 @@ cLCARSNGConfig::cLCARSNGConfig(void)
   mcFolderScaled = efullscreen;
   mcCamScaled = efullscreen;
   mcDefaultScaled = efullscreen;
+  displayGrid = 0;
 }
 
 bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
@@ -82,6 +83,7 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
 //  else if (!strcasecmp(Name, "FolderMenue"))        mcFolderScaled     = atoi(Value);
 //  else if (!strcasecmp(Name, "CamMenue"))           mcCamScaled        = atoi(Value);
   else if (!strcasecmp(Name, "DefaultMenue"))       mcDefaultScaled    = atoi(Value);
+  else if (!strcasecmp(Name, "DisplayGrid"))        displayGrid        = atoi(Value);
   else
      return false;
   return true;

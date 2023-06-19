@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.0.2\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2023-06-14 18:06+0200\n"
+"POT-Creation-Date: 2023-06-19 15:26+0200\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: Karl Melscher <kamel5@gmx.net>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -158,3 +158,9 @@ msgstr "Pluginmenü"
 
 msgid "Default view"
 msgstr "Standardansicht"
+
+msgid "Debug:"
+msgstr ""
+
+msgid "Display grid"
+msgstr "Raster anzeigen"
