@@ -653,7 +653,8 @@ void cLCARSNGDisplayChannel::SetChannelHint(const cChannel *Channel) {
 
 #endif //USE_ZAPCOCKPIT
 
-void cLCARSNGDisplayChannel::DrawRaster(void)
+#ifdef DRAWGRID
+void cLCARSNGDisplayChannel::DrawGrid(void)
 {
   int bottom = yc14;
   int top = yc00;
@@ -677,7 +678,7 @@ void cLCARSNGDisplayChannel::DrawRaster(void)
      if ((i % 3) == 0)
         offset = lineHeight;
   }
-//  return;
+
   offset = lineHeight;
 
 // int yc00, yc01, yc02, yc03, yc04, yc05, yc06, yc07, yc08, yc09, yc10, yc11, yc12, yc13, yc14;
@@ -694,6 +695,7 @@ void cLCARSNGDisplayChannel::DrawRaster(void)
         offset = lineHeight;
   }
 }
+#endif
 
 void cLCARSNGDisplayChannel::Flush(void)
 {
@@ -719,7 +721,10 @@ void cLCARSNGDisplayChannel::Flush(void)
         }
      }
   DrawVolume();
-//  DrawRaster();
+#ifdef DRAWGRID
+  if (Config.displayGrid)
+     DrawGrid();
+#endif
   if (initial || !(Running()))
      osd->Flush();
   if (Config.displInfoChannel == 1 && !drawDescription)

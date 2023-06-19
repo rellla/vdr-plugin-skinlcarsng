@@ -99,7 +99,9 @@ private:
   void DrawTimer(void);
   void DrawVolume(void);
   void SetInfo(bool showInfo);
-  void DrawRaster(void);
+#ifdef DRAWGRID
+  void DrawGrid(void);
+#endif
 #ifdef USE_ZAPCOCKPIT
 /*  cVeDcChannelHints           *veChannelHints;
   cVeDcChannelDetail          *veChannelDetail;

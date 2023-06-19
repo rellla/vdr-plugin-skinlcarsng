@@ -58,6 +58,11 @@ cLCARSNGSetup::cLCARSNGSetup() {
 //  Add(new cMenuEditStraItem(tr("Folder menue"),               &tmpConfig.mcFolderScaled));
 //  Add(new cMenuEditStraItem(tr("Cam menue"),                  &tmpConfig.mcCamScaled));
   Add(new cMenuEditStraItem(tr("Default view"),               &tmpConfig.mcDefaultScaled, 4, menuView));
+#ifdef DRAWGRID
+  Add(new cOsdItem("",                                        osUnknown, false));
+  Add(new cOsdItem(tr("Debug:"),                              osUnknown, false));
+  Add(new cMenuEditBoolItem(tr("Display grid"),               &tmpConfig.displayGrid));
+#endif
 
   SetCurrent(Get(currentItem));
   Display();
@@ -91,4 +96,5 @@ void cLCARSNGSetup::Store(void) {
 //  SetupStore("FolderMenue",        Config.mcFolderScaled);
 //  SetupStore("CamMenue",           Config.mcCamScaled);
   SetupStore("DefaultMenue",       Config.mcDefaultScaled);
+  SetupStore("DisplayGrid",        Config.displayGrid);
 }

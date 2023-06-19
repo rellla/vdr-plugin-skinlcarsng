@@ -151,8 +151,10 @@ private:
   void DrawVolume(void);
   void DrawTextScrollbar(void);
   bool DrawProgressBar(int x, int y, int width, const char *text, tColor ColorFg, tColor ColorBg);
-  void DrawGrid(void);
   void DescriptionClear(void);
+#ifdef DRAWGRID
+  void DrawGrid(void);
+#endif
 public:
 #ifdef DEPRECATED_SKIN_SETITEMEVENT
   using cSkinDisplayMenu::SetItemEvent;

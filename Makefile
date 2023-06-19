@@ -36,6 +36,11 @@ APIVERSION = $(call PKGCFG,apiversion)
 
 -include $(PLGCFG)
 
+DRAWGRID ?= 0
+ifeq ($(DRAWGRID),1)
+CONFIG += -DDRAWGRID
+endif
+
 ### The name of the distribution archive:
 
 ARCHIVE = $(PLUGIN)-$(VERSION)
@@ -49,7 +54,7 @@ SOFILE = libvdr-$(PLUGIN).so
 
 INCLUDES +=
 
-DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' $(CONFIG)
 
 ### The object files (add further files here):
 
