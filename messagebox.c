@@ -42,14 +42,12 @@ void cLCARSNGMessageBox::SetMessage(eMessageType Type, const char *Text)
      if (Full) {
         pixmapBg->DrawRectangle(cRect(x0, y0, x7 - x0, y1 - y0), Theme.Color(clrBackground));
         pixmapBg->DrawRectangle(cRect(x0, y0, x1 - x0, y1 - y0), clrTransparent);
-        pixmapBg->DrawEllipse  (cRect(x0, y0, x1 - x0, y1 - y0), ColorFg, 7);
-        pixmapBg->DrawEllipse  (cRect(x0 + Margin, y0 + Margin, x1 - x0 - Margin, y1 - y0 - 2 * Margin), ColorBg, 7);
+        DrawEllipseOutline(pixmapBg, x0, y0, x1 - x0, y1 - y0, ColorFg, ColorBg, 7);
         DrawRectangleOutline(pixmapBg, x1, y0, x2 - x1, y1 - y0, ColorFg, ColorBg, 14);
         DrawRectangleOutline(pixmapBg, x3, y0, x4 - x3, y1 - y0, ColorFg, ColorBg, 15);
         DrawRectangleOutline(pixmapBg, x5, y0, x6 - x5, y1 - y0, ColorFg, ColorBg, 11);
         pixmapBg->DrawRectangle(cRect(x6, y0, x7 - x6, y1 - y0), clrTransparent);
-        pixmapBg->DrawEllipse  (cRect(x6, y0, x7 - x6, y1 - y0), ColorFg, 5);
-        pixmapBg->DrawEllipse  (cRect(x6, y0 + Margin, x7 - x6 - Margin, y1 - y0 - 2 * Margin), ColorBg, 5);
+        DrawEllipseOutline(pixmapBg, x6, y0, x7 - x6, y1 - y0, ColorFg, ColorBg, 5);
         xt0 = x3;
         xt1 = x4;
         }
