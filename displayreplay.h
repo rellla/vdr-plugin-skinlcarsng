@@ -6,14 +6,16 @@
 class cLCARSNGDisplayReplay : public cSkinDisplayReplay, cThread {
 private:
   cOsd *osd;
-  const cFont *font;
+  const cFont *osdFont;
+  const cFont *smlFont;
   int Margin;
   int xp00, xp01, xp02, xp03, xp04, xp05, xp06, xp07, xp08, xp09, xp10, xp11, xp12, xp13, xp14, xp15, xp16, xp17;
-  int yp00A, yp00, yp01, yp02, yp03, yp04, yp05, yp06, yp07, yp08, yp09;
+  int yp00, yp01, yp02, yp03, yp04, yp05, yp06, yp07, yp08, yp09, yp10, yp11, yp12;
   int xv00, xv01, yv00, yv01;
   bool modeOnly;
   int iconHeight;
   int lineHeight;
+  int smlLineHeight;
   int current = 0;
   int total = 0;
   tColor frameColorFg;
@@ -44,6 +46,10 @@ private:
   void DrawBlinkingRec(void);
   void DrawScreenResolution(void);
   void DrawVolume(void);
+#ifdef DRAWGRID
+  void DrawGrid(void);
+#endif
+  int zoom;
   bool initial;
   bool lastOn;
   bool On;
