@@ -180,32 +180,132 @@ void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0
 }
 #endif
 
-void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int usage)
+void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Usage, int Margin)
 {
-  // Color1 = border color
-  // Color2 = inner rectangle color
-  if ((Color1 == Color2) || usage)
-     Osd->DrawRectangle(x1, y1, x2, y2, Color1);
+  /* Color1 = border color
+   * Color2 = inner color
+   */
 
-  if (Color1 != Color2)
-     Osd->DrawRectangle(x1 + ((usage & muLeft) ? Config.Margin : 0),
-                        y1 + ((usage & muTop) ? Config.Margin : 0),
-                        x2 - ((usage & muRight) ? Config.Margin : 0),
-                        y2 - ((usage & muBottom) ? Config.Margin : 0), Color2);
+  int margin = (Margin > 0) ? Margin : Config.Margin;
+  Osd->DrawRectangle(x1, y1, x2, y2, (margin == 0) ? Color2 : Color1);
+  if ((margin == 0) || !Usage || (Color1 == Color2))
+     return;
+
+  Osd->DrawRectangle(x1 + ((Usage & muLeft)   ? margin : 0),
+                     y1 + ((Usage & muTop)    ? margin : 0),
+                     x2 - ((Usage & muRight)  ? margin : 0),
+                     y2 - ((Usage & muBottom) ? margin : 0), Color2);
 }
 
-void DrawRectangleOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int usage)
+void DrawRectangleOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int Usage, int Margin)
 {
-  // Color1 = border color
-  // Color2 = inner rectangle color
-  if ((Color1 == Color2) || usage)
-     Pixmap->DrawRectangle(cRect(x, y, w, h), Color1);
+  /* Color1 = border color
+   * Color2 = inner color
+   */
 
-  if (Color1 != Color2)
-     Pixmap->DrawRectangle(cRect(x + ((usage & muLeft) ? Config.Margin : 0), y + ((usage & muTop) ? Config.Margin : 0),
-                                 w - ((usage & muLeft) ? Config.Margin : 0) -  ((usage & muRight) ? Config.Margin : 0),
-                                 h - ((usage & muTop) ? Config.Margin : 0) -  ((usage & muBottom) ? Config.Margin : 0)),
-                                 Color2);
+  int margin = (Margin > 0) ? Margin : Config.Margin;
+  Pixmap->DrawRectangle(cRect(x, y, w, h), (margin == 0) ? Color2 : Color1);
+  if ((margin == 0) || !Usage || (Color1 == Color2))
+     return;
+
+  Pixmap->DrawRectangle(cRect(x + ((Usage & muLeft) ? margin : 0), y + ((Usage & muTop)    ? margin : 0),
+                              w - ((Usage & muLeft) ? margin : 0) -    ((Usage & muRight)  ? margin : 0),
+                              h - ((Usage & muTop)  ? margin : 0) -    ((Usage & muBottom) ? margin : 0)),
+                              Color2);
+}
+
+void DrawEllipseOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Quadrants, int Margin)
+{
+  /* Quadrants:
+   * 0       draws the entire ellipse
+   * 1..4    draws only the first, second, third or fourth quadrant, respectively
+   * 5..8    draws the right, top, left or bottom half, respectively
+   * -1..-4  draws the inverted part of the given quadrant
+   *  Color1 = border color
+   *  Color2 = inner color
+   */
+
+  int margin = (Margin > 0) ? Margin : Config.Margin;
+  Osd->DrawEllipse(x1, y1, x2, y2, (margin == 0) ? Color2 : Color1, Quadrants);
+  if (margin == 0)
+     return;
+
+  switch (Quadrants) {
+             case  0: Osd->DrawEllipse(x1 + margin, y1 + margin, x2 - margin, y2 - margin, Color2, 0);                  // full ellipse
+                      break;
+             case  1: Osd->DrawEllipse(x1, y1 + margin, x2 - margin, y2, Color2, 1);                                    // top right
+                      break;
+             case  2: Osd->DrawEllipse(x1 + margin, y1 + margin, x2, y2, Color2, 2);                                    // top left
+                      break;
+             case  3: Osd->DrawEllipse(x1 + margin, y1, x2, y2 - margin, Color2, 3);                                    // bottom left
+                      break;
+             case  4: Osd->DrawEllipse(x1, y1, x2 - margin, y2 - margin, Color2, 4);                                    // bottom right
+                      break;
+             case  5: Osd->DrawEllipse(x1, y1 + margin, x2 - margin, y2 - margin, Color2, 5);                           // right
+                      break;
+             case  6: Osd->DrawEllipse(x1 + margin, y1 + margin, x2 - margin, y2, Color2, 6);                           // top
+                      break;
+             case  7: Osd->DrawEllipse(x1 + margin, y1 + margin, x2, y2 - margin, Color2, 7);                           // left
+                      break;
+             case  8: Osd->DrawEllipse(x1 + margin, y1, x2 - margin, y2 - margin, Color2, 8);                           // bottom
+                      break;
+             case -1: Osd->DrawEllipse(x1, y1 - margin, x2 + margin, y2, Color2, -1);                                   // top right invers
+                      break;
+             case -2: Osd->DrawEllipse(x1 - margin, y1 - margin, x2, y2, Color2, -2);                                   // top left invers
+                      break;
+             case -3: Osd->DrawEllipse(x1 - margin, y1, x2, y2 + margin, Color2, -3);                                   // bottom left invers
+                      break;
+             case -4: Osd->DrawEllipse(x1, y1, x2 + margin, y2 + margin, Color2, -4);                                   // bottom right invers
+                      break;
+             default: ;
+             }
+}
+
+void DrawEllipseOutline(cPixmap *Pixmap, int x1, int y1, int w, int h, tColor Color1, tColor Color2, int Quadrants, int Margin)
+{
+  /* Quadrants:
+   * 0       draws the entire ellipse
+   * 1..4    draws only the first, second, third or fourth quadrant, respectively
+   * 5..8    draws the right, top, left or bottom half, respectively
+   * -1..-4  draws the inverted part of the given quadrant
+   *  Color1 = border color
+   *  Color2 = inner color
+   */
+
+  int margin = (Margin > 0) ? Margin : Config.Margin;
+  Pixmap->DrawEllipse(cRect(x1, y1, w, h), (margin == 0) ? Color2 : Color1, Quadrants);
+  if (margin == 0)
+     return;
+
+  switch (Quadrants) {
+             case  0: Pixmap->DrawEllipse(cRect(x1 + margin, y1 + margin, w - 2 * margin, h - 2 * margin), Color2, 0);  // full ellipse
+                      break;
+             case  1: Pixmap->DrawEllipse(cRect(x1, y1 + margin, w - margin, h - margin), Color2, 1);                   // top right
+                      break;
+             case  2: Pixmap->DrawEllipse(cRect(x1 + margin, y1 + margin, w - margin, h - margin), Color2, 2);          // top left
+                      break;
+             case  3: Pixmap->DrawEllipse(cRect(x1 + margin, y1, w - margin, h - margin), Color2, 3);                   // bottom left
+                      break;
+             case  4: Pixmap->DrawEllipse(cRect(x1, y1, w - margin, h - margin), Color2, 4);                            // bottom right
+                      break;
+             case  5: Pixmap->DrawEllipse(cRect(x1, y1 + margin, w - margin, h - 2 * margin), Color2, 5);               // right
+                      break;
+             case  6: Pixmap->DrawEllipse(cRect(x1 + margin, y1 + margin, w - 2 * margin, h - margin), Color2, 6);      // top
+                      break;
+             case  7: Pixmap->DrawEllipse(cRect(x1 + margin, y1 + margin, w - margin, h - 2 * margin), Color2, 7);      // left
+                      break;
+             case  8: Pixmap->DrawEllipse(cRect(x1 + margin, y1, w - 2 * margin, h - margin), Color2, 8);               // bottom
+                      break;
+             case -1: Pixmap->DrawEllipse(cRect(x1, y1 - margin, w + margin, h + margin), Color2, -1);                  // top right invers
+                      break;
+             case -2: Pixmap->DrawEllipse(cRect(x1 - margin, y1 - margin, w + margin, h + margin), Color2, -2);         // top left invers
+                      break;
+             case -3: Pixmap->DrawEllipse(cRect(x1 - margin, y1, w + margin, h + margin), Color2, -3);                  // bottom left invers
+                      break;
+             case -4: Pixmap->DrawEllipse(cRect(x1, y1, w + margin, h + margin), Color2, -4);                           // bottom right invers
+                      break;
+             default: ;
+             }
 }
 
 static time_t lastDiskSpaceCheck = 0;
