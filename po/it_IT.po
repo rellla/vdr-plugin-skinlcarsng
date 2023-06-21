@@ -1,0 +1,166 @@
+# VDR plugin language source file.
+# Copyright (C) 2008 Martin Schirrmacher <vdr.skinflat@schirrmacher.eu>
+# This file is distributed under the same license as the skinflat package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SkinLcarsng 0.0.2\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2023-06-19 15:26+0200\n"
+"PO-Revision-Date: 2017-10-18 12:01+0200\n"
+"Last-Translator: fiveten_59\n"
+"Language-Team: fiveten_59\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "DISK"
+msgstr "DISCO"
+
+msgid "LOAD"
+msgstr "LAST"
+
+msgid "RECORDINGS"
+msgstr "REGISTRAZIONI"
+
+msgid "TIMER"
+msgstr ""
+
+msgid "Setup"
+msgstr "Setup"
+
+msgid "Channels"
+msgstr "Canali"
+
+msgid "TIMERS"
+msgstr "TIMERS"
+
+msgid "DEVICES"
+msgstr "EMPFÄNGER"
+
+msgid "LIVE"
+msgstr "LIVE"
+
+msgid "PLAY"
+msgstr "PLAY"
+
+msgid "errors"
+msgstr "errori"
+
+msgid "Search timer:"
+msgstr "Ricerca timer:"
+
+msgid "caused by:"
+msgstr "causato da:"
+
+msgid "reason:"
+msgstr "ragione:"
+
+msgid "search pattern:"
+msgstr "Ricerca motivo:"
+
+msgid "TS Errors:"
+msgstr "Errori TS:"
+
+msgid "length"
+msgstr "lunghezza"
+
+msgid "scaled video large"
+msgstr "Dimensione video largo"
+
+msgid "scaled video small"
+msgstr "Dimensione video piccolo"
+
+msgid "full screen"
+msgstr "full screen"
+
+msgid "split screen"
+msgstr "schermo diviso"
+
+msgid "thin screen"
+msgstr "schermo sottile"
+
+msgid "auto display"
+msgstr "auto display"
+
+msgid "2nd OK"
+msgstr "2° OK"
+
+msgid "Margin"
+msgstr "Bordo"
+
+msgid "Display Error 0"
+msgstr "Mostra errore 0"
+
+msgid "Display description:"
+msgstr "Descrizione display:"
+
+msgid "In menu epg"
+msgstr "Menu EPG"
+
+msgid "In menu timer"
+msgstr "Menu Timer"
+
+msgid "In menu recording"
+msgstr "Menu Registrazioni"
+
+msgid "In display channel"
+msgstr "Display Canale"
+
+msgid "Max. number of info lines"
+msgstr "Numero Max. linee informazioni"
+
+msgid "Waiting period Fade-in (ms)"
+msgstr "Attesa dissolvenza (ms)"
+
+msgid "Fade-in time (ms)"
+msgstr "Dissolvenza (ms)"
+
+msgid "Waiting period Scroll (ms)"
+msgstr "Attesa scorrimento (ms)"
+
+msgid "ScrollPixel"
+msgstr "scorrimento Pixel"
+
+msgid "Refreshrate (Frames/s)"
+msgstr "Tasso di refresh (Frames/s)"
+
+msgid "Menue view:"
+msgstr "Vista Menu:"
+
+msgid "main menue"
+msgstr "Menu principale"
+
+msgid "schedule menue"
+msgstr "Menu programmi"
+
+msgid "event menue"
+msgstr "Menu evento"
+
+msgid "channel menue"
+msgstr "Menu canale"
+
+msgid "timer menue"
+msgstr "Menu timer"
+
+msgid "recording menue"
+msgstr "Menu registrazione"
+
+msgid "setup menue"
+msgstr "Setup Menu"
+
+msgid "command menue"
+msgstr "Menu comando"
+
+msgid "plugin menue"
+msgstr "Menu plugin"
+
+msgid "Default view"
+msgstr "Vista default"
+
+msgid "Debug:"
+msgstr ""
+
+msgid "Display grid"
+msgstr "Griglia display"
