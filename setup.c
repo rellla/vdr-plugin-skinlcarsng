@@ -35,6 +35,10 @@ cLCARSNGSetup::cLCARSNGSetup() {
   Add(new cMenuEditStraItem(tr("Volume bar style"),           &tmpConfig.volumeBarStyle, 3, volumeBar));
 
   Add(new cOsdItem("",                                        osUnknown, false));
+  Add(new cOsdItem(tr("Display channel view:"),               osUnknown, false));
+  Add(new cMenuEditBoolItem(tr("Swap events and timers"),     &tmpConfig.swapTimers));
+
+  Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Display description:"),                osUnknown, false));
   Add(new cMenuEditBoolItem(tr("In menu epg"),                &tmpConfig.displInfoMenuEPG));
   Add(new cMenuEditBoolItem(tr("In menu timer"),              &tmpConfig.displInfoMenuTimer));
@@ -89,6 +93,7 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("ScrollPixel",        Config.scrollPixel);
   SetupStore("FramesPerSecond",    Config.framesPerSecond);
   SetupStore("VolumeBarStyle",     Config.volumeBarStyle);
+  SetupStore("SwapTimers",         Config.swapTimers);
   SetupStore("MainMenue",          Config.mcMainScaled);
   SetupStore("ScheduleMenue",      Config.mcScheduleScaled);
   SetupStore("ChannelMenue",       Config.mcChannelScaled);

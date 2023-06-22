@@ -21,6 +21,7 @@ public:
   int scrollPixel;
   int framesPerSecond;
   int volumeBarStyle;
+  int swapTimers;
   int mcUndefinedScaled;
   int mcUnknownScaled;
   int mcMainScaled;
