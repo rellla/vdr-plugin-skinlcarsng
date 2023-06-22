@@ -20,6 +20,7 @@ public:
   int fadeinTime;
   int scrollPixel;
   int framesPerSecond;
+  int volumeBarStyle;
   int mcUndefinedScaled;
   int mcUnknownScaled;
   int mcMainScaled;

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.0.2\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2023-06-19 15:26+0200\n"
+"POT-Creation-Date: 2023-06-22 13:19+0200\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: fiveten_59\n"
 "Language-Team: fiveten_59\n"
@@ -81,6 +81,12 @@ msgstr "schermo diviso"
 msgid "thin screen"
 msgstr "schermo sottile"
 
+msgid "flat bar"
+msgstr ""
+
+msgid "blended color bar"
+msgstr ""
+
 msgid "auto display"
 msgstr "auto display"
 
@@ -92,6 +98,9 @@ msgstr "Bordo"
 
 msgid "Display Error 0"
 msgstr "Mostra errore 0"
+
+msgid "Volume bar style"
+msgstr ""
 
 msgid "Display description:"
 msgstr "Descrizione display:"

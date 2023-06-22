@@ -57,16 +57,29 @@ void cLCARSNGVolumeBox::SetVolume(int Current, int Total, bool Mute) {
   pixmap->DrawBitmap(cPoint(xl, (y1 - bm.Height()) / 2), bm, Theme.Color(clrVolumeSymbol), frameColor);
   if (!Mute) {
      xl += bm.Width() + TextSpacing;
-     int w = (y1 - y0) / 3;
-     int d = TextFrame;
-     int n = (xr - xl + d) / (w + d);
-     int x = xr - n * (w + d);
-     tColor Color = Theme.Color(clrVolumeBarLower);
-     for (int i = 0; i < n; i++) {
-         if (Total * i >= Current * n)
-            Color = Theme.Color(clrVolumeBarUpper);
-         pixmap->DrawRectangle(cRect(x, yt, w, yb - yt), Color);
-         x += w + d;
-         }
+     if (Config.volumeBarStyle == 2) {
+        int h = (yb - yt) * 2 / 3;
+        pixmap->DrawRectangle(cRect(xl, y0, xr - xl, y1), frameColor);
+        DrawProgressbar(pixmap, xl, yt + h / 4, xr - xl, h, Current, Total, Theme.Color(clrVolumeBarMin), Theme.Color(clrVolumeBarMax), true, true);
+        }
+     else if (Config.volumeBarStyle == 1) {
+        int w = (Total > 0) ? min(xr - xl, int((xr - xl) * double(Current) / Total)) : 0;
+	int h = (yb - yt) * 2 / 3;
+        pixmap->DrawRectangle(cRect(xl, yt, xr - xl, yb - yt), frameColor);
+        pixmap->DrawRectangle(cRect(xl, yt + h / 4, w, h), Theme.Color(clrVolumeBarLower));
+        }
+     else {
+        int w = (y1 - y0) / 3;
+        int d = TextFrame;
+        int n = (xr - xl + d) / (w + d);
+        int x = xr - n * (w + d);
+        tColor Color = Theme.Color(clrVolumeBarLower);
+        for (int i = 0; i < n; i++) {
+           if (Total * i >= Current * n)
+              Color = Theme.Color(clrVolumeBarUpper);
+           pixmap->DrawRectangle(cRect(x, yt, w, yb - yt), Color);
+           x += w + d;
+           }
+        }
      }
 }
