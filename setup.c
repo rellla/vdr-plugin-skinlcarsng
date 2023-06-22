@@ -17,6 +17,10 @@ cLCARSNGSetup::cLCARSNGSetup() {
   menuView[3] = tr("split screen");
   menuView[4] = tr("thin screen");
 
+  volumeBar[0] = "LCARS";
+  volumeBar[1] = tr("flat bar");
+  volumeBar[2] = tr("blended color bar");
+
 #ifdef USE_ZAPCOCKPIT
   int i = 3;
 #else
@@ -28,6 +32,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
 
   Add(new cMenuEditIntItem(tr("Margin"),                      &tmpConfig.Margin, 0, 5));
   Add(new cMenuEditBoolItem(tr("Display Error 0"),            &tmpConfig.displayError0));
+  Add(new cMenuEditStraItem(tr("Volume bar style"),           &tmpConfig.volumeBarStyle, 3, volumeBar));
 
   Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Display description:"),                osUnknown, false));
@@ -83,6 +88,7 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("FadeInTime",         Config.fadeinTime);
   SetupStore("ScrollPixel",        Config.scrollPixel);
   SetupStore("FramesPerSecond",    Config.framesPerSecond);
+  SetupStore("VolumeBarStyle",     Config.volumeBarStyle);
   SetupStore("MainMenue",          Config.mcMainScaled);
   SetupStore("ScheduleMenue",      Config.mcScheduleScaled);
   SetupStore("ChannelMenue",       Config.mcChannelScaled);

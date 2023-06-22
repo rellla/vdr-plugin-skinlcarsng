@@ -136,6 +136,8 @@ THEME_CLR(Theme, clrVolumeFrame,            CLR_MAIN_FRAME);
 THEME_CLR(Theme, clrVolumeSymbol,           CLR_BLACK);
 THEME_CLR(Theme, clrVolumeBarUpper,         RgbShade(CLR_MAIN_FRAME, -0.2));
 THEME_CLR(Theme, clrVolumeBarLower,         CLR_GREEN);
+THEME_CLR(Theme, clrVolumeBarMin,           CLR_GREEN);
+THEME_CLR(Theme, clrVolumeBarMax,           CLR_RED);
 
 // Channel display:
 
@@ -212,6 +214,7 @@ void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Colo
 void DrawRectangleOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int Usage = 0, int Margin = 0);
 void DrawEllipseOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Quadrants = 0, int Margin = 0);
 void DrawEllipseOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int Quadrants = 0, int Margin = 0);
+void DrawProgressbar(cPixmap *p, int left, int top, int width, int height, int Current, int Total, tColor color, tColor colorBlending, bool blend = false, bool partial = false);
 int FreeMB(const char *Base, bool menurecording = false);
 std::string StripXmlTag(std::string &Line, const char *Tag);
 cString GetScreenResolutionIcon(void);

@@ -308,6 +308,56 @@ void DrawEllipseOutline(cPixmap *Pixmap, int x1, int y1, int w, int h, tColor Co
              }
 }
 
+void DrawProgressbar(cPixmap *p, int left, int top, int width, int height, int Current, int Total, tColor clr1, tColor clr2, bool blend, bool partial) {
+    if (!p)
+        return;
+
+/*    if (Current == 0) {
+        p->DrawEllipse(cRect(left, top, height, height), blend ? clr2 : clr1);
+        return;
+    } else
+        p->DrawEllipse(cRect(left, top, height, height), clr2);
+*/
+    width = width - height;                             // width of gradient (width - ellipse)
+    double percent = ((double)Current) / (double)Total;
+    double progresswidth = width * percent;
+
+    int alpha = 0x0;                                    // 0...255
+    int alphaStep = 0x1;
+    int maximumsteps = 256;                             // alphaStep * maximumsteps <= 256
+    int factor = 2;                                     // max. 128 steps
+
+    double step = 0;
+    if (partial) {
+        step = (double)width / maximumsteps;            // shows a progresswidth part of color gradient
+        maximumsteps = (double)maximumsteps * percent;
+    } else
+        step = progresswidth / maximumsteps;            // shows a progresswidth full color gradient
+
+    if (!partial && progresswidth < 128) {              // width < 128
+        factor = 4 * factor;                            // 32 steps
+    } else if (progresswidth < 256) {                   // width < 256
+        factor = 2 * factor;                            // 64 steps
+    }
+
+    step = step * factor;
+    alphaStep = alphaStep * factor;
+    maximumsteps = maximumsteps / factor;
+
+    tColor clr3 = blend ? clr2 : clr1;
+    tColor clr = 0x00000000;
+    int x = left + height / 2;
+    for (int i = 0; i < maximumsteps; i++) {
+        x = left + height / 2 + i * step;
+        clr = AlphaBlend(clr3, clr1, alpha);
+        p->DrawRectangle(cRect(x, top, step + 1, height), clr);
+        alpha += alphaStep;
+    }
+    x = x + step - height / 2;
+    p->DrawRectangle(cRect(x, top, step + 1, height), clr);
+//    p->DrawEllipse(cRect(x, top, height, height), clr);
+}
+
 static time_t lastDiskSpaceCheck = 0;
 static int lastFreeMB = -1;
 

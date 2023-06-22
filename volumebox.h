@@ -15,7 +15,7 @@ private:
   int mute;
 public:
   cLCARSNGVolumeBox(cOsd *Osd, const cRect &Rect, bool Full = true);
-  ~cLCARSNGVolumeBox();
+  virtual ~cLCARSNGVolumeBox();
   void SetVolume(int Current = 0, int Total = 0, bool Mute = false);
   };
 
