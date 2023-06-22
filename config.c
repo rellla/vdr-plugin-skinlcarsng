@@ -18,6 +18,7 @@ cLCARSNGConfig::cLCARSNGConfig(void)
   scrollPixel = 2;
   framesPerSecond = 25;
   volumeBarStyle = 0;
+  swapTimers = 0;
   mcUndefinedScaled = efullscreen;
   mcUnknownScaled = efullscreen;
   mcMainScaled = efullscreen;
@@ -72,6 +73,7 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "ScrollPixel"))        scrollPixel        = atoi(Value);
   else if (!strcasecmp(Name, "FramesPerSecond"))    framesPerSecond    = atoi(Value);
   else if (!strcasecmp(Name, "VolumeBarStyle"))     volumeBarStyle     = atoi(Value);
+  else if (!strcasecmp(Name, "SwapTimers"))         swapTimers         = atoi(Value);
   else if (!strcasecmp(Name, "MainMenue"))          mcMainScaled       = atoi(Value);
   else if (!strcasecmp(Name, "ScheduleMenue"))      mcScheduleScaled   = atoi(Value);
   else if (!strcasecmp(Name, "ChannelMenue"))       mcChannelScaled    = atoi(Value);

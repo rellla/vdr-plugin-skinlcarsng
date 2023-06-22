@@ -173,3 +173,6 @@ msgstr ""
 
 msgid "Display grid"
 msgstr "Raster anzeigen"
+
+msgid "Swap timers in channel view"
+msgstr "Timer in channel view tauschen"
