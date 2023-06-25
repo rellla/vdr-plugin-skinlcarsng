@@ -1,4 +1,7 @@
 #include <vdr/plugin.h>
+#ifdef USE_WAREAGLEICON
+#include <vdr/iconpatch.h>
+#endif
 #include "config.h"
 #include "lcarsng.h"
 #include "displaychannel.h"
@@ -375,7 +378,6 @@ void cLCARSNGDisplayChannel::DrawEventRec(const cEvent *Present, const cEvent *F
 
 void cLCARSNGDisplayChannel::DrawTimer(void)
 {
-//  return;
   int CountTimers = 0;
   LOCK_TIMERS_READ;
   for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
@@ -384,6 +386,7 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
      }
   if (CountTimers == 0)
      return;
+
   cSortedTimers SortedTimers(Timers);
   int i = 0;
   int j = 0;
@@ -398,13 +401,16 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
            j++;
         else {
            cString Date;
-           cString Number;
+           bool isRemote = false;
            bool isRecording = false;
+#if APIVERSNUM > 20300
+           // The remote timer indicator:
+           if (Timer->Remote())
+              isRemote = true;
+#endif
+           // The timer recording indicator:
            if (Timer->Recording()) {
               isRecording = true;
-              if (cRecordControl *RecordControl = cRecordControls::GetRecordControl(Timer))
-                 if (const cDevice *Device = RecordControl->Device())
-                    Number = itoa(Device->DeviceNumber() + 1);
               Date = cString::sprintf("- %s", *TimeString(Timer->StopTime()));
               }
            else
@@ -425,8 +431,23 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
               if (Timer->HasFlags(tfSwitchOnly)) timerColor = Theme.Color(clrSwitchTimer);
 #endif
               osd->DrawText(xc01, y, cString::sprintf("%d", Channel->Number()), frameColorFg, frameColorBg, smlFont, xc02 - xc01 - Gap - 1, smlLineHeight, taRight | taBorder);
-              if (isRecording)
-                 osd->DrawText(xc04, y, cString::sprintf("Rec: #%s %s", *Number, *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc04 - 1, smlLineHeight, taRight | taBorder);
+              if (isRecording) {
+                 if (isRemote) {
+#ifdef USE_WAREAGLEICON
+                    const char *icon = Icons::MovingRecording();
+                    osd->DrawText(xc04, y, cString::sprintf("Rec: %s %s", icon, *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc04 - 1, smlLineHeight, taRight | taBorder);
+#else
+                    osd->DrawText(xc04, y, cString::sprintf("Rec: %s", *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc04 - 1, smlLineHeight, taRight | taBorder);
+#endif
+                    }
+                 else {
+                    const cDevice *Device = NULL;
+                    if (cRecordControl *RecordControl = cRecordControls::GetRecordControl(Timer))
+                       Device = RecordControl->Device();
+                    cString Number = Device ? itoa(Device->DeviceNumber() + 1) : "?";
+                    osd->DrawText(xc04, y, cString::sprintf("Rec: #%s %s", *Number, *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc04 - 1, smlLineHeight, taRight | taBorder);
+                    }
+                 }
               else
                  osd->DrawText(xc04, y, cString::sprintf("%s", *Date), timerColor, textColorBg, smlFont, x1 - xc04 - 1, smlLineHeight, taRight | taBorder);
               int w = smlFont->Width(File) + 2 * textBorder; // smlFont width to short
