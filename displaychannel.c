@@ -226,14 +226,13 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
         DrawRectangleOutline(osd, xc22, ytt1, xc22 + lineHeight / 2 - 1, ytt2 - 1, frameColorBr, frameColorBg, 11);
         DrawEllipseOutline(osd, xc22 + lineHeight / 2, ytt1, xc23 - 1, ytt2 - 1, frameColorBr, frameColorBg, 5);
         osd->DrawText(xc14 + Margin, ytt1 + Margin, "Timer", frameColorFg, frameColorBg, osdFont, xc15 - xc14 - 1 - 2 * Margin, ytt2 - ytt1 - 1 - 2 * Margin, taRight | taBorder);
+     // Bottom middle
+        DrawRectangleOutline(osd, xc10, yc13, xc13 - 1, yc14 - 1, frameColorBr, frameColorBg, 11);
         }
      // Top Right:
      DrawRectangleOutline(osd, xc22, yc00, xc22 + lineHeight / 2 + Margin - 1, yc01 - 1, frameColorBr, frameColorBg, 11);
      osd->DrawRectangle(xc22 + lineHeight / 2 + Margin, yc00, xc23 - 1, yc00 + lineHeight / 2 - 1, clrTransparent);
      DrawEllipseOutline(osd, xc22 + lineHeight / 2 + Margin, yc00, xc23 - 1, yc01 - 1, frameColorBr, frameColorBg, 5);
-     // Bottom middle:
-     if (Config.swapTimers)
-        DrawRectangleOutline(osd, xc10, yc13, xc13 - 1, yc14 - 1, frameColorBr, frameColorBg, 11);
      }
   else {
      // Rectangles:
@@ -298,7 +297,7 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
      int y0 = (lineHeight + 2 * Margin) / 2;
      int y1 = y0 + lineHeight / 3;
      // progress bar
-     if (Config.swapTimers)
+     if (Config.swapTimers) // Don't draw the background/ border
         osd->DrawRectangle(xc06, y0, xc06 + Seen - 1, y1 - 1, Theme.Color(clrSeen));
      else {
         osd->DrawRectangle(xc06, y0, xc19 - 1, y1 - 1, Theme.Color(clrSeen));
@@ -313,19 +312,17 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
         }
      // display time remaining
      cString time = ((Current / 60.0) > 0.1) ? cString::sprintf("-%d", max((int)ceil((Total - Current) / 60.0), 0)) : "";
-     if (Config.swapTimers) {
-        osd->DrawRectangle(xc01 + Margin, yc08, xc02 - Margin - 1, yc09 - 1, frameColorBg); //Backgroung time remaining
-        if (!isempty(time)) {
-           int w = smlFont->Width(time) + 2 * textBorder;
-           osd->DrawText(xc01 + Margin + (xc02 - xc01 - 1 - 2 * Margin - w), yc08 + Gap / 2, time, Theme.Color(clrEventShortText), frameColorBg, smlFont, w, smlLineHeight, taRight | taBorder); // time remaining
-           }
-        }
-     else {
-        osd->DrawRectangle(xc14 + Margin, yc05, xc15 - Margin, yc06 - 1, Theme.Color(clrBackground)); //Backgroung time remaining
-        if (!isempty(time)) {
-           int w = smlFont->Width(time) + 2 * textBorder;
-           osd->DrawText(xc14 + Margin + (xc15 - xc14 - 1 - 2 * Margin - w), yc05 + Gap / 2, time, Theme.Color(clrEventShortText), textColorBg, smlFont, w, smlLineHeight, taRight | taBorder); // time remaining
-           }
+     if (Config.swapTimers)
+        osd->DrawRectangle(xc01 + Margin, yc08, xc02 - Margin - 1, yc09 - 1, frameColorBg); // Background time remaining
+     else
+        osd->DrawRectangle(xc14 + Margin, yc05, xc15 - Margin, yc06 - 1, Theme.Color(clrBackground)); // Background time remaining
+     if (!isempty(time)) {
+        int w = smlFont->Width(time) + 2 * textBorder;
+        int x1 = Config.swapTimers ? xc01 : xc14;
+        int x2 = Config.swapTimers ? xc02 : xc15;
+        int y2 = Config.swapTimers ? yc08 : yc05;
+        tColor background = Config.swapTimers ? frameColorBg : textColorBg;
+        osd->DrawText(x1 + Margin + (x2 - x1 - 1 - 2 * Margin - w), y2 + Gap / 2, time, Theme.Color(clrEventShortText), background, smlFont, w, smlLineHeight, taRight | taBorder); // time remaining
         }
      lastSeen = Seen;
      }
@@ -467,7 +464,7 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
 #ifdef SWITCHONLYPATCH
               if (Timer->HasFlags(tfSwitchOnly)) timerColor = Theme.Color(clrSwitchTimer);
 #endif
-              if (Config.swapTimers) {
+              if (Config.swapTimers) { // color the timer/ channel number button
                  tColor recColorBg = frameColorBg;
                  tColor recColorBr = frameColorBr;
                  if (isRecording) {
@@ -487,15 +484,9 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
                  if (isRemote) {
 #ifdef USE_WAREAGLEICON
                     const char *icon = Icons::MovingRecording();
-                    if (Config.swapTimers)
-                       osd->DrawText(xc15, y, cString::sprintf("%s %s", icon, *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc15 - 1, smlLineHeight, taRight | taBorder);
-                    else
-                       osd->DrawText(xc04, y, cString::sprintf("Rec: %s %s", icon, *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc04 - 1, smlLineHeight, taRight | taBorder);
+                    osd->DrawText((Config.swapTimers ? xc15 : xc04), y, cString::sprintf("%s %s", icon, *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - (Config.swapTimers ? xc15 : xc04) - 1, smlLineHeight, taRight | taBorder);
 #else
-                    if (Config.swapTimers)
-                       osd->DrawText(xc16, y, cString::sprintf("%s", *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc16 - 1, smlLineHeight, taRight | taBorder);
-                    else
-                       osd->DrawText(xc04, y, cString::sprintf("Rec: %s", *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc04 - 1, smlLineHeight, taRight | taBorder);
+                    osd->DrawText((Config.swapTimers ? xc15 : xc04), y, cString::sprintf("%s", *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - (Config.swapTimers ? xc15 : xc04) - 1, smlLineHeight, taRight | taBorder);
 #endif
                     }
                  else {
@@ -503,28 +494,16 @@ void cLCARSNGDisplayChannel::DrawTimer(void)
                     if (cRecordControl *RecordControl = cRecordControls::GetRecordControl(Timer))
                        Device = RecordControl->Device();
                     cString Number = Device ? itoa(Device->DeviceNumber() + 1) : "?";
-                    if (Config.swapTimers)
-                       osd->DrawText(xc15, y, cString::sprintf("#%s %s", *Number, *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc15 - 1, smlLineHeight, taRight | taBorder);
-                    else
-                       osd->DrawText(xc04, y, cString::sprintf("Rec: #%s %s", *Number, *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - xc04 - 1, smlLineHeight, taRight | taBorder);
+                    osd->DrawText((Config.swapTimers ? xc15 : xc04), y, cString::sprintf("#%s %s", *Number, *Date), Theme.Color(clrChannelSymbolRecBg), textColorBg, smlFont, x1 - (Config.swapTimers ? xc15 : xc04) - 1, smlLineHeight, taRight | taBorder);
                     }
                  }
               else {
-                 if (Config.swapTimers)
-                    osd->DrawText(xc15, y, cString::sprintf("%s", *Date), timerColor, textColorBg, smlFont, x1 - xc15 - 1, smlLineHeight, taRight | taBorder);
-                 else
-                    osd->DrawText(xc04, y, cString::sprintf("%s", *Date), timerColor, textColorBg, smlFont, x1 - xc04 - 1, smlLineHeight, taRight | taBorder);
+                 osd->DrawText((Config.swapTimers ? xc15 : xc04), y, cString::sprintf("%s", *Date), timerColor, textColorBg, smlFont, x1 - (Config.swapTimers ? xc15 : xc04) - 1, smlLineHeight, taRight | taBorder);
                  }
 
               int w = smlFont->Width(File) + 2 * textBorder; // smlFont width to short
-              if (Config.swapTimers) {
-                 osd->DrawRectangle(x2, y, xc21 - 1, y + smlLineHeight, Theme.Color(clrBackground));
-                 osd->DrawText(x2, y, cString::sprintf("%s", File), timerColor, textColorBg, smlFont, min(w, xc21 - x1 - Gap - 1), smlLineHeight, taLeft | taBorder);
-                 }
-              else {
-                 osd->DrawRectangle(x2, y, xc07 - 1, y + smlLineHeight, Theme.Color(clrBackground));
-                 osd->DrawText(x2, y, cString::sprintf("%s", File), timerColor, textColorBg, smlFont, min(w, xc07 - x1 - Gap - 1), smlLineHeight, taLeft | taBorder);
-                 }
+              osd->DrawRectangle(x2, y, (Config.swapTimers ? xc21 : xc07) - 1, y + smlLineHeight, Theme.Color(clrBackground));
+              osd->DrawText(x2, y, cString::sprintf("%s", File), timerColor, textColorBg, smlFont, min(w, (Config.swapTimers ? xc21 : xc07) - x1 - Gap - 1), smlLineHeight, taLeft | taBorder);
               }
            i++;
            }
@@ -597,25 +576,13 @@ void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Foll
   following = Following;
   for (int i = 0; i < 2; i++) {
       const cEvent *e = !i ? Present : Following;
-      int x1, x2, x3, x4, y0, y1, y2;
-      if (Config.swapTimers) {
-         x1 = xc03; // text left
-         x2 = xc09; // text right
-         x3 = xc01; // time left
-         x4 = xc02; // time right
-         y0 = !i ? yc07 : yc10;
-         y1 = !i ? yc08 : yc10a;
-         y2 = !i ? yc09 : yc10b;
-         }
-      else {
-         x1 = xc16; // text left
-         x2 = xc21; // text right
-         x3 = xc14; // time left
-         x4 = xc15; // time right
-         y0 = !i ? yc02 : yc07;
-         y1 = !i ? yc05 : yc08;
-         y2 = !i ? yc06 : yc09;
-         }
+      int x1 = Config.swapTimers ? xc03 : xc16; // text left
+      int x2 = Config.swapTimers ? xc09 : xc21; // text right
+      int x3 = Config.swapTimers ? xc01 : xc14; // time left
+      int x4 = Config.swapTimers ? xc02 : xc15; // time right
+      int y0 = !i ? (Config.swapTimers ? yc07 : yc02) : (Config.swapTimers ? yc10 : yc07);
+      int y1 = !i ? (Config.swapTimers ? yc08 : yc05) : (Config.swapTimers ? yc10a : yc08);
+      int y2 = !i ? (Config.swapTimers ? yc09 : yc06) : (Config.swapTimers ? yc10b : yc09);
       if (e) {
          osd->DrawRectangle(x1, y0, x2 - 1, y2 - 1, Theme.Color(clrBackground));
 //       draw Time:
