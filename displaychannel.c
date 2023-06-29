@@ -179,45 +179,49 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
      DrawEllipseOutline(osd, xc23 + lineHeight / 2 + Margin, yc15, xc24 - 1, yc16 - 1, frameColorBr,frameColorBg,  5);
      // Status area tail middle:
      if (!Config.swapTimers) {
-     // Middle left middle
+        // Middle left middle
         DrawRectangleOutline(osd, xc11 - lineHeight / 2, yc08 - Margin, xc11 - 1, yc09 - 1, frameColorBr, frameColorBg, 13);
         DrawRectangleOutline(osd, xc10, yc07, xc11 - lineHeight / 2 - 1, yc08 - 1, frameColorBr, frameColorBg, 9);
         osd->DrawRectangle(xc10 + Margin, yc07, xc11 - lineHeight / 2 - 1, yc07 + lineHeight / 2 - 1, Theme.Color(clrBackground));
         DrawEllipseOutline(osd, xc10 + Margin, yc07, xc11 - 1, yc08 - Margin - 1, frameColorBr, frameColorBg, 1);
         DrawEllipseOutline(osd, xc10 + Margin, yc08 - 1, xc11 - lineHeight / 2 - 1, yc08 + lineHeight / 2 - 1, frameColorBr, frameColorBg, -1);
-     // Middle left bottom
+        // Middle left bottom
         DrawRectangleOutline(osd, xc11 - lineHeight / 2, yc10, xc11 - 1, yc15 + Margin - 1, frameColorBr, frameColorBg, 7);
         DrawRectangleOutline(osd, xc10, yc15, xc11 - lineHeight / 2 - 1, yc16 - 1, frameColorBr, frameColorBg, 3);
         osd->DrawRectangle(xc10 + Margin, yc15 + lineHeight / 2, xc11 - lineHeight / 2 - 1, yc16 - 1, Theme.Color(clrBackground));
         DrawEllipseOutline(osd, xc10 + Margin, yc15 + Margin, xc11 - 1, yc16 - 1, frameColorBr, frameColorBg, 4);
         DrawEllipseOutline(osd, xc10, yc15 - lineHeight / 2, xc11 - lineHeight / 2 - 1, yc15, frameColorBr, frameColorBg, -4);
-     //Middle right top
+        //Middle right top
         DrawRectangleOutline(osd, xc12, yc02 + lineHeight + Margin, xc12 + lineHeight / 2 - 1, yc06 - 1, frameColorBr, frameColorBg, 13);
         DrawRectangleOutline(osd, xc13 - lineHeight / 2, yc02, xc13 - 1, yc05 - 1, frameColorBr, frameColorBg, 12);
         osd->DrawRectangle(xc13 - lineHeight / 2, yc02, xc13 - Margin - 1, yc02 + lineHeight / 2 - 1, Theme.Color(clrBackground));
         DrawEllipseOutline(osd, xc12, yc02, xc13 - Margin - 1, yc05 - Margin - 1, frameColorBr, frameColorBg, 2);
         DrawEllipseOutline(osd, xc12 + lineHeight / 2, yc05 - 1, xc13 - Margin - 1, yc05 + lineHeight / 2 - 1, frameColorBr, frameColorBg, -2);
-     // Middle right middle
+        // Middle right middle
         DrawRectangleOutline(osd, xc12, yc07, xc12 + lineHeight / 2 - 1, yc09 - 1, frameColorBr, frameColorBg, 15);
         DrawRectangleOutline(osd, xc13 - lineHeight / 2, yc07, xc13 - 1, yc08 - 1, frameColorBr, frameColorBg, 12);
         osd->DrawRectangle(xc13 - lineHeight / 2, yc07, xc13 - Margin - 1, yc07 + lineHeight / 2 - 1, Theme.Color(clrBackground));
         DrawEllipseOutline(osd, xc12, yc07, xc13 - Margin - 1, yc08 - Margin - 1, frameColorBr, frameColorBg, 2);
         DrawEllipseOutline(osd, xc12 + lineHeight / 2, yc08 - 1, xc13 - Margin - 1, yc08 + lineHeight / 2 - 1, frameColorBr, frameColorBg, -2);
         osd->DrawRectangle(xc12 + Margin, yc07 + Margin, xc12 + lineHeight / 2 - 1 - Margin, yc09 - 1 - Margin, frameColorBg);
-     // Middle right bottom
+        // Middle right bottom
         DrawRectangleOutline(osd, xc12, yc10, xc12 + lineHeight / 2 - 1, yc15 + Margin - 1, frameColorBr, frameColorBg, 7);
         DrawRectangleOutline(osd, xc12 + lineHeight / 2, yc15, xc13 - 1, yc16 - 1, frameColorBr, frameColorBg, 6);
         osd->DrawRectangle(xc12 + lineHeight / 2, yc15 + lineHeight / 2, xc13 - Margin - 1, yc16 - 1, Theme.Color(clrBackground));
         DrawEllipseOutline(osd, xc12, yc15 + Margin, xc13 - Margin - 1, yc16 - 1, frameColorBr, frameColorBg, 3);
         DrawEllipseOutline(osd, xc12 + lineHeight / 2, yc15 - lineHeight / 2, xc13 - Margin - 1, yc15 - 1, frameColorBr, frameColorBg, -3);
-     // Middle
+        // Middle
         DrawRectangleOutline(osd, xc14, yc02, xc15 - 1, yc05 - 1, frameColorBr, frameColorBg, 15); // "Event time 1"
         DrawRectangleOutline(osd, xc14, yc07, xc15 - 1, yc08 - 1, frameColorBr, frameColorBg, 15); // "Event time 2"
         DrawRectangleOutline(osd, xc08, yc07, xc09 - 1, yc08 - 1, frameColorBr, frameColorBg, 15); // "Timer"
         osd->DrawText(xc08 + Margin, yc07 + Margin, "Timer", frameColorFg, frameColorBg, osdFont, xc09 - xc08 - 1 - 2 * Margin, yc08 - yc07 - 1 - 2 * Margin, taLeft | taBorder);
+        // Top Right:
+        DrawRectangleOutline(osd, xc23, yc00, xc23 + lineHeight / 2 + Margin - 1, yc01 - 1, frameColorBr, frameColorBg, 11);
+        osd->DrawRectangle(xc23 + lineHeight / 2 + Margin, yc00, xc24 - 1, yc00 + lineHeight / 2 - 1, clrTransparent);
+        DrawEllipseOutline(osd, xc23 + lineHeight / 2 + Margin, yc00, xc24 - 1, yc01 - 1, frameColorBr, frameColorBg, 5);
         }
      else {
-     // Middle right top, Timer title
+        // Middle right top, Timer title
         int ytt1 = yc02 + lineHeight / 3;
         int ytt2 = yc05 + lineHeight / 3;
         DrawEllipseOutline(osd, xc12, ytt1, xc13 - lineHeight / 2 - 1, ytt2 - 1, frameColorBr, frameColorBg, 7);
@@ -227,13 +231,13 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
         DrawRectangleOutline(osd, xc23, ytt1, xc23 + lineHeight / 2 - 1, ytt2 - 1, frameColorBr, frameColorBg, 11);
         DrawEllipseOutline(osd, xc23 + lineHeight / 2, ytt1, xc24 - 1, ytt2 - 1, frameColorBr, frameColorBg, 5);
         osd->DrawText(xc14 + Margin, ytt1 + Margin, "Timer", frameColorFg, frameColorBg, osdFont, xc15 - xc14 - 1 - 2 * Margin, ytt2 - ytt1 - 1 - 2 * Margin, taRight | taBorder);
-     // Bottom middle
+        // Bottom middle
         DrawRectangleOutline(osd, xc10, yc15, xc13 - 1, yc16 - 1, frameColorBr, frameColorBg, 15);
+        // Top Right:
+        DrawRectangleOutline(osd, xc23, yc00, xc23 + lineHeight / 2 + Margin - 1, yc01 - 1, Theme.Color(clrDateBg), Theme.Color(clrDateBg), 11);
+        osd->DrawRectangle(xc23 + lineHeight / 2 + Margin, yc00, xc24 - 1, yc00 + lineHeight / 2 - 1, clrTransparent);
+        DrawEllipseOutline(osd, xc23 + lineHeight / 2 + Margin, yc00, xc24 - 1, yc01 - 1, Theme.Color(clrDateBg), Theme.Color(clrDateBg), 5);
         }
-     // Top Right:
-     DrawRectangleOutline(osd, xc23, yc00, xc23 + lineHeight / 2 + Margin - 1, yc01 - 1, frameColorBr, frameColorBg, 11);
-     osd->DrawRectangle(xc23 + lineHeight / 2 + Margin, yc00, xc24 - 1, yc00 + lineHeight / 2 - 1, clrTransparent);
-     DrawEllipseOutline(osd, xc23 + lineHeight / 2 + Margin, yc00, xc24 - 1, yc01 - 1, frameColorBr, frameColorBg, 5);
      }
   else {
      // Rectangles:
@@ -260,9 +264,6 @@ void cLCARSNGDisplayChannel::DrawDate(void)
 {
   cString s = DayDateTime();
   if (initial || !*lastDate || strcmp(s, lastDate)) {
-     DrawRectangleOutline(osd, xc23, yc00, xc23 + lineHeight / 2 + Margin - 1, yc01 - 1, Theme.Color(clrDateBg), Theme.Color(clrDateBg), 11);
-     osd->DrawRectangle(xc23 + lineHeight / 2 + Margin, yc00, xc24 - 1, yc00 + lineHeight / 2 - 1, clrTransparent);
-     DrawEllipseOutline(osd, xc23 + lineHeight / 2 + Margin, yc00, xc24 - 1, yc01 - 1, Theme.Color(clrDateBg), Theme.Color(clrDateBg), 5);
      osd->DrawText(xc21, yc00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, xc22 - xc21, yc01, taRight | taBorder);
      lastDate = s;
      }
@@ -612,8 +613,8 @@ void cLCARSNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Foll
             }
          }
       else {
-         DrawRectangleOutline(osd, x3, y0, x4 - 1, y1 - 1, frameColorBr, frameColorBg, 15);
-         osd->DrawRectangle(x4, y0, x2 - 1, y2 - 1, Theme.Color(clrBackground));
+         osd->DrawRectangle(x3 + Margin, y0 + Margin, x4 - 1 - Margin, y1 - 1 - Margin, frameColorBg);
+         osd->DrawRectangle(x1, y0, x2 - 1, y2 - 1, Theme.Color(clrBackground));
          }
       }
    if (lastSeen == -1)
