@@ -439,8 +439,9 @@ void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color, tColor ColorBg)
         DrawRectangleOutline(osd, xs00, yc04, xs11 - 1, yc05 - 1, Color, ColorBg, 15);
         }
      else {
-        DrawRectangleOutline(osd, xs00, yc04, xs05 - 1, yc05 - 1, Color, ColorBg, 15);
-        DrawRectangleOutline(osd, xs06, yc04, xa07 - 1, yc05 - 1, Color, ColorBg, 15);
+        DrawRectangleOutline(osd, xs00, yc04, xs01 - 1, yc05 - 1, Color, ColorBg, 15);
+        DrawRectangleOutline(osd, xs02, yc04, xs09 - 1, yc05 - 1, Color, ColorBg, 15); 
+        DrawRectangleOutline(osd, xs10, yc04, xs11 - 1, yc05 - 1, Color, ColorBg, 15);
         }
      DrawRectangleOutline(osd, xa08, yc04, xa09 - 1, yc05 - 1, Color, ColorBg, 15);
      }
@@ -463,10 +464,13 @@ void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color, tColor ColorBg)
      else {
         DrawRectangleOutline(osd, xm04, yc04 + lineHeight / 2, xm08 - 1, yc05 - 1, Color, ColorBg, 15);
 	DrawRectangleOutline(osd, xm08 + Gap, yc04, xs00 - Gap - 1, yc05 - 1, Color, ColorBg, 15);
-        DrawRectangleOutline(osd, xs00, yc04, xs01 - 1, yc05 - 1, Color, ColorBg, 15);
-        DrawRectangleOutline(osd, xs00, yc04, xs01 - 1, yc05 - 1, Color, ColorBg, 15);
-        DrawRectangleOutline(osd, xs02, yc04, xs09 - 1, yc05 - 1, Color, ColorBg, 15);
-        DrawRectangleOutline(osd, xs10, yc04, xs11 - 1, yc05 - 1, Color, ColorBg, 15);
+        if (MenuCategory() == mcMain) {
+           DrawRectangleOutline(osd, xs00, yc04, xs01 - 1, yc05 - 1, Color, ColorBg, 15);
+           DrawRectangleOutline(osd, xs02, yc04, xs09 - 1, yc05 - 1, Color, ColorBg, 15);
+           DrawRectangleOutline(osd, xs10, yc04, xs11 - 1, yc05 - 1, Color, ColorBg, 15);
+           }
+        else
+           DrawRectangleOutline(osd, xs00, yc04, xs11 - 1, yc05 - 1, Color, ColorBg, 15);
         DrawRectangleOutline(osd, xs12, yc04, xs13 - 1, yc05 - 1, Color, ColorBg, 15);
         }
      }
@@ -1118,8 +1122,8 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      w = tallFont->Width(Channel->Name());
      osd->DrawRectangle(xa03, y1 + hd, x1, y1 + hd + tallFont->Height(), Theme.Color(clrBackground));
      osd->DrawText(xa03, y1 + hd, Channel->Name(), Theme.Color(clrChannelName), ColorBg, tallFont, min(w, x1 - xa03), h, taCenter | taLeft);
-     // must be (xa00 + Gap + Margin) to not interact with the ellipse
-     osd->DrawText(xa00 + Gap + Margin, y2, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - xa00 - Gap - 2 * Margin, lineHeight, taTop | taRight | taBorder);
+     // must be (xa00 + 2 * Gap + Margin) to not interact with the ellipse
+     osd->DrawText(xa00 + 2 * Gap + Margin, y2, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - xa00 - 2 * Gap - 2 * Margin, lineHeight, taTop | taRight | taBorder);
      lastChannel = Channel;
      lastChannelName = Channel->Name();
      DrawSeen(0, 0);
@@ -1695,7 +1699,7 @@ void cLCARSNGDisplayMenu::DrawVolume(void)
       int volume = statusMonitor->GetVolume();
       if (volume != lastVolume) {
          if (!volumeBox)
-            volumeBox = new cLCARSNGVolumeBox(osd, cRect(0, yb15 - lineHeight, xa09, lineHeight));
+            volumeBox = new cLCARSNGVolumeBox(osd, cRect(0, yb15 - lineHeight, xa09 - 1, lineHeight));
          volumeBox->SetVolume(volume, MAXVOLUME, volume ? false : true);
          lastVolumeTime = time(NULL);
 	 lastVolume = volume;
