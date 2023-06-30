@@ -466,9 +466,11 @@ cString GetScreenResolutionIcon(void) {
                 iconName = "UHD4k";
                 break;
      case 1440: // 2560 x 1440 = QHD
+     case 1152: // 2048 x 1152
      case 1080: // "HD1080i"; // 'i' is default, 'p' can't be detected currently
                 iconName = "HD1080";
                 break;
+     case 768:  // 1366 x 768
      case 720:  // "HD720p"; // 'i' is not defined in standards
                 iconName = "HD720p";
                 break;
@@ -478,7 +480,17 @@ cString GetScreenResolutionIcon(void) {
      case 480:  // "SD480i"; // assumed 'i'
                 iconName = "SD480i";
                 break;
-     default:   break;
+     default:   if (screenWidth > 4500)
+                   iconName = "UHD8k";
+		else if (screenWidth > 2100)
+                   iconName = "UHD4k";
+                else if (screenWidth > 1700)
+                   iconName = "HD1080";
+                else if (screenWidth > 1000)
+                   iconName = "HD720p";
+                else
+                   iconName = "SD";
+                break;
      }
   return iconName;
 }
