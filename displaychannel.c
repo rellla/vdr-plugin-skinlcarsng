@@ -73,17 +73,23 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
      zoom = 1;
      }
 
+  // OSD 
+  xo00 = 0;
+  xo01 = cOsd::OsdWidth();
+  yo00 = 0;
+  yo01 = cOsd::OsdHeight();
+
   int d = 5 * lineHeight;
   int d1 = 3 * lineHeight;
 
-  xc00 = 0;                                        // Left
+  xc00 = xo00;                                // OSD left
   xc01 = xc00 + 2 * lineHeight;
   xc02 = xc00 + d;
   xc03 = xc02 + lineHeight;
   xc04 = xc03 + Gap;
   xc05 = xc02 + ((zoom > 1) ? 0.5 : 1) * d;
   xc06 = xc05 + Gap;
-  xc24 = cOsd::OsdWidth();                         // Right
+  xc24 = xo01;                                // OSD right
   xc23 = xc24 - lineHeight - 2 * Margin;
   xc22 = xc23 - Gap;
   xc21 = xc22 - ((zoom > 1) ? 1.5 : 2) * d;
@@ -106,7 +112,24 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
 
   int h = max(lineHeight, iconHeight);
 
-  yc00 = 0;                                        // Top
+  // Calculate the channel info height
+  int y00 = 0;                                                                    // Top
+  int y01 = y00 + h + 2 * Margin;
+  int y02 = y01 + lineHeight / 2;
+//  int y03 = y01 + lineHeight;
+//  int y04 = y00 + 2 * lineHeight;
+  int y05 = y02 + lineHeight + 2 * Margin;
+  int y06 = y05 + lineHeight;
+  int y07 = y06 + Gap;
+  int y08 = y07 + lineHeight + 2 * Margin;
+  int y09 = y08 + lineHeight;
+  int y10 = y09 + Gap;
+//  int y11 = y10 + lineHeight + 2 * Margin;
+//  int y12 = y11 + lineHeight;
+  int y16 = y10 + h + (Config.swapTimers ? 2.5 : 1.5)  * lineHeight + 2 * Margin; // Bottom
+
+  // Channel info in the OSD
+  yc00 = (Setup.ChannelInfoPos) ? 0 : yo01 - (withInfo ? y16 : y06);              // Top
   yc01 = yc00 + h + 2 * Margin;
   yc02 = yc01 + lineHeight / 2;
   yc03 = yc01 + lineHeight;
@@ -119,7 +142,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
   yc10 = yc09 + Gap;
   yc11 = yc10 + lineHeight + 2 * Margin;
   yc12 = yc11 + lineHeight;
-  yc16 = yc10 + h + (Config.swapTimers ? 2.5 : 1.5)  * lineHeight + 2 * Margin; // Bottom
+  yc16 = yc10 + h + (Config.swapTimers ? 2.5 : 1.5)  * lineHeight + 2 * Margin;   // Bottom
   yc15 = yc16 - h - 2 * Margin;
   yc14 = yc15 - lineHeight;
   yc13 = yc16 - 2 * lineHeight;
@@ -138,14 +161,12 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
 //  dsyslog ("%s %s %d Ellipse AU %ix%i\n", __FILE__, __func__,  __LINE__, (xc01 - 1 - xc00), (yc16 - 1 - yc13));
 //  dsyslog ("%s %s %d Ellipse AO %ix%i\n", __FILE__, __func__,  __LINE__, (xc01 - 1 - xc00), (yc04 - 1 - yc00));
 
-  int y1 = withInfo ? yc16 : yc06;
-  int y0 = cOsd::OsdTop() + (Setup.ChannelInfoPos ? 0 : cOsd::OsdHeight() - y1);
-  osd = CreateOsd(cOsd::OsdLeft(), y0, xc00, yc00, xc24 - 1, y1 - 1);
+  osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop(), xc00, yo00, xc24 - 1, yo01 - 1);
 
   animatedInfo.x0 = (zoom > 1) ? xc14 : (zoom) ? xc15 : xc17; // info window left
   animatedInfo.x1 = xc24;                                     // info window right
-  animatedInfo.y0 = -y0  + lineHeight;
-  animatedInfo.y1 = -Gap;
+  animatedInfo.y0 = lineHeight;
+  animatedInfo.y1 = yc00 - Gap;
   animatedInfo.d = d;
   animatedInfo.zoom = zoom;
   animatedInfo.textColorBg = textColorBg;
@@ -153,11 +174,12 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
   animatedInfo.frameColorBr = frameColorBr;
   animatedInfo.frameColorBg = frameColorBg;
 
+  int y1 = withInfo ? yc16 : yc06;
   if (withInfo) {
      // Rectangles:
      osd->DrawRectangle(xc00, yc00, xc24 - 1, y1 - 1, Theme.Color(clrBackground)); // Main background
      DrawRectangleOutline(osd, xc00, yc07, xc02 - 1, yc09 - 1, frameColorBr, frameColorBg, 15); // Left middle
-     DrawRectangleOutline(osd, xc06, yc00, xc20 - 1, (lineHeight + 2 * Margin - Gap) / 2 - 1, frameColorBr, frameColorBg, 15); // Top middle
+     DrawRectangleOutline(osd, xc06, yc00, xc20 - 1, yc00 + (lineHeight + 2 * Margin - Gap) / 2 - 1, frameColorBr, frameColorBg, 15); // Top middle
      // Upper Elbow:
      DrawRectangleOutline(osd, xc00, yc00, xc02 - 1, yc01 - 1, frameColorBr, frameColorBg, 3);
      DrawRectangleOutline(osd, xc00, yc01, xc02 - 1, yc06 - 1, frameColorBr, frameColorBg, 13);
@@ -264,7 +286,7 @@ void cLCARSNGDisplayChannel::DrawDate(void)
 {
   cString s = DayDateTime();
   if (initial || !*lastDate || strcmp(s, lastDate)) {
-     osd->DrawText(xc21, yc00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, xc22 - xc21, yc01, taRight | taBorder);
+     osd->DrawText(xc21, yc00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, xc22 - xc21 - 1, yc01 - yc00, taCenter | taRight | taBorder);
      lastDate = s;
      }
 }
@@ -298,7 +320,7 @@ void cLCARSNGDisplayChannel::DrawSeen(int Current, int Total)
   int Seen = (Total > 0) ? min(xc20 - xc06, int((xc20 - xc06) * double(Current) / Total)) : 0;
   if (initial || Seen != lastSeen) {
      int x = (Config.swapTimers) ? 0 : 2;
-     int y0 = (lineHeight + 2 * Margin) / 2;
+     int y0 = yc00 + (lineHeight + 2 * Margin) / 2;
      int y1 = y0 + lineHeight / 3;
      // progress bar
      if (Config.swapTimers) { // Don't draw the background border, but clear the background
@@ -529,24 +551,26 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 {
   DELETENULL(drawDescription);
   int x = xc22;
-  DrawRectangleOutline(osd, xc19, yc15, xc22 - 1, yc16 - 1, frameColorBr, frameColorBg, 15);
-  if (Channel && !Channel->GroupSep()) {
-     x -= bmRecording.Width() + SymbolSpacing;
-     x -= bmEncrypted.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yc15 + (yc16 - yc15 - bmEncrypted.Height()) / 2, bmEncrypted, Theme.Color(Channel->Ca() ? clrChannelSymbolOn : clrChannelSymbolOff), frameColorBr);
-     x -= bmDolbyDigital.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yc15 + (yc16 - yc15 - bmDolbyDigital.Height()) / 2, bmDolbyDigital, Theme.Color(Channel->Dpid(0) ? clrChannelSymbolOn : clrChannelSymbolOff), frameColorBr);
-     x -= bmAudio.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yc15 + (yc16 - yc15 - bmAudio.Height()) / 2, bmAudio, Theme.Color(Channel->Apid(1) ? clrChannelSymbolOn : clrChannelSymbolOff), frameColorBr);
-     if (Channel->Vpid()) {
-        x -= bmTeletext.Width() + SymbolSpacing;
-        osd->DrawBitmap(x, yc15 + (yc16 - yc15 - bmTeletext.Height()) / 2, bmTeletext, Theme.Color(Channel->Tpid() ? clrChannelSymbolOn : clrChannelSymbolOff), frameColorBr);
+  if (withInfo) {
+     DrawRectangleOutline(osd, xc19, yc15, xc22 - 1, yc16 - 1, frameColorBr, frameColorBg, 15);
+     if (Channel && !Channel->GroupSep()) {
+        x -= bmRecording.Width() + SymbolSpacing;
+        x -= bmEncrypted.Width() + SymbolSpacing;
+        osd->DrawBitmap(x, yc15 + (yc16 - yc15 - bmEncrypted.Height()) / 2, bmEncrypted, Theme.Color(Channel->Ca() ? clrChannelSymbolOn : clrChannelSymbolOff), frameColorBr);
+        x -= bmDolbyDigital.Width() + SymbolSpacing;
+        osd->DrawBitmap(x, yc15 + (yc16 - yc15 - bmDolbyDigital.Height()) / 2, bmDolbyDigital, Theme.Color(Channel->Dpid(0) ? clrChannelSymbolOn : clrChannelSymbolOff), frameColorBr);
+        x -= bmAudio.Width() + SymbolSpacing;
+        osd->DrawBitmap(x, yc15 + (yc16 - yc15 - bmAudio.Height()) / 2, bmAudio, Theme.Color(Channel->Apid(1) ? clrChannelSymbolOn : clrChannelSymbolOff), frameColorBr);
+        if (Channel->Vpid()) {
+           x -= bmTeletext.Width() + SymbolSpacing;
+           osd->DrawBitmap(x, yc15 + (yc16 - yc15 - bmTeletext.Height()) / 2, bmTeletext, Theme.Color(Channel->Tpid() ? clrChannelSymbolOn : clrChannelSymbolOff), frameColorBr);
+           }
+        else if (Channel->Apid(0)) {
+           x -= bmRadio.Width() + SymbolSpacing;
+           osd->DrawBitmap(x, yc15 + (yc16 - yc15 - bmRadio.Height()) / 2, bmRadio, Theme.Color(clrChannelSymbolOn), frameColorBr);
+           }
+        initial = true; // make shure DrawBlinkingRec() refreshs recording icon
         }
-     else if (Channel->Apid(0)) {
-        x -= bmRadio.Width() + SymbolSpacing;
-        osd->DrawBitmap(x, yc15 + (yc16 - yc15 - bmRadio.Height()) / 2, bmRadio, Theme.Color(clrChannelSymbolOn), frameColorBr);
-        }
-     initial = true; // make shure DrawBlinkingRec() refreshs recording icon
      }
   leftIcons = x;
 
