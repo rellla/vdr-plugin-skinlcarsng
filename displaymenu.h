@@ -1,3 +1,4 @@
+#include "messagebox.h"
 #include "volumebox.h"
 
 typedef struct {
@@ -120,6 +121,7 @@ private:
   int lastVolume;
   time_t lastVolumeTime;
   cDrawDescription *drawDescription;
+  cLCARSNGMessageBox *messageBox = NULL;
   cLCARSNGVolumeBox *volumeBox;
   static cBitmap bmArrowUp, bmArrowDown, bmTransferMode;
   void SetCoordinateY(int y);

@@ -1380,21 +1380,12 @@ void cLCARSNGDisplayMenu::SetMessage(eMessageType Type, const char *Text)
      DescriptionClear();
      DELETENULL(volumeBox);
      message = true;
-     tColor ColorFg = Theme.Color(clrMessageStatusFg + 2 * Type);
-     tColor ColorBg = Theme.Color(clrMessageStatusBg + 2 * Type);
-     int x0, x1, y0, y1, lx, ly;
-     x0 = xb00;
-     x1 = xb15 - 1;
-     y0 = yb14 - 2 * Margin;
-     y1 = yb15 - 1;
-     lx = x1 - x0 - 2 * Margin;
-     ly = y1 - y0 - 2 * Margin;
-     osd->SaveRegion(x0, y0, x1, y1);
-     DrawRectangleOutline(osd, x0, y0, x1, y1, ColorFg, ColorBg, 15);
-     osd->DrawText(x0 + Margin, y0 + Margin, Text, ColorFg, ColorBg, cFont::GetFont(fontSml), lx, ly, taCenter);
+     if (!messageBox)
+        messageBox = new cLCARSNGMessageBox(osd, cRect(0, yb15 - lineHeight, xa09 - 1, lineHeight));
+     messageBox->SetMessage(Type, Text);
      }
   else {
-     osd->RestoreRegion();
+     DELETENULL(messageBox);
      message = false;
      }
 }
