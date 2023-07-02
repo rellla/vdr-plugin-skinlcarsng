@@ -26,7 +26,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
 #else
   int i = 2;
 #endif
-  infoChannel[0] = trVDR("nein");
+  infoChannel[0] = trVDR("no");
   infoChannel[1] = tr("auto display");
   infoChannel[2] = tr("2nd OK");
 
