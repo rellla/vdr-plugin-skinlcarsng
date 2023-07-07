@@ -12,7 +12,7 @@ cBitmap cLCARSNGDisplayReplay::bmRecording(recording_xpm);
 
 // --- cLCARSNGDisplayReplay -----------------------------------------------
 
-cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS DisplRepl")
+cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS DisplRepl")
 {
   osdFont = cFont::GetFont(fontOsd);
   smlFont = cFont::GetFont(fontSml);
@@ -104,41 +104,66 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly):cThread("LCARS Displ
 
   leftIcons = 0;
 
+  int x0 = xp00;
+  int x1 = xp17;
+  int y0 = yp00;
+  int y1 = yp12;
+
   osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop() + cOsd::OsdHeight() - yp12, xp00, yp00, xp17 - 1, yp12 - 1);
-  osd->DrawRectangle(xp00, yp00, xp17 - 1, yp12 - 1, modeOnly ? clrTransparent : Theme.Color(clrBackground));
+  if (osd) {
+     ReplayPixmap = osd->CreatePixmap(2, cRect(x0, y0, x1 - x0, y1 - y0));
+     if (ReplayPixmap) {
+        ReplayPixmap->SetAlpha(255);
+        ReplayPixmap->Fill(CLR_Clear);
+        }
+     }
+  if (!ReplayPixmap)
+     return;
+
+#ifdef DRAWGRID
+  if (Config.displayGrid) {
+     GridPixmap = osd->CreatePixmap(3, cRect(x0, y0, x1 - x0, y1 - y0));
+     if (GridPixmap) {
+        GridPixmap->SetAlpha(255);
+        GridPixmap->Fill(clrTransparent);
+        }
+     }
+#endif
+
+  DrawRectangle(ReplayPixmap, xp00, yp00, xp17, yp12, modeOnly ? clrTransparent : Theme.Color(clrBackground));
   // Rectangles:
-  DrawRectangleOutline(osd, xp00, yp06, xp02 - 1, yp07 - 1, frameColorBr, frameColorBg, 15);
+  DrawRectangleOutline(ReplayPixmap, xp00, yp06, xp02, yp07, frameColorBr, frameColorBg, 15);
   if (!modeOnly) {
      // Top middle
-     DrawRectangleOutline(osd, xp06, yp00, xp13 - 1, yp01 / 2 - 1, frameColorBr, frameColorBg, 15);
+     DrawRectangleOutline(ReplayPixmap, xp06, yp00, xp13, yp01 / 2, frameColorBr, frameColorBg, 15);
      // Upper Elbow:
-     DrawRectangleOutline(osd, xp00, yp00, xp02 - 1, yp03 - 1, frameColorBr, frameColorBg, 3); 
-     DrawRectangleOutline(osd, xp00, yp01, xp02 - 1, yp05 - 1, frameColorBr, frameColorBg, 13);
-     DrawRectangleOutline(osd, xp02, yp00, xp05 - 1, yp01 - 1, frameColorBr, frameColorBg, 14);
-     osd->DrawRectangle(xp00, yp00, xp01 - 1, yp04 - 1, clrTransparent);
-     DrawEllipseOutline(osd, xp00, yp00, xp01 - 1, yp04 - 1, frameColorBr, frameColorBg, 2);
-     DrawEllipseOutline(osd, xp02, yp01, xp04 - 1, yp03 - 1, frameColorBr, frameColorBg, -2);
+     DrawRectangleOutline(ReplayPixmap, xp00, yp00, xp02, yp03, frameColorBr, frameColorBg, 3); 
+     DrawRectangleOutline(ReplayPixmap, xp00, yp01, xp02, yp05, frameColorBr, frameColorBg, 13);
+     DrawRectangleOutline(ReplayPixmap, xp02, yp00, xp05, yp01, frameColorBr, frameColorBg, 14);
+     DrawRectangle(ReplayPixmap, xp00, yp00, xp01, yp04, clrTransparent);
+     DrawEllipseOutline(ReplayPixmap, xp00, yp00, xp01, yp04, frameColorBr, frameColorBg, 2);
+     DrawEllipseOutline(ReplayPixmap, xp02, yp01, xp04, yp03, frameColorBr, frameColorBg, -2);
      // Lower Elbow:
-     DrawRectangleOutline(osd, xp00, yp08, xp02 - 1, yp11 - 1, frameColorBr, frameColorBg, 7);
-     DrawRectangleOutline(osd, xp00, yp11, xp02 - 1, yp12 - 1, frameColorBr, frameColorBg, 8);
-     DrawRectangleOutline(osd, xp02, yp11, xp05 - 1, yp12 - 1, frameColorBr, frameColorBg, 14);
-     osd->DrawRectangle(xp00, yp09, xp01 - 1, yp12 - 1, clrTransparent);
-     DrawEllipseOutline(osd, xp00, yp09, xp01 - 1, yp12 - 1, frameColorBr, frameColorBg, 3);
-     DrawEllipseOutline(osd, xp02, yp10, xp04 - 1, yp11 - 1, frameColorBr, frameColorBg, -3);
+     DrawRectangleOutline(ReplayPixmap, xp00, yp08, xp02, yp11, frameColorBr, frameColorBg, 7);
+     DrawRectangleOutline(ReplayPixmap, xp00, yp11, xp02, yp12, frameColorBr, frameColorBg, 8);
+     DrawRectangleOutline(ReplayPixmap, xp02, yp11, xp05, yp12, frameColorBr, frameColorBg, 14);
+     DrawRectangle(ReplayPixmap, xp00, yp09, xp01, yp12, clrTransparent);
+     DrawEllipseOutline(ReplayPixmap, xp00, yp09, xp01, yp12, frameColorBr, frameColorBg, 3);
+     DrawEllipseOutline(ReplayPixmap, xp02, yp10, xp04, yp11, frameColorBr, frameColorBg, -3);
      // Status area:
-     DrawRectangleOutline(osd, xp06, yp11, xp07 - 1, yp12 - 1, frameColorBr, frameColorBg, 15);
-     DrawRectangleOutline(osd, xp08, yp11, xp09 - 1, yp12 - 1, frameColorBr, frameColorBg, 15);
-     DrawRectangleOutline(osd, xp10, yp11, xp11 - 1, yp12 - 1, frameColorBr, frameColorBg, 15);
-     DrawRectangleOutline(osd, xp12, yp11, xp15 - 1, yp12 - 1, frameColorBr, frameColorBg, 15);
-     DrawRectangleOutline(osd, xp16, yp11, xp16 + lineHeight / 2 + Margin - 1, yp12 - 1, frameColorBr, frameColorBg, 11);
-     osd->DrawRectangle(xp16 + lineHeight / 2 + Margin, yp11 + lineHeight / 2, xp17 - 1, yp12 - 1, clrTransparent);
-     DrawEllipseOutline(osd, xp16 + lineHeight / 2 + Margin, yp11, xp17 - 1, yp12 - 1, frameColorBr, frameColorBg, 5);
+     DrawRectangleOutline(ReplayPixmap, xp06, yp11, xp07, yp12, frameColorBr, frameColorBg, 15);
+     DrawRectangleOutline(ReplayPixmap, xp08, yp11, xp09, yp12, frameColorBr, frameColorBg, 15);
+     DrawRectangleOutline(ReplayPixmap, xp10, yp11, xp11, yp12, frameColorBr, frameColorBg, 15);
+     DrawRectangleOutline(ReplayPixmap, xp12, yp11, xp15, yp12, frameColorBr, frameColorBg, 15);
+     DrawRectangleOutline(ReplayPixmap, xp16, yp11, xp16 + lineHeight / 2 + Margin, yp12, frameColorBr, frameColorBg, 11);
+     DrawRectangle(ReplayPixmap, xp16 + lineHeight / 2 + Margin, yp11 + lineHeight / 2, xp17, yp12, clrTransparent);
+     DrawEllipseOutline(ReplayPixmap, xp16 + lineHeight / 2 + Margin, yp11, xp17, yp12, frameColorBr, frameColorBg, 5);
      // Upper Right:
-     DrawRectangleOutline(osd, xp16, yp00, xp16 + lineHeight / 2 + Margin - 1, yp01 - 1, frameColorBr, frameColorBg, 11);
-     osd->DrawRectangle(xp16 + lineHeight / 2 + Margin, yp00, xp17 - 1, yp01 - lineHeight / 2 - 1, clrTransparent);
-     DrawEllipseOutline(osd, xp16 + lineHeight / 2 + Margin, yp00, xp17 - 1, yp01 - 1, frameColorBr, frameColorBg, 5);
+     DrawRectangleOutline(ReplayPixmap, xp16, yp00, xp16 + lineHeight / 2 + Margin, yp01, frameColorBr, frameColorBg, 11);
+     DrawRectangle(ReplayPixmap, xp16 + lineHeight / 2 + Margin, yp00, xp17, yp01 - lineHeight / 2, clrTransparent);
+     DrawEllipseOutline(ReplayPixmap, xp16 + lineHeight / 2 + Margin, yp00, xp17, yp01, frameColorBr, frameColorBg, 5);
      // Progressbar
-     DrawRectangleOutline(osd, xp03, yp07 - lineHeight, xp15 - 1, yp07 - 1, frameColorBr, frameColorBg, 15);
+     DrawRectangleOutline(ReplayPixmap, xp03, yp07 - lineHeight, xp15, yp07, frameColorBr, frameColorBg, 15);
      }
 }
 
@@ -154,7 +179,7 @@ void cLCARSNGDisplayReplay::DrawDate(void)
 {
   cString s = DayDateTime();
   if (!*lastDate || strcmp(s, lastDate)) {
-     osd->DrawText(xp14, yp00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, xp15 - xp14 - Margin - 1, yp01, taRight | taBorder);
+     DrawText(ReplayPixmap, xp14, yp00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, xp15 - xp14, yp01, taRight | taBorder);
      lastDate = s;
      }
 }
@@ -164,7 +189,7 @@ void cLCARSNGDisplayReplay::DrawTrack(void)
   cDevice *Device = cDevice::PrimaryDevice();
   const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
   if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
-     osd->DrawText(xp10 + Margin, yp11 + Margin, Track ? Track->description : "", Theme.Color(clrTrackName), clrTransparent, (zoom) ? smlFont : osdFont, xp11 - xp10 - textBorder - 2 * Margin, yp12 - yp11 - 2 * Margin, taCenter | taRight | taBorder);
+     DrawText(ReplayPixmap, xp10 + Margin, yp11 + Margin, Track ? Track->description : "", Theme.Color(clrTrackName), clrTransparent, (zoom) ? smlFont : osdFont, xp11 - xp10 - textBorder - 2 * Margin, yp12 - yp11 - 2 * Margin, taCenter | taRight | taBorder);
      strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
      }
 }
@@ -174,13 +199,13 @@ void cLCARSNGDisplayReplay::DrawScreenResolution(void)
   cString resolution = GetScreenResolutionIcon();
   if (!(strcmp(resolution, oldResolution) == 0)) {
      if (strcmp(resolution, "") == 0) {
-        osd->DrawRectangle(xp11 + Margin, yp11 + Margin, leftIcons, yp12 - Margin, frameColorBg);
+        DrawRectangle(ReplayPixmap, xp11 + Margin, yp11 + Margin, leftIcons, yp12 - Margin, frameColorBg);
         }
      const cFont *font = (zoom) ? smlFont : osdFont;
      int w = font->Width(*resolution) + 2 * textBorder;
      int x = leftIcons - w - SymbolSpacing;
      int h = ((zoom) && (iconHeight < lineHeight)) ? (lineHeight - iconHeight) / 2 : 0;
-     osd->DrawText(x, yp11 + h + Margin, cString::sprintf("%s", *resolution), Theme.Color(clrChannelSymbolOn), frameColorBr, font, w, yp12 - yp11 - 2 * Margin - 2 * h, taCenter | taRight | taBorder);
+     DrawText(ReplayPixmap, x, yp11 + h + Margin, cString::sprintf("%s", *resolution), Theme.Color(clrChannelSymbolOn), frameColorBr, font, w, yp12 - yp11 - 2 * Margin - 2 * h, taCenter | taRight | taBorder);
      oldResolution = resolution;
      }
 }
@@ -206,7 +231,7 @@ void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
   if (initial || On != lastOn) { 
      int x = xp15;
      x -= bmRecording.Width() + SymbolSpacing;
-     osd->DrawBitmap(x, yp11 + (yp12 - yp11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColorBr : frameColorBr);
+     DrawBitmap(ReplayPixmap, x, yp11 + (yp12 - yp11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColorBr : frameColorBr);
      lastOn = On;
      leftIcons = x;
      }
@@ -222,10 +247,10 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
   recordingErrors = RecordingInfo->Errors();
   SetTitle(RecordingInfo->Title());
   int w = smlFont->Width(RecordingInfo->ShortText());
-  osd->DrawText(xp03, yp05 - lineHeight - Margin, RecordingInfo->ShortText(), Theme.Color(clrEventShortText), textColorBg, smlFont, min(xp15, (xp03 + w)) - xp03, lineHeight, taCenter);
+  DrawText(ReplayPixmap, xp03, yp05 - lineHeight - Margin, RecordingInfo->ShortText(), Theme.Color(clrEventShortText), textColorBg, smlFont, min(xp15, (xp03 + w)) - xp03, lineHeight, taCenter);
   // must be (xp00 + Gap + Margin) to not interact with the ellipse
-  osd->DrawText(xp00 + Gap + Margin, yp02 + Margin, ShortDateString(Recording->Start()), frameColorFg, frameColorBg, osdFont, xp02 - xp00 - Gap - 2 * Margin, lineHeight, taTop | taRight | taBorder);
-  osd->DrawText(xp00 + Margin, yp05 - lineHeight - Margin, TimeString(Recording->Start()), frameColorFg, frameColorBg, osdFont, xp02 - xp00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
+  DrawText(ReplayPixmap, xp00 + Gap + Margin, yp02 + Margin, ShortDateString(Recording->Start()), frameColorFg, frameColorBg, osdFont, xp02 - xp00 - Gap - 2 * Margin, lineHeight, taTop | taRight | taBorder);
+  DrawText(ReplayPixmap, xp00 + Margin, yp05 - lineHeight - Margin, TimeString(Recording->Start()), frameColorFg, frameColorBg, osdFont, xp02 - xp00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
 
   //check for instant recording
   const char *recName = Recording->Name();
@@ -252,7 +277,7 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
 void cLCARSNGDisplayReplay::SetTitle(const char *Title)
 {
   int w = osdFont->Width(Title);
-  osd->DrawText(xp03, yp02 + Margin, Title, Theme.Color(clrEventTitle), textColorBg, osdFont, min(xp15, (xp03 + w)) - xp03, lineHeight);
+  DrawText(ReplayPixmap, xp03, yp02 + Margin, Title, Theme.Color(clrEventTitle), textColorBg, osdFont, min(xp15, (xp03 + w)) - xp03, lineHeight);
 }
 
 static const char *const *ReplaySymbols[2][2][5] = {
@@ -266,7 +291,7 @@ void cLCARSNGDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
 {
   Speed = constrain(Speed, -1, 3);
   cBitmap bm(ReplaySymbols[Play][Forward][Speed + 1]);
-  osd->DrawBitmap(xp01 - bm.Width() / 2, (yp06 + yp07 - bm.Height()) / 2, bm, frameColorFg, frameColorBg);
+  DrawBitmap(ReplayPixmap, xp01 - bm.Width() / 2, (yp06 + yp07 - bm.Height()) / 2, bm, frameColorFg, frameColorBg);
 }
 
 void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
@@ -278,58 +303,60 @@ void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
   if (timshiftMode) {
      cString tM = "TimeshiftMode";
      int w = osdFont->Width(tM);
-     osd->DrawText(xp03, yp05, tM, Theme.Color(clrReplayPosition), textColorBg, osdFont, w, 0, taRight);
+     DrawText(ReplayPixmap, xp03, yp05, tM, Theme.Color(clrReplayPosition), textColorBg, osdFont, w, 0, taRight);
   }
   if (isRecording) {
      int w = osdFont->Width(endTime);
      if (Total > framesTotal) {
-        osd->DrawRectangle(xp15 - w, yp05, xp15 - 1, yp07 - lineHeight - 1, Theme.Color(clrBackground)); // Clear endTime
+        DrawRectangle(ReplayPixmap, xp15 - w, yp05, xp15, yp07 - lineHeight, Theme.Color(clrBackground)); // Clear endTime
         isRecording = false;
         x = 0;
      }
      else {
         double rest = ((double)framesTotal - (double)Total) / (double)framesTotal;
         x = (int)((xp15 - xp03) * rest);
-        osd->DrawText(xp15 - w, yp05, *endTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, w, 0, taRight);
+        DrawText(ReplayPixmap, xp15 - w, yp05, *endTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, w, 0, taRight);
      }
      if (pbinit) {
-        osd->DrawRectangle(xp03 + Margin, yp07 - lineHeight + 4 + lH, xp15 - Margin, yp07 - 4 - lH, frameColorBr); // small rectangle
+        DrawRectangle(ReplayPixmap, xp03 + Margin, yp07 - lineHeight + 4 + lH, xp15 - Margin, yp07 - 4 - lH, frameColorBr); // small rectangle
         pbinit = false;
      }
   }
   if ((xp15 - xp03 - x - 5) > 0) {
      cProgressBar pb(xp15 - xp03 - x - 2 * Margin, lineHeight - 2 * Margin, Current, Total, marks, Theme.Color(clrReplayProgressSeen), Theme.Color(clrReplayProgressRest), Theme.Color(clrReplayProgressSelected), Theme.Color(clrReplayProgressMark), Theme.Color(clrReplayProgressCurrent));
-     osd->DrawBitmap(xp03 + Margin, yp07 - lineHeight + Margin, pb); // Progressbar
+     DrawBitmap(ReplayPixmap, xp03 + Margin, yp07 - lineHeight + Margin, pb); // Progressbar
   }
 }
 
 void cLCARSNGDisplayReplay::SetCurrent(const char *Current)
 {
+  // Display current time below progressbar
   int w = osdFont->Width(Current);
-  osd->DrawText(xp03, yp08, Current, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastCurrentWidth, w), 0, taTop | taLeft);
+  DrawText(ReplayPixmap, xp03, yp08, Current, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastCurrentWidth, w), 0, taTop | taLeft);
   if (lastCurrentWidth > w)
-     osd->DrawRectangle(xp03 + lastCurrentWidth - (lastCurrentWidth - w), yp08, xp03 + lastCurrentWidth, yp08 + lineHeight, Theme.Color(clrBackground));
+     DrawRectangle(ReplayPixmap, xp03 + lastCurrentWidth - (lastCurrentWidth - w), yp08, xp03 + lastCurrentWidth, yp08 + lineHeight, Theme.Color(clrBackground));
   lastCurrentWidth = w;
 
   // Display remaining time below progressbar
   int rest = current - total;
   cString restTime = cString::sprintf("%s", *IndexToHMSF(rest, false, fps));
   int wR = osdFont->Width(*restTime);
-  osd->DrawText(xp15 - wR, yp08, *restTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastRestWidth, wR), 0, taTop | taRight);
+  DrawText(ReplayPixmap, xp15 - wR, yp08, *restTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastRestWidth, wR), 0, taTop | taRight);
   lastRestWidth = wR;
 
   // Display total time above progressbar
-  if (isRecording)
-     return;
+  if (isRecording && !(total > framesTotal))
+     endTime = cString::sprintf("%s: %s / %s", tr("length"), *IndexToHMSF(total, false, fps), *IndexToHMSF(framesTotal, false, fps));
+  else
+     endTime = cString::sprintf("%s: %s", tr("length"), *IndexToHMSF(total, false, fps));
 
-  endTime = cString::sprintf("%s: %s", tr("length"), *IndexToHMSF(total, false, fps));
   int wT = osdFont->Width(*endTime);
-  osd->DrawText(xp15 - wT, yp06, *endTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastTotalWidth, wT), 0, taTop | taRight);
+  DrawText(ReplayPixmap, xp15 - wT, yp06, *endTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastTotalWidth, wT), 0, taTop | taRight);
   lastTotalWidth = wT;
 
   // Display recording error
   if (Config.displayErrorsInReplay && recordingErrors)
-     osd->DrawText(xp08 + Margin, yp11 + Margin, "!", clrRed, frameColorBg, smlFont, xp09 - xp08 - 2 * Margin, yp12 - yp11 - 2 * Margin, taCenter);
+     DrawText(ReplayPixmap, xp08 + Margin, yp11 + Margin, "!", clrRed, frameColorBg, smlFont, xp09 - xp08 - 2 * Margin, yp12 - yp11 - 2 * Margin, taCenter);
 }
 
 void cLCARSNGDisplayReplay::SetTotal(const char *Total)
@@ -339,8 +366,8 @@ void cLCARSNGDisplayReplay::SetTotal(const char *Total)
 void cLCARSNGDisplayReplay::SetJump(const char *Jump)
 {
   if (!Jump)
-     osd->DrawRectangle(xp06 + Margin, yp11 + Margin, xp07 - 1 - Margin, yp12 - 1 - Margin, frameColorBg);
-  osd->DrawText(xp06 + Margin, yp11 + Margin, Jump, Theme.Color(clrReplayJumpFg), Jump ? Theme.Color(clrReplayJumpBg) : frameColorBg, osdFont, xp07 - xp06 - 1 - 2 * Margin, yp12 - yp11 - 1 - 2 * Margin, taCenter);
+     osd->DrawRectangle(xp06 + Margin, yp11 + Margin, xp07 - Margin, yp12 - Margin, frameColorBg);
+  DrawText(ReplayPixmap, xp06 + Margin, yp11 + Margin, Jump, Theme.Color(clrReplayJumpFg), Jump ? Theme.Color(clrReplayJumpBg) : frameColorBg, osdFont, xp07 - xp06 - 2 * Margin, yp12 - yp11 - 2 * Margin, taCenter);
 }
 
 void cLCARSNGDisplayReplay::SetMessage(eMessageType Type, const char *Text)
@@ -402,7 +429,7 @@ void cLCARSNGDisplayReplay::Flush(void)
      }
   DrawVolume();
 #ifdef DRAWGRID
-  if (Config.displayGrid)
+  if (initial && Config.displayGrid)
      DrawGrid();
 #endif
   osd->Flush();
@@ -412,6 +439,9 @@ void cLCARSNGDisplayReplay::Flush(void)
 #ifdef DRAWGRID
 void cLCARSNGDisplayReplay::DrawGrid(void)
 {
+  if (!GridPixmap)
+     return;
+
   int bottom = yp12;
   int top = yp01;
   tColor gridColor = 0xffff7700;
@@ -425,8 +455,8 @@ void cLCARSNGDisplayReplay::DrawGrid(void)
                         "xp09", "xp10", "xp11", "xp12", "xp13", "xp14", "xp15", "xp16", "xp17", '\0' };
 
   for (int i = 0; strxp[i][0]; i++) {
-     osd->DrawRectangle(xp[i], top, xp[i] + 1, bottom - 1, gridColor);
-     osd->DrawText(xp[i], top + offset, cString(strxp[i]), gridColor, clrTransparent, smlFont);
+     DrawRectangle(GridPixmap, xp[i], top, xp[i] + 1, bottom, gridColor);
+     DrawText(GridPixmap, xp[i], top + offset, cString(strxp[i]), gridColor, clrTransparent, smlFont);
 
      offset = offset + lineHeight;
 
@@ -442,8 +472,8 @@ void cLCARSNGDisplayReplay::DrawGrid(void)
 
   int d = 5 * lineHeight;
   for (int i = 0; stryp[i][0]; i++) {
-     osd->DrawRectangle(xp00, yp[i], xp14 - 1, yp[i] + 1, gridColor);
-     osd->DrawText(xp06 + (d / 2) + (2.5 * offset), yp[i], cString(stryp[i]), gridColor, clrTransparent, smlFont);
+     DrawRectangle(GridPixmap, xp00, yp[i], xp14, yp[i] + 1, gridColor);
+     DrawText(GridPixmap, xp06 + (d / 2) + (2.5 * offset), yp[i], cString(stryp[i]), gridColor, clrTransparent, smlFont);
 
      offset = offset + lineHeight;
 

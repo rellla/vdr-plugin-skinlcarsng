@@ -6,6 +6,8 @@
 class cLCARSNGDisplayReplay : public cSkinDisplayReplay, cThread {
 private:
   cOsd *osd;
+  cPixmap *ReplayPixmap = NULL;
+  cPixmap *GridPixmap = NULL;
   const cFont *osdFont;
   const cFont *smlFont;
   int Margin;
