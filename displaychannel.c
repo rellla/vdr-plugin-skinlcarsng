@@ -913,44 +913,37 @@ void cDrawChannelDescription::DrawBracket(int height)
 
   BracketPixmap->Fill(Theme.Color(clrBackground));
   int rand = xy + Gap;
-  BracketPixmap->DrawRectangle(cRect(rand, rand, x4 - rand, y1 - 2 * rand), clrTransparent);
+  DrawRectangle(BracketPixmap, rand, rand, x4, y1 - rand, clrTransparent);
 
-  DrawRectangleOutline(BracketPixmap, x1, 0, x2 - x1, yh, aI.frameColorBr, aI.frameColorBg, 14);
-  DrawRectangleOutline(BracketPixmap, x3, 0, x4 - x3, yh, aI.frameColorBr, aI.frameColorBg, 15);
-  DrawRectangleOutline(BracketPixmap, x3, yh + Gap, x4 - x3, xy - yh - Gap, aI.frameColorBr, aI.frameColorBg, 15);
-  DrawRectangleOutline(BracketPixmap, 0, xy, x1, y1 - y0 - 2 * xy, aI.frameColorBr, aI.frameColorBg, 1);
-  DrawRectangleOutline(BracketPixmap, x1, y1 - y0 - yh, x2 - x1, yh, aI.frameColorBr, aI.frameColorBg, 14);
-  DrawRectangleOutline(BracketPixmap, x3, y1 - y0 - xy, x4 - x3, xy, aI.frameColorBr, aI.frameColorBg, 15);
+  DrawRectangleOutline(BracketPixmap, x1, 0, x2, yh, aI.frameColorBr, aI.frameColorBg, 14);
+  DrawRectangleOutline(BracketPixmap, x3, 0, x4, yh, aI.frameColorBr, aI.frameColorBg, 15);
+  DrawRectangleOutline(BracketPixmap, x3, yh + Gap, x4, xy, aI.frameColorBr, aI.frameColorBg, 15);
+  DrawRectangleOutline(BracketPixmap, 0, xy, x1, y1 - xy, aI.frameColorBr, aI.frameColorBg, 1);
+  DrawRectangleOutline(BracketPixmap, x1, y1 - yh, x2, y1, aI.frameColorBr, aI.frameColorBg, 14);
+  DrawRectangleOutline(BracketPixmap, x3, y1 - xy, x4, y1, aI.frameColorBr, aI.frameColorBg, 15);
 
   // Upper Elbow part 1:
-  BracketPixmap->DrawRectangle(cRect(0, 0, xy, xy), clrTransparent);
+  DrawRectangle(BracketPixmap, 0, 0, xy, xy, clrTransparent);
   DrawEllipseOutline(BracketPixmap, 0, 0, x1, xy, aI.frameColorBr, aI.frameColorBg, 2);
   // Lower Elbow part 1:
-  BracketPixmap->DrawRectangle(cRect(0, y1 - xy, xy, xy), clrTransparent);
-  DrawEllipseOutline(BracketPixmap, 0, y1 - y0 - xy, x1, xy, aI.frameColorBr, aI.frameColorBg, 3);
+  DrawRectangle(BracketPixmap, 0, y1 - xy, xy, y1, clrTransparent);
+  DrawEllipseOutline(BracketPixmap, 0, y1 - xy, x1, y1, aI.frameColorBr, aI.frameColorBg, 3);
 
-  BracketPixmap->DrawRectangle(cRect(x1 - Margin, yh, Margin, y1 - y0 - 2 * yh), aI.frameColorBr);
+  DrawRectangle(BracketPixmap, x1 - Margin, yh, x1, y1 - yh, aI.frameColorBr);
 
   // Upper Elbow part 2:
-  DrawEllipseOutline(BracketPixmap, x1 , yh, yh, yh, aI.frameColorBr, aI.frameColorBg, -2);
+  DrawEllipseOutline(BracketPixmap, x1, yh, x1 + yh, xy, aI.frameColorBr, aI.frameColorBg, -2);
   // Lower Elbow part 2:
-  DrawEllipseOutline(BracketPixmap, x1, y1 - y0 - 2 * yh, yh, yh, aI.frameColorBr, aI.frameColorBg, -3);
+  DrawEllipseOutline(BracketPixmap, x1, y1 - xy, x1 + yh, y1 - yh, aI.frameColorBr, aI.frameColorBg, -3);
 
   // Top Right
-  DrawRectangleOutline(BracketPixmap, x5, 0, xy / 2, xy, aI.frameColorBr, aI.frameColorBg, 11);
-  BracketPixmap->DrawRectangle(cRect(x5 + xy / 2, 0, x6 - x5 - xy / 2, xy / 2), clrTransparent);
-  DrawEllipseOutline(BracketPixmap, x5 + xy / 2, 0, x6 - x5 - xy / 2, xy, aI.frameColorBr, aI.frameColorBg, 5);
+  DrawRectangleOutline(BracketPixmap, x5, 0, x5 + xy / 2, xy, aI.frameColorBr, aI.frameColorBg, 11);
+  DrawRectangle(BracketPixmap, x5 + xy / 2, 0, x6, xy / 2, clrTransparent);
+  DrawEllipseOutline(BracketPixmap, x5 + xy / 2, 0, x6, xy, aI.frameColorBr, aI.frameColorBg, 5);
   // Bottom Right
-  DrawRectangleOutline(BracketPixmap, x5, y1 - y0 - xy, xy / 2, xy, aI.frameColorBr, aI.frameColorBg, 11);
-  BracketPixmap->DrawRectangle(cRect(x5 + xy / 2, y1 - xy / 2, x6 - x5 - xy / 2, xy / 2), clrTransparent);
-  DrawEllipseOutline(BracketPixmap, x5 + xy / 2, y1 - xy, x6 - x5 - xy / 2, xy, aI.frameColorBr, aI.frameColorBg, 5);
-
-  return;
-
-  BracketPixmap->DrawRectangle(cRect(0, 0, x6, Margin), aI.frameColorBr);                // border oben
-  BracketPixmap->DrawRectangle(cRect(0, y1 - y0 - Margin, x6, Margin), aI.frameColorBr); // border unten
-  BracketPixmap->DrawRectangle(cRect(0, 0, Margin, y1 - y0), aI.frameColorBr);                // border links
-  BracketPixmap->DrawRectangle(cRect(x6 - Margin, 0, Margin, y1 - y0), aI.frameColorBr); // border rechts
+  DrawRectangleOutline(BracketPixmap, x5, y1 - xy, x5 + xy / 2, y1, aI.frameColorBr, aI.frameColorBg, 11);
+  DrawRectangle(BracketPixmap, x5 + xy / 2, y1 - xy / 2, x6, y1, clrTransparent);
+  DrawEllipseOutline(BracketPixmap, x5 + xy / 2, y1 - xy, x6, y1, aI.frameColorBr, aI.frameColorBg, 5);
 }
 
 void cDrawChannelDescription::Draw(void)
