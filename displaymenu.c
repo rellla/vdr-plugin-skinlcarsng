@@ -1392,6 +1392,9 @@ void cLCARSNGDisplayMenu::SetMessage(eMessageType Type, const char *Text)
 
 bool cLCARSNGDisplayMenu::SetItemEvent(const cEvent *Event, int Index, bool Current, bool Selectable, const cChannel *Channel, bool WithDate, eTimerMatch TimerMatch, bool TimerActive)
 {
+  if (!Config.displInfoMenuEPG)
+     return false;
+
   if ((animatedInfo.Event == Event) && !Current) {
      DescriptionClear();
      }
@@ -1410,6 +1413,9 @@ bool cLCARSNGDisplayMenu::SetItemEvent(const cEvent *Event, int Index, bool Curr
 
 bool cLCARSNGDisplayMenu::SetItemTimer(const cTimer *Timer, int Index, bool Current, bool Selectable)
 {
+  if (!Config.displInfoMenuTimer)
+     return false;
+
   if ((animatedInfo.Timer == Timer) && !Current) {
      DescriptionClear();
      }
@@ -1424,6 +1430,9 @@ bool cLCARSNGDisplayMenu::SetItemTimer(const cTimer *Timer, int Index, bool Curr
 
 bool cLCARSNGDisplayMenu::SetItemRecording(const cRecording *Recording, int Index, bool Current, bool Selectable, int Level, int Total, int New)
 {
+  if (!Config.displInfoMenuRec)
+     return false;
+
   if ((animatedInfo.Recording == Recording) && !Current) {
      DescriptionClear();
      }
@@ -1433,8 +1442,10 @@ bool cLCARSNGDisplayMenu::SetItemRecording(const cRecording *Recording, int Inde
      lastSetRecording = NULL;
   if (Current && !Total) {
      animatedInfo.Fast = false;
+#if APIVERSNUM > 20700
      if (!initial && (Recording == lastSetRecording))
         animatedInfo.Fast = true;
+#endif
      lastSetRecording = Recording;
      animatedInfo.Recording = Recording;
      animatedInfo.Index = Index;
