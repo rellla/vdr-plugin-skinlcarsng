@@ -1,5 +1,8 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
+Version 0.4.1
+- Fix not refreshing recordings list while pressung key pageup/pagedown
+
 Version 0.4.0
 - Fix a segfault in cDrawDescription::Draw() (thx to @rell at vdr-portal.de)
 - Add volume bar to display replay
