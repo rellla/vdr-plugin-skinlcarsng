@@ -180,6 +180,24 @@ void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0
 }
 #endif
 
+void DrawBitmap(cPixmap *Pixmap, int x, int y, const cBitmap &Bitmap, tColor ColorFg, tColor ColorBg, bool Overlay)
+{
+  if (Pixmap)
+     Pixmap->DrawBitmap(cPoint(x, y), Bitmap, ColorFg, ColorBg, Overlay);
+}
+
+void DrawText(cPixmap *Pixmap, int x, int y, const char *s, tColor ColorFg, tColor ColorBg, const cFont *Font, int Width, int Height, int Alignment)
+{
+  if (Pixmap)
+     Pixmap->DrawText(cPoint(x, y), s, ColorFg, ColorBg, Font, Width, Height, Alignment);
+}
+
+void DrawRectangle(cPixmap *Pixmap, int x1, int y1, int x2, int y2, tColor Color)
+{
+  if (Pixmap)
+     Pixmap->DrawRectangle(cRect(x1, y1, x2 - x1, y2 - y1), Color);
+}
+
 void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Usage, int Margin)
 {
   /* Color1 = border color
@@ -197,12 +215,17 @@ void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Colo
                      y2 - ((Usage & muBottom) ? margin : 0), Color2);
 }
 
-void DrawRectangleOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int Usage, int Margin)
+void DrawRectangleOutline(cPixmap *Pixmap, int x, int y, int x2, int y2, tColor Color1, tColor Color2, int Usage, int Margin)
 {
+  if (!Pixmap)
+     return;
+
   /* Color1 = border color
    * Color2 = inner color
    */
 
+  int w = x2 - x;
+  int h = y2 - y;
   int margin = (Margin > 0) ? Margin : Config.Margin;
   Pixmap->DrawRectangle(cRect(x, y, w, h), (margin == 0) ? Color2 : Color1);
   if ((margin == 0) || !Usage || (Color1 == Color2))
@@ -261,8 +284,11 @@ void DrawEllipseOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1
              }
 }
 
-void DrawEllipseOutline(cPixmap *Pixmap, int x1, int y1, int w, int h, tColor Color1, tColor Color2, int Quadrants, int Margin)
+void DrawEllipseOutline(cPixmap *Pixmap, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Quadrants, int Margin)
 {
+  if (!Pixmap)        
+     return;
+
   /* Quadrants:
    * 0       draws the entire ellipse
    * 1..4    draws only the first, second, third or fourth quadrant, respectively
@@ -272,6 +298,8 @@ void DrawEllipseOutline(cPixmap *Pixmap, int x1, int y1, int w, int h, tColor Co
    *  Color2 = inner color
    */
 
+  int w = x2 - x1;
+  int h = y2 - y1;
   int margin = (Margin > 0) ? Margin : Config.Margin;
   Pixmap->DrawEllipse(cRect(x1, y1, w, h), (margin == 0) ? Color2 : Color1, Quadrants);
   if (margin == 0)

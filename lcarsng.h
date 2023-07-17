@@ -63,6 +63,7 @@ extern cTheme Theme;
 
 // Color domains:
 
+#define CLR_Clear           0x01000000
 #define CLR_BACKGROUND      0x99000000
 #define CLR_MAIN_FRAME      0xFFFF9966
 #define CLR_CHANNEL_FRAME   0xFF8A9EC9
@@ -210,6 +211,9 @@ cFont *CreateTinyFont(int LineHeight);
 bool DrawDeviceData(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &xs, const cFont *TinyFont, cString &LastDeviceType, cCamSlot *&LastCamSlot, bool Initial);
 void DrawDeviceSignal(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &LastSignalStrength, int &LastSignalQuality, bool Initial);
 void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0, int x1, int y1, int &LastCurrent);
+void DrawBitmap(cPixmap *Pixmap, int x, int y, const cBitmap &Bitmap, tColor ColorFg = 0, tColor ColorBg = 0, bool Overlay = false);
+void DrawText(cPixmap *Pixmap, int x, int y, const char *s, tColor ColorFg, tColor ColorBg, const cFont *Font, int Width = 0, int Height = 0, int Alignment = taDefault);
+void DrawRectangle(cPixmap *Pixmap, int x1, int y1, int x2, int y2, tColor Color);
 void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Usage = 0, int Margin = 0);
 void DrawRectangleOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int Usage = 0, int Margin = 0);
 void DrawEllipseOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Quadrants = 0, int Margin = 0);
