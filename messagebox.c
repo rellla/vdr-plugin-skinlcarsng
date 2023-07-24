@@ -5,8 +5,8 @@
 cLCARSNGMessageBox::cLCARSNGMessageBox(cOsd *Osd, const cRect &Rect, bool Full) {
   osd = Osd;
 
-  pixmapBg = osd->CreatePixmap(0, Rect);
-  pixmapBg->Fill(0x01000000);
+  pixmapBg = osd->CreatePixmap(6, Rect);
+  pixmapBg->Fill(clrTransparent);
   pixmap = osd->CreatePixmap(7, Rect);
   pixmap->Fill(clrTransparent);
 
