@@ -219,6 +219,7 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
   if (!RecordingInfo)
      return;
  
+  recordingErrors = RecordingInfo->Errors();
   SetTitle(RecordingInfo->Title());
   int w = smlFont->Width(RecordingInfo->ShortText());
   osd->DrawText(xp03, yp05 - lineHeight - Margin, RecordingInfo->ShortText(), Theme.Color(clrEventShortText), textColorBg, smlFont, min(xp15, (xp03 + w)) - xp03, lineHeight, taCenter);
@@ -325,6 +326,10 @@ void cLCARSNGDisplayReplay::SetCurrent(const char *Current)
   int wT = osdFont->Width(*endTime);
   osd->DrawText(xp15 - wT, yp06, *endTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastTotalWidth, wT), 0, taTop | taRight);
   lastTotalWidth = wT;
+
+  // Display recording error
+  if (Config.displayErrorsInReplay && recordingErrors)
+     osd->DrawText(xp08 + Margin, yp11 + Margin, "!", clrRed, frameColorBg, smlFont, xp09 - xp08 - 2 * Margin, yp12 - yp11 - 2 * Margin, taCenter);
 }
 
 void cLCARSNGDisplayReplay::SetTotal(const char *Total)

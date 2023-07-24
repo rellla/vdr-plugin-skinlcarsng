@@ -36,6 +36,7 @@ private:
   int leftIcons;
   bool message;
   bool isRecording;
+  int recordingErrors = 0;
   int framesTotal;
   double fps;
   cString endTime;

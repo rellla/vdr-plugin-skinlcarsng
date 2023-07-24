@@ -39,6 +39,10 @@ cLCARSNGSetup::cLCARSNGSetup() {
   Add(new cMenuEditBoolItem(tr("Swap events and timers"),     &tmpConfig.swapTimers));
 
   Add(new cOsdItem("",                                        osUnknown, false));
+  Add(new cOsdItem(tr("Display replay view:"),                osUnknown, false));
+  Add(new cMenuEditBoolItem(tr("Display error sign"),         &tmpConfig.displayErrorsInReplay));
+
+  Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Display description:"),                osUnknown, false));
   Add(new cMenuEditBoolItem(tr("In menu epg"),                &tmpConfig.displInfoMenuEPG));
   Add(new cMenuEditBoolItem(tr("In menu timer"),              &tmpConfig.displInfoMenuTimer));
@@ -94,6 +98,7 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("FramesPerSecond",    Config.framesPerSecond);
   SetupStore("VolumeBarStyle",     Config.volumeBarStyle);
   SetupStore("SwapTimers",         Config.swapTimers);
+  SetupStore("DisplayErrInRepl",   Config.displayErrorsInReplay);
   SetupStore("MainMenue",          Config.mcMainScaled);
   SetupStore("ScheduleMenue",      Config.mcScheduleScaled);
   SetupStore("ChannelMenue",       Config.mcChannelScaled);

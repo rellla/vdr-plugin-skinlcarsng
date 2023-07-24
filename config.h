@@ -22,6 +22,7 @@ public:
   int framesPerSecond;
   int volumeBarStyle;
   int swapTimers;
+  int displayErrorsInReplay;
   int mcUndefinedScaled;
   int mcUnknownScaled;
   int mcMainScaled;

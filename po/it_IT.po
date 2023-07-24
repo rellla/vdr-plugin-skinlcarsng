@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.4.0\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2023-06-30 12:47+0200\n"
+"POT-Creation-Date: 2023-08-07 12:03+0200\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: fiveten_59\n"
 "Language-Team: fiveten_59\n"
@@ -107,6 +107,12 @@ msgstr "Mostra vista canale"
 
 msgid "Swap events and timers"
 msgstr "Scambio eventi e timers"
+
+msgid "Display replay view:"
+msgstr "Mostra vista riproduzione"
+
+msgid "Display error sign"
+msgstr "Mostra errore cartello"
 
 msgid "Display description:"
 msgstr "Descrizione schermo:"
