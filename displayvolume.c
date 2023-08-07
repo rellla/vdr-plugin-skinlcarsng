@@ -18,7 +18,6 @@ cLCARSNGDisplayVolume::~cLCARSNGDisplayVolume()
 {
   delete volumeBox;
   delete osd;
-  cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
 }
 
 void cLCARSNGDisplayVolume::SetVolume(int Current, int Total, bool Mute)

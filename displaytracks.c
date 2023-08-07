@@ -84,7 +84,6 @@ cLCARSNGDisplayTracks::cLCARSNGDisplayTracks(const char *Title, int NumTracks, c
 cLCARSNGDisplayTracks::~cLCARSNGDisplayTracks()
 {
   delete osd;
-  cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
 }
 
 void cLCARSNGDisplayTracks::SetItem(const char *Text, int Index, bool Current)

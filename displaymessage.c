@@ -16,7 +16,6 @@ cLCARSNGDisplayMessage::~cLCARSNGDisplayMessage()
 {
   delete messageBox;
   delete osd;
-  cDevice::PrimaryDevice()->ScaleVideo(cRect::Null);
 }
 
 void cLCARSNGDisplayMessage::SetMessage(eMessageType Type, const char *Text)
