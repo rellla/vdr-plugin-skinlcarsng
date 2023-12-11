@@ -163,7 +163,8 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS Dis
      DrawRectangle(ReplayPixmap, xp16 + lineHeight / 2 + Margin, yp00, xp17, yp01 - lineHeight / 2, clrTransparent);
      DrawEllipseOutline(ReplayPixmap, xp16 + lineHeight / 2 + Margin, yp00, xp17, yp01, frameColorBr, frameColorBg, 5);
      // Progressbar
-     DrawRectangleOutline(ReplayPixmap, xp03, yp07 - lineHeight, xp15, yp07, frameColorBr, frameColorBg, 15);
+     int pbHeight = lineHeight + ((lineHeight - 2 * Margin) % 3);
+     DrawRectangleOutline(ReplayPixmap, xp03, yp07 - pbHeight, xp15, yp07, frameColorBr, frameColorBg, 15);
      }
 }
 
@@ -299,7 +300,12 @@ void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
   current = Current;
   total = Total;
   int x = 0;
-  int lH = lineHeight / 4;
+  int pbHeight = lineHeight - 2 * Margin;
+  int rest = pbHeight % 3;
+  if (rest)
+     pbHeight += rest;
+  int lH = pbHeight / 3;
+
   if (timshiftMode) {
      cString tM = "TimeshiftMode";
      int w = osdFont->Width(tM);
@@ -318,12 +324,14 @@ void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
         DrawText(ReplayPixmap, xp15 - w, yp05, *endTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, w, 0, taRight);
      }
      if (pbinit) {
-        DrawRectangle(ReplayPixmap, xp03 + Margin, yp07 - lineHeight + 4 + lH, xp15 - Margin, yp07 - 4 - lH, frameColorBr); // small rectangle
+        int y1 = yp07 - lineHeight + Margin + lH;
+        int y2 = yp07 - Margin - lH;
+        DrawRectangle(ReplayPixmap, xp03 + Margin, y1, xp15 - Margin, y2, frameColorBr); // small rectangle
         pbinit = false;
      }
   }
   if ((xp15 - xp03 - x - 5) > 0) {
-     cProgressBar pb(xp15 - xp03 - x - 2 * Margin, lineHeight - 2 * Margin, Current, Total, marks, Theme.Color(clrReplayProgressSeen), Theme.Color(clrReplayProgressRest), Theme.Color(clrReplayProgressSelected), Theme.Color(clrReplayProgressMark), Theme.Color(clrReplayProgressCurrent));
+     cProgressBar pb(xp15 - xp03 - x - 2 * Margin, pbHeight, Current, Total, marks, Theme.Color(clrReplayProgressSeen), Theme.Color(clrReplayProgressRest), Theme.Color(clrReplayProgressSelected), Theme.Color(clrReplayProgressMark), Theme.Color(clrReplayProgressCurrent));
      DrawBitmap(ReplayPixmap, xp03 + Margin, yp07 - lineHeight + Margin, pb); // Progressbar
   }
 }
