@@ -8,6 +8,7 @@ cLCARSNGConfig::cLCARSNGConfig(void)
   Margin = 2;
   displayError0 = 0;
   displInfoMenuEPG = 0;
+  displayScraperInfo = 0;
   displInfoMenuTimer = 0;
   displInfoMenuRec = 0;
   displInfoChannel = 0;
@@ -20,6 +21,7 @@ cLCARSNGConfig::cLCARSNGConfig(void)
   volumeBarStyle = 0;
   swapTimers = 0;
   displayErrorsInReplay = 0;
+  displMenuPoster = 0;
   mcUndefinedScaled = efullscreen;
   mcUnknownScaled = efullscreen;
   mcMainScaled = efullscreen;
@@ -58,6 +60,7 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
 {
   if      (!strcasecmp(Name, "Margin"))             Margin             = atoi(Value);
   else if (!strcasecmp(Name, "DisplayError0"))      displayError0      = atoi(Value);
+  else if (!strcasecmp(Name, "DisplayScraperInfo")) displayScraperInfo = atoi(Value);
   else if (!strcasecmp(Name, "DisplInfoMenuEPG"))   displInfoMenuEPG   = atoi(Value);
   else if (!strcasecmp(Name, "DisplInfoMenuTimer")) displInfoMenuTimer = atoi(Value);
   else if (!strcasecmp(Name, "DisplInfoMenuRec"))   displInfoMenuRec   = atoi(Value);
@@ -76,6 +79,7 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "VolumeBarStyle"))     volumeBarStyle     = atoi(Value);
   else if (!strcasecmp(Name, "SwapTimers"))         swapTimers         = atoi(Value);
   else if (!strcasecmp(Name, "DisplayErrInRepl"))   displayErrorsInReplay = atoi(Value);
+  else if (!strcasecmp(Name, "DisplMenuPoster"))    displMenuPoster    = atoi(Value);
   else if (!strcasecmp(Name, "MainMenue"))          mcMainScaled       = atoi(Value);
   else if (!strcasecmp(Name, "ScheduleMenue"))      mcScheduleScaled   = atoi(Value);
   else if (!strcasecmp(Name, "ChannelMenue"))       mcChannelScaled    = atoi(Value);

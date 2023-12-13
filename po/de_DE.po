@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.4.0\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2023-08-07 12:03+0200\n"
+"POT-Creation-Date: 2023-12-13 13:24+0100\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: Karl Melscher <vdr.kamel5@gmx.net>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -102,6 +102,9 @@ msgstr "0 Fehler anzeigen"
 msgid "Volume bar style"
 msgstr "Art des Lautstärkebalkens"
 
+msgid "Use scraper infos and pictures"
+msgstr "Scraper Infos und Bilder benutzen"
+
 msgid "Display channel view:"
 msgstr "Kanalanzeige"
 
@@ -149,6 +152,9 @@ msgstr "Wiederholrate (Bilder/s)"
 
 msgid "Menue view:"
 msgstr "Menü Ansicht:"
+
+msgid "Display poster"
+msgstr "Poster anzeigen"
 
 msgid "main menue"
 msgstr "Hauptmenü"

@@ -38,7 +38,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   lastCountRecordings = -1;
   lastNumRecordingsInPath = -1;
   lastCountTimers = -1;
-  const cFont *font = cFont::GetFont(fontOsd);
+  font = cFont::GetFont(fontOsd);
   lineHeight = font->Height();
   tinyFont = CreateTinyFont(lineHeight);
   frameColorFg = Theme.Color(clrMenuFrameFg);
@@ -49,6 +49,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   textColorBg = Theme.Color(clrMenuTextBg);
   currentIndex = -1;
   Margin = Config.Margin;
+  border = 2 * (Margin + Gap);
   drawDescription = NULL;
   volumeBox = NULL;
   lastVolume = statusMonitor->GetVolume();
@@ -1316,6 +1317,10 @@ void cLCARSNGDisplayMenu::DescriptionClear(void)
   animatedInfo.Recording = NULL;
   animatedInfo.Channel = NULL;
   textScroller.Reset();
+  if (PosterPixmap) {
+     osd->DestroyPixmap(PosterPixmap);
+     PosterPixmap = NULL;
+     }
 }
 
 void cLCARSNGDisplayMenu::SetTitle(const char *Title)
@@ -1537,9 +1542,14 @@ void cLCARSNGDisplayMenu::SetEvent(const cEvent *Event)
   if (!Event)
      return;
 
-  const cFont *font = cFont::GetFont(fontOsd);
+  if (PosterPixmap) {
+     osd->DestroyPixmap(PosterPixmap);
+     PosterPixmap = NULL;
+     }
+
   int xl = xi00;
   int y = yi00;
+
   cTextScroller ts;
   char t[32];
   tColor ColorBg = ((viewmode == escaledvideo) || (viewmode == escaledvideosmall)) ? Theme.Color(clrBackground) : textColorBg;
@@ -1566,20 +1576,41 @@ void cLCARSNGDisplayMenu::SetEvent(const cEvent *Event)
      osd->DrawEllipse  (xi02 + lineHeight / 2, y, xi03 - 1, yb - 1, frameColorBg, 5);
      }
   y += font->Height();
+
+  int xt = xi01;
+
+  if (Config.displayScraperInfo && Config.displMenuPoster) {
+     DrawPoster_t dP; 
+     dP.osd = osd;
+     dP.Event = Event;
+     dP.x = xi01 - (xi01 - xi00) / 3;
+     dP.y = y;
+     dP.width = (xi01 - xi00) / 3;
+     dP.height = yi01 - y; 
+     dP.border = border;
+
+     PosterPixmap = DrawPoster(dP);
+     if (PosterPixmap) {
+        PosterPixmap->SetAlpha(255);
+        xt = xt - PosterPixmap->ViewPort().Width();
+        }
+     }
+
   w = font->Width(Event->Title()) + Gap;
-  ts.Set(osd, xl, y, min(w, xi01 - xl), yi01 - y, Event->Title(), font, Theme.Color(clrEventTitle), ColorBg);
+  ts.Set(osd, xl, y, min(w, xt - xl), yi01 - y, Event->Title(), font, Theme.Color(clrEventTitle), ColorBg);
   y += ts.Height();
   if (!isempty(Event->ShortText())) {
      const cFont *font = cFont::GetFont(fontSml);
      w = font->Width(Event->ShortText()) + Gap;
-     ts.Set(osd, xl, y, min(w, xi01 - xl), yi01 - y, Event->ShortText(), font, Theme.Color(clrEventShortText), ColorBg);
+     ts.Set(osd, xl, y, min(w, xt - xl), yi01 - y, Event->ShortText(), font, Theme.Color(clrEventShortText), ColorBg);
      y += ts.Height();
      }
   y += font->Height();
+
   if (!isempty(Event->Description())) {
      int yt = y;
      int yb = yi01;
-     textScroller.Set(osd, xl, yt, xi01 - xl, yb - yt, Event->Description(), font, Theme.Color(clrEventDescription), ColorBg);
+     textScroller.Set(osd, xl, yt, xt - xl, yb - yt, Event->Description(), font, Theme.Color(clrEventDescription), ColorBg);
      DrawTextScrollbar();
      }
 }
@@ -1589,8 +1620,12 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
   if (!Recording)
      return;
 
+  if (PosterPixmap) {
+     osd->DestroyPixmap(PosterPixmap);
+     PosterPixmap = NULL;
+     }
+
   const cRecordingInfo *Info = Recording->Info();
-  const cFont *font = cFont::GetFont(fontOsd);
   int xl = xi00;
   int y = yi00;
   cTextScroller ts;
@@ -1627,17 +1662,38 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
      osd->DrawEllipse  (xi02 + lineHeight / 2, y, xi03 - Margin - 1, yb - 1, frameColorBg, 5);
      }
   y += font->Height();
+
+  xt = xi01;
+
+  if (Config.displayScraperInfo && Config.displMenuPoster) {
+     DrawPoster_t dP;
+     dP.osd = osd;
+     dP.Recording = Recording;
+     dP.x = xi01 - (xi01 - xi00) / 3;
+     dP.y = y;
+     dP.width = (xi01 - xi00) / 3;
+     dP.height = yi01 - y;
+     dP.border = border;
+
+     PosterPixmap = DrawPoster(dP);
+     if (PosterPixmap) {
+        PosterPixmap->SetAlpha(255);
+        xt = xt - PosterPixmap->ViewPort().Width();
+        }
+     }
+
   const char *Title = Info->Title();
   if (isempty(Title))
      Title = Recording->Name();
-  ts.Set(osd, xl, y, xi01 - xl, yi01 - y, Title, font, Theme.Color(clrEventTitle), ColorBg);
+  ts.Set(osd, xl, y, xt - xl, yi01 - y, Title, font, Theme.Color(clrEventTitle), ColorBg);
   y += ts.Height();
   if (!isempty(Info->ShortText())) {
      const cFont *font = cFont::GetFont(fontSml);
-     ts.Set(osd, xl, y, xi01 - xl, yi01 - y, Info->ShortText(), font, Theme.Color(clrEventShortText), ColorBg);
+     ts.Set(osd, xl, y, xt - xl, yi01 - y, Info->ShortText(), font, Theme.Color(clrEventShortText), ColorBg);
      y += ts.Height();
      }
   y += font->Height();
+
   std::stringstream sstrInfo;
   if (!isempty(Info->Description())) {
      sstrInfo << Info->Description() << std::endl;
@@ -1673,7 +1729,7 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
   if (!isempty(sstrInfo.str().c_str())) {
      int yt = y;
      int yb = yi01;
-     textScroller.Set(osd, xl, yt, xi01 - xl, yb - yt, sstrInfo.str().c_str(), font, Theme.Color(clrEventDescription), ColorBg);
+     textScroller.Set(osd, xl, yt, xt - xl, yb - yt, sstrInfo.str().c_str(), font, Theme.Color(clrEventDescription), ColorBg);
      DrawTextScrollbar();
      }
 }
@@ -1802,8 +1858,8 @@ void cLCARSNGDisplayMenu::DrawGrid(void)
   int top = yt00;
   int offset = lineHeight / 2;
   int bottom = yb15 - 1;
-  tColor gridColor = 0xffffffff; //Theme.Color(clrDeviceFg);
-  cFont *TinyFont = cFont::CreateFont(Setup.FontOsd, 14);
+  tColor gridColor = 0xff77ff77; //Theme.Color(clrDeviceFg);
+  cFont *TinyFont = cFont::CreateFont(Setup.FontOsd, 18);
 
   int xa[10] = { xa00, xa01, xa02, xa03, xa04, xa05, xa06, xa07, xa08, xa09 };
   int yt[11] = { yt00, yt01, yt02, yt03, yt04, yt05, yt06, yt07, yt08, yt09, yt10 };
@@ -1834,16 +1890,17 @@ void cLCARSNGDisplayMenu::DrawGrid(void)
     offset = offset + lineHeight;
   }
 
-/*
-  for (int i = 0; strxi[i][0]; i++) {
-    if ((i % 3) == 0)
-      offset = 0;
-    osd->DrawRectangle(xi[i], top, xi[i] + 1, bottom, gridColor);
-    osd->DrawText(xi[i], top + offset, cString(strxi[i]), gridColor, clrTransparent, TinyFont);
-    offset = offset + lineHeight;
-  }
-*/
-  if (viewmode == efullscreen) {
+  if (MenuCategory() == mcRecordingInfo || MenuCategory() == mcEvent) {
+     offset = lineHeight * 3;
+     for (int i = 0; strxi[i][0]; i++) {
+        if ((i % 3) == 0)
+           offset = lineHeight * 3;
+        osd->DrawRectangle(xi[i], top, xi[i] + 1, bottom, gridColor);
+        osd->DrawText(xi[i], top + offset, cString(strxi[i]), gridColor, clrTransparent, TinyFont);
+        offset = offset + lineHeight;
+        }
+     }
+  else if (viewmode == efullscreen) {
      for (int i = 0; strxb[i][0]; i++) {
         if ((i % 3) == 0)
            offset = 0;
@@ -1914,7 +1971,16 @@ void cLCARSNGDisplayMenu::DrawGrid(void)
     offset = offset + lineHeight;
   }
 
-  if (viewmode == efullscreen) {
+  if (MenuCategory() == mcRecordingInfo || MenuCategory() == mcEvent) {
+     for (int i = 0; stryi[i][0]; i++) {
+        if ((i % 3) == 0)
+           offset = 0;
+        osd->DrawRectangle(left, yi[i], right, yi[i] + 1, gridColor);
+        osd->DrawText(left + offset, yi[i], cString(stryi[i]), gridColor, clrTransparent, TinyFont);
+        offset = offset + lineHeight;
+        }
+     }
+  else if (viewmode == efullscreen) {
      for (int i = 0; strym[i][0]; i++) {
         if ((i % 3) == 0)
            offset = 0;
@@ -1924,35 +1990,27 @@ void cLCARSNGDisplayMenu::DrawGrid(void)
         }
      }
   else {
-/*
-  for (int i = 0; strys[i][0]; i++) {
-    if ((i % 3) == 0)
-      offset = 0;
-    osd->DrawRectangle(left, ys[i], right, ys[i] + 1, gridColor);
-    osd->DrawText(left + offset, ys[i], cString(strys[i]), gridColor, clrTransparent, TinyFont);
-    offset = offset + lineHeight;
-  }
+     if (MenuCategory() == mcMain) {
+        for (int i = 0; strys[i][0]; i++) {
+           if ((i % 3) == 0)
+              offset = 0;
+           osd->DrawRectangle(left, ys[i], right, ys[i] + 1, gridColor);
+           osd->DrawText(left + offset, ys[i], cString(strys[i]), gridColor, clrTransparent, TinyFont);
+           offset = offset + lineHeight;
+           }
 
-  for (int i = 0; stryi[i][0]; i++) {
-    if ((i % 3) == 0)
-      offset = 0;
-    osd->DrawRectangle(left, yi[i], right, yi[i] + 1, gridColor);
-    osd->DrawText(left + offset, yi[i], cString(stryi[i]), gridColor, clrTransparent, TinyFont);
-    offset = offset + lineHeight;
-  }
-*/
-     left = xd00;
-     left1 = left + d;
-     right = xd07;
-     for (int i = 0; stryd[i][0]; i++) {
-        if ((i % 3) == 0)
-           offset = 0;
-        osd->DrawRectangle(left, yd[i], right, yd[i] + 1, gridColor);
-        osd->DrawText(left + offset, yd[i], cString(stryd[i]), gridColor, clrTransparent, TinyFont);
-        offset = offset + lineHeight;
+        left = xd00;
+        left1 = left + d;
+        right = xd07;
+        for (int i = 0; stryd[i][0]; i++) {
+           if ((i % 3) == 0)
+              offset = 0;
+           osd->DrawRectangle(left, yd[i], right, yd[i] + 1, gridColor);
+           osd->DrawText(left + offset, yd[i], cString(stryd[i]), gridColor, clrTransparent, TinyFont);
+           offset = offset + lineHeight;
+           }
         }
      }
-
 }
 #endif
 

@@ -1,3 +1,6 @@
+#include <Magick++.h>
+#include "tools.h"
+
 enum viewMode {
     escaledvideo = 0,
     escaledvideosmall,
@@ -10,6 +13,7 @@ class cLCARSNGConfig {
 public:
   int Margin;
   int displayError0;
+  int displayScraperInfo;
   int displInfoMenuEPG;
   int displInfoMenuTimer;
   int displInfoMenuRec;
@@ -23,6 +27,7 @@ public:
   int volumeBarStyle;
   int swapTimers;
   int displayErrorsInReplay;
+  int displMenuPoster;
   int mcUndefinedScaled;
   int mcUnknownScaled;
   int mcMainScaled;

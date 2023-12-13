@@ -33,6 +33,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
   Add(new cMenuEditIntItem(tr("Margin"),                      &tmpConfig.Margin, 0, 5));
   Add(new cMenuEditBoolItem(tr("Display Error 0"),            &tmpConfig.displayError0));
   Add(new cMenuEditStraItem(tr("Volume bar style"),           &tmpConfig.volumeBarStyle, 3, volumeBar));
+  Add(new cMenuEditBoolItem(tr("Use scraper infos and pictures"), &tmpConfig.displayScraperInfo));
 
   Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Display channel view:"),               osUnknown, false));
@@ -58,6 +59,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
 
   Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Menue view:"),                         osUnknown, false));
+  Add(new cMenuEditBoolItem(tr("Display poster"),             &tmpConfig.displMenuPoster));
   Add(new cMenuEditStraItem(tr("main menue"),                 &tmpConfig.mcMainScaled, 3, menuView));
   Add(new cMenuEditStraItem(tr("schedule menue"),             &tmpConfig.mcScheduleScaled, 4, menuView));
   Add(new cMenuEditStraItem(tr("event menue"),                &tmpConfig.mcEventScaled, 4, menuView));
@@ -86,6 +88,7 @@ void cLCARSNGSetup::Store(void) {
   Config = tmpConfig;
   SetupStore("Margin",             Config.Margin);
   SetupStore("DisplayError0",      Config.displayError0);
+  SetupStore("DisplayScraperInfo", Config.displayScraperInfo);
   SetupStore("DisplInfoMenuEPG",   Config.displInfoMenuEPG);
   SetupStore("DisplInfoMenuTimer", Config.displInfoMenuTimer);
   SetupStore("DisplInfoMenuRec",   Config.displInfoMenuRec);
@@ -99,6 +102,7 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("VolumeBarStyle",     Config.volumeBarStyle);
   SetupStore("SwapTimers",         Config.swapTimers);
   SetupStore("DisplayErrInRepl",   Config.displayErrorsInReplay);
+  SetupStore("DisplMenuPoster",    Config.displMenuPoster);
   SetupStore("MainMenue",          Config.mcMainScaled);
   SetupStore("ScheduleMenue",      Config.mcScheduleScaled);
   SetupStore("ChannelMenue",       Config.mcChannelScaled);

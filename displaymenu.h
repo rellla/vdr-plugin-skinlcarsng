@@ -71,8 +71,10 @@ private:
   int yd00, yd01, yd02, yd03, yd04, yd05;
   int xs; // starting column for signal display
   int lineHeight;
-  cFont *tinyFont;
-  cFont *tallFont;
+  cPixmap *PosterPixmap = NULL;
+  const cFont *font;
+  const cFont *tinyFont;
+  const cFont *tallFont;
   tColor frameColorFg;
   tColor frameColorBg;
   tColor frameColorBr;
@@ -118,6 +120,7 @@ private:
   cString lastHeader;
   int lastSeen;
   int Margin;
+  int border;
   int lastVolume;
   time_t lastVolumeTime;
   cDrawDescription *drawDescription;

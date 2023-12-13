@@ -38,6 +38,14 @@ class cPluginLCARSNG : public cPlugin {
         virtual cString SVDRPCommand(const char *Command, const char *Option, int &ReplyCode);
 };
 
+__attribute__((constructor)) static void init(void) {
+#ifndef IMAGEMAGICK
+   MagickLib::InitializeMagickEx(NULL, MAGICK_OPT_NO_SIGNAL_HANDER, NULL);
+#else
+   Magick::InitializeMagick(NULL);
+#endif
+}
+
 cPluginLCARSNG::cPluginLCARSNG(void) {
     statusMonitor = NULL;
 }

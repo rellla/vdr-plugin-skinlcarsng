@@ -3,6 +3,12 @@
 #
 # $Id$
 
+# External image lib to use: imagemagick, graphicsmagick
+#IMAGELIB = imagemagick
+#IMAGELIB = graphicsmagick
+
+IMAGELIB ?= graphicsmagick
+
 # The official name of this plugin.
 # This name will be used in the '-P...' option of VDR to load the plugin.
 # By default the main source file also carries this name.
@@ -29,6 +35,8 @@ TMPDIR ?= /tmp
 export CFLAGS   = $(call PKGCFG,cflags)
 export CXXFLAGS = $(call PKGCFG,cxxflags)
 
+#CXXFLAGS += -std=c++11
+
 ### The version number of VDR's plugin API:
 APIVERSION = $(call PKGCFG,apiversion)
 
@@ -52,14 +60,26 @@ SOFILE = libvdr-$(PLUGIN).so
 
 ### Includes and Defines and Dependencies (add further entries here):
 
-INCLUDES +=
+ifeq ($(IMAGELIB), imagemagick)
+   $(info Compiling with ImageMagick++)
+   INCLUDES += $(shell pkg-config --cflags Magick++)
+   LIBS += $(shell pkg-config --libs Magick++)
+   DEFINES += -DIMAGEMAGICK
+else ifeq ($(IMAGELIB), graphicsmagick)
+   $(info Compiling with GraphicsMagick++)
+   INCLUDES += $(shell pkg-config --cflags GraphicsMagick++)
+   LIBS += $(shell pkg-config --libs GraphicsMagick++)
+else
+   $(error ERROR: IMAGELIB must be either imagemagick or graphicsmagick)
+endif
 
 DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' $(CONFIG)
 
 ### The object files (add further files here):
 
 OBJS = config.o displaychannel.o displaymenu.o displaymessage.o displayreplay.o displaytracks.o\
-       displayvolume.o messagebox.o lcarsng.o setup.o status.o volumebox.o $(PLUGIN).o
+       displayvolume.o imagemagickwrapper.o imagescaler.o imageloader.o messagebox.o \
+       lcarsng.o setup.o status.o tools.o volumebox.o $(PLUGIN).o
 
 ### The main target:
 
@@ -114,7 +134,7 @@ install-i18n: $(I18Nmsgs)
 
 $(SOFILE): $(OBJS)
 	@echo LD $@
-	$(Q)$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) -o $@
+	$(Q)$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) $(LIBS) -o $@
 
 install-lib: $(SOFILE)
 	@echo IN $@

@@ -4,6 +4,7 @@
 #include <vdr/font.h>
 #include <vdr/menu.h>
 #include <vdr/osd.h>
+#include <vdr/plugin.h>
 #if APIVERSNUM > 20101
 #include <vdr/positioner.h>
 #endif
@@ -197,31 +198,6 @@ THEME_CLR(Theme, clrTrackItemCurrentFg,     CLR_BLACK);
 THEME_CLR(Theme, clrTrackItemCurrentBg,     CLR_TRACK);
 
 extern bool TwoColors;
-
-enum eMarginUsage {
-  muNone     = 0x0000,
-  muLeft     = 0x0001,
-  muTop      = 0x0002,
-  muRight    = 0x0004,
-  muBottom   = 0x0008,
-  };
-
-cOsd *CreateOsd(int Left, int Top, int x0, int y0, int x1, int y1);
-cFont *CreateTinyFont(int LineHeight);
-bool DrawDeviceData(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &xs, const cFont *TinyFont, cString &LastDeviceType, cCamSlot *&LastCamSlot, bool Initial);
-void DrawDeviceSignal(cOsd *Osd, const cDevice *Device, int x0, int y0, int x1, int y1, int &LastSignalStrength, int &LastSignalQuality, bool Initial);
-void DrawDevicePosition(cOsd *Osd, const cPositioner *Positioner, int x0, int y0, int x1, int y1, int &LastCurrent);
-void DrawBitmap(cPixmap *Pixmap, int x, int y, const cBitmap &Bitmap, tColor ColorFg = 0, tColor ColorBg = 0, bool Overlay = false);
-void DrawText(cPixmap *Pixmap, int x, int y, const char *s, tColor ColorFg, tColor ColorBg, const cFont *Font, int Width = 0, int Height = 0, int Alignment = taDefault);
-void DrawRectangle(cPixmap *Pixmap, int x1, int y1, int x2, int y2, tColor Color);
-void DrawRectangleOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Usage = 0, int Margin = 0);
-void DrawRectangleOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int Usage = 0, int Margin = 0);
-void DrawEllipseOutline(cOsd *Osd, int x1, int y1, int x2, int y2, tColor Color1, tColor Color2, int Quadrants = 0, int Margin = 0);
-void DrawEllipseOutline(cPixmap *Pixmap, int x, int y, int w, int h, tColor Color1, tColor Color2, int Quadrants = 0, int Margin = 0);
-void DrawProgressbar(cPixmap *p, int left, int top, int width, int height, int Current, int Total, tColor color, tColor colorBlending, bool blend = false, bool partial = false);
-int FreeMB(const char *Base, bool menurecording = false);
-std::string StripXmlTag(std::string &Line, const char *Tag);
-cString GetScreenResolutionIcon(void);
 
 class cLCARSNG : public cSkin {
 public:
