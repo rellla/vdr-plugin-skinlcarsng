@@ -14,6 +14,11 @@ cRect videoWindowRect;
 
 cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
 {
+  font = cFont::GetFont(fontOsd);
+  lineHeight = font->Height();
+  fontsml = cFont::GetFont(fontSml);
+  lineHeightSml = fontsml->Height();
+  tinyFont = CreateTinyFont(lineHeight);
   tallFont = cFont::CreateFont(Setup.FontOsd, Setup.FontOsdSize * 1.6);
   initial = true;
   message = false;
@@ -38,9 +43,6 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   lastCountRecordings = -1;
   lastNumRecordingsInPath = -1;
   lastCountTimers = -1;
-  font = cFont::GetFont(fontOsd);
-  lineHeight = font->Height();
-  tinyFont = CreateTinyFont(lineHeight);
   frameColorFg = Theme.Color(clrMenuFrameFg);
   frameColorBg = Theme.Color(clrMenuFrameBg);
   frameColorBr = (Theme.Color(clrMenuFrameBr) == CLR_BLACK) ? frameColorBg : Theme.Color(clrMenuFrameBr);
@@ -480,7 +482,6 @@ void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color, tColor ColorBg)
 void cLCARSNGDisplayMenu::DrawMainFrameLower(void)
 {
 // Mitte unterer Ellenbogen
-  const cFont *font = cFont::GetFont(fontOsd);
   // Lower elbow:
   DrawRectangleOutline(osd, xa00, yc10, xa01 - 1, yc11 - 1, frameColorBr, frameColorBg, 9);
   DrawRectangleOutline(osd, xa01, yc06, xa02 - 1, yc11 - 1, frameColorBr, frameColorBg, 14);
@@ -507,7 +508,6 @@ void cLCARSNGDisplayMenu::DrawMainFrameLower(void)
 
 void cLCARSNGDisplayMenu::DrawMainFrameChannel(void)
 {
-  const cFont *font = cFont::GetFont(fontOsd);
   // Upper elbow:
   DrawRectangleOutline(osd, xa00, yt05, xa01 - 1, yt06 - 1, frameColorBr, frameColorBg, 9);
   DrawRectangleOutline(osd, xa01, yt00, xa02 - 1, yt06 - 1, frameColorBr, frameColorBg, 14);
@@ -536,7 +536,6 @@ void cLCARSNGDisplayMenu::DrawMainButton(const char *Text, int x0, int x1, int x
 
 void cLCARSNGDisplayMenu::DrawMenuFrame(void)
 {
-  const cFont *font = cFont::GetFont(fontOsd);
   // Upper elbow:
   osd->DrawRectangle(xa00, yt00, xa01 - 1, yt05 - 1, clrTransparent);
   DrawRectangleOutline(osd, xa00, yt05, xa01 - 1, yt06 - 1, frameColorBr, frameColorBg, 9);
@@ -574,7 +573,6 @@ void cLCARSNGDisplayMenu::DrawDate(void)
   if (initial)
      DrawRectangleOutline(osd, xa00, yb00, xa02 - 1, yb01 - 1, frameColorBr, frameColorBg, 15);
   if (initial || !*lastDate || strcmp(s, lastDate)) {
-     const cFont *font = cFont::GetFont(fontOsd);
      tColor ColorFg = Theme.Color(clrDateFg);
      tColor ColorBg = Theme.Color(clrDateBg);
      lastDate = s;
@@ -589,7 +587,6 @@ void cLCARSNGDisplayMenu::DrawDisk(void)
 {
   if (yb02) {
      if (cVideoDiskUsage::HasChanged(lastDiskUsageState) || initial || currentTitle != lastcurrentTitle) { // must call HasChanged() first, or it shows an outdated value in the 'initial' case!
-        const cFont *font = cFont::GetFont(fontOsd);
         int DiskUsage = cVideoDiskUsage::UsedPercent();
         bool DiskAlert = DiskUsage > DISKUSAGEALERTLIMIT;
         tColor ColorFg = DiskAlert ? Theme.Color(clrAlertFg) : frameColorFg;
@@ -619,7 +616,7 @@ void cLCARSNGDisplayMenu::DrawLoad(void)
      double SystemLoad;
      if (getloadavg(&SystemLoad, 1) > 0) {
         if (initial || SystemLoad != lastSystemLoad) {
-           osd->DrawText(xa00 + Margin, yb05 - lineHeight - Margin, cString::sprintf("%.1f", SystemLoad), ColorFg, ColorBg, cFont::GetFont(fontOsd), xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
+           osd->DrawText(xa00 + Margin, yb05 - lineHeight - Margin, cString::sprintf("%.1f", SystemLoad), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
            lastSystemLoad = SystemLoad;
            }
         }
@@ -638,7 +635,6 @@ void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
      }
 
 #endif
-  const cFont *font = cFont::GetFont(fontOsd);
   int NumRecordingsInPath = 0;
   {
   LOCK_RECORDINGS_READ;
@@ -656,7 +652,6 @@ void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
 void cLCARSNGDisplayMenu::DrawCountRecordings(void)
 {
   if (yb06) {
-     const cFont *font = cFont::GetFont(fontOsd);
      tColor ColorFg = frameColorFg;
      tColor ColorBg = frameColorBg;
      int CountRecordings = 0;
@@ -680,7 +675,6 @@ void cLCARSNGDisplayMenu::DrawCountRecordings(void)
 void cLCARSNGDisplayMenu::DrawCountTimers(void)
 {
   if (yb08) {
-     const cFont *font = cFont::GetFont(fontOsd);
      tColor ColorFg = frameColorFg;
      tColor ColorBg = frameColorBg;
      int CountTimers = 0;
@@ -706,7 +700,6 @@ void cLCARSNGDisplayMenu::DrawCountTimers(void)
 
 void cLCARSNGDisplayMenu::DrawMainBracket(void)
 {
-  const cFont *font = cFont::GetFont(fontOsd);
   tColor Color = Theme.Color(clrMenuMainBracket);
   int y0, y1, y2, y3;
   if (MenuCategory() == mcChannel && viewmode == esmalscreen) {
@@ -756,7 +749,6 @@ void cLCARSNGDisplayMenu::DrawMainBracket(void)
 
 void cLCARSNGDisplayMenu::DrawStatusElbows(void)
 {
-  const cFont *font = cFont::GetFont(fontOsd);
   osd->DrawRectangle(xs00, ys00, xs01 - 1, ys01 - 1, frameColorBr);
   osd->DrawText     (xs00 + Margin, ys00 + Margin, tr("TIMERS"), frameColorFg, frameColorBg, font, xs01 - xs00 - 2 * Margin, lineHeight, taBottom | taLeft | taBorder);
   DrawRectangleOutline(osd, xs02, ys00, xs03 - 1, ys01 - 1, frameColorBr, frameColorBg, 11);
@@ -913,7 +905,6 @@ void cLCARSNGDisplayMenu::DrawTimers(void)
   if (Timers.Modified(lastTimersState)) {
 #endif
      deviceRecording.Clear();
-     const cFont *font = cFont::GetFont(fontOsd);
 #if APIVERSNUM > 20300
      osd->DrawRectangle(xs00 - (lineHeight - Gap) / 2, ys04, xs04 - 1, ys05 - 1, Theme.Color(clrBackground));
 #else
@@ -1109,7 +1100,7 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
   if (initial) {
      DrawMainFrameUpper(channelFrameColorBr, Theme.Color(clrChannelFrameBg));
      if (zoom && ((viewmode == escaledvideo) || (viewmode == escaledvideosmall))) {
-        osd->DrawText(xs11 - w - lineHeight / 2, yt00  + lineHeight / 2, tr("LIVE"), Theme.Color(clrChannelFrameFg), clrTransparent, cFont::GetFont(fontOsd), w, lineHeight, taRight | taBorder);
+        osd->DrawText(xs11 - w - lineHeight / 2, yt00  + lineHeight / 2, tr("LIVE"), Theme.Color(clrChannelFrameFg), clrTransparent, font, w, lineHeight, taRight | taBorder);
         w = 0;
         }
      else
@@ -1126,7 +1117,7 @@ void cLCARSNGDisplayMenu::DrawLive(const cChannel *Channel)
      osd->DrawRectangle(xa03, y1 + hd, x1, y1 + hd + tallFont->Height(), Theme.Color(clrBackground));
      osd->DrawText(xa03, y1 + hd, Channel->Name(), Theme.Color(clrChannelName), ColorBg, tallFont, min(w, x1 - xa03), h, taCenter | taLeft);
      // must be (xa00 + 2 * Gap + Margin) to not interact with the ellipse
-     osd->DrawText(xa00 + 2 * Gap + Margin, y2, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), cFont::GetFont(fontOsd), xa02 - xa00 - 2 * Gap - 2 * Margin, lineHeight, taTop | taRight | taBorder);
+     osd->DrawText(xa00 + 2 * Gap + Margin, y2, cSource::ToString(Channel->Source()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), font, xa02 - xa00 - 2 * Gap - 2 * Margin, lineHeight, taTop | taRight | taBorder);
      lastChannel = Channel;
      lastChannelName = Channel->Name();
      DrawSeen(0, 0);
@@ -1187,7 +1178,7 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
   if (initial) {
      DrawMainFrameUpper(replayFrameColorBr, Theme.Color(clrReplayFrameBg));
      if (zoom && ((viewmode == escaledvideo) || (viewmode == escaledvideosmall))) {
-        osd->DrawText(xs11 - w - lineHeight / 2, yt00  + lineHeight / 2, tr("PLAY"), Theme.Color(clrReplayFrameFg), clrTransparent, cFont::GetFont(fontOsd), w, lineHeight, taRight | taBorder);
+        osd->DrawText(xs11 - w - lineHeight / 2, yt00  + lineHeight / 2, tr("PLAY"), Theme.Color(clrReplayFrameFg), clrTransparent, font, w, lineHeight, taRight | taBorder);
         w = 0;
         }
      else
@@ -1204,7 +1195,6 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
   int y2 = (((viewmode == esplitscreen) || (viewmode == escaledvideosmall) || zoom) ? yt04 : yt07) + Margin;
   if (const cRecording *Recording = Control->GetRecording()) {
      if (initial || Recording != lastRecording) {
-        const cFont *font = cFont::GetFont(fontOsd);
         osd->DrawRectangle(xa03, y1 + hd, x1, y1 + hd + tallFont->Height(), Theme.Color(clrBackground));
         if (const cRecordingInfo *Info = Recording->Info()) {
            w = tallFont->Width(Info->ChannelName());
@@ -1234,8 +1224,6 @@ void cLCARSNGDisplayMenu::DrawPlay(cControl *Control)
 void cLCARSNGDisplayMenu::DrawInfo(const cEvent *Event, bool WithTime)
 {
   if (Event) {
-     const cFont *font = cFont::GetFont(fontOsd);
-     const cFont *fontsml = cFont::GetFont(fontSml);
      tColor ColorBg = ((viewmode == escaledvideo) || (viewmode == escaledvideosmall)) ? Theme.Color(clrBackground) : textColorBg;
      int x1 = ((viewmode == escaledvideo) || (viewmode == escaledvideosmall)) ? ((viewmode == escaledvideosmall) ? xd02 : xd07) : xd00 - lineHeight;
      int x2 = ((viewmode == escaledvideo) || (viewmode == escaledvideosmall)) ? ((viewmode == escaledvideosmall) ? xd02 : xd07) : xd00 - lineHeight;
@@ -1247,8 +1235,8 @@ void cLCARSNGDisplayMenu::DrawInfo(const cEvent *Event, bool WithTime)
         osd->DrawText(xa00 + Margin, y, Event->GetTimeString(), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), font, xa02 - xa00 - 2 * Margin, lineHeight, taTop | taRight | taBorder);
      y += lineHeight;
      w = fontsml->Width(Event->ShortText());
-     osd->DrawRectangle(xa03, y + ((lineHeight - fontsml->Height()) / 2), x2, y + lineHeight, Theme.Color(clrBackground));
-     osd->DrawText(xa03, y + ((lineHeight - fontsml->Height()) / 2), Event->ShortText(), Theme.Color(clrEventShortText), ColorBg, fontsml, min (w, x2 - xa03), fontsml->Height(), taBottom | taLeft);
+     osd->DrawRectangle(xa03, y + ((lineHeight - lineHeightSml) / 2), x2, y + lineHeight, Theme.Color(clrBackground));
+     osd->DrawText(xa03, y + ((lineHeight - lineHeightSml) / 2), Event->ShortText(), Theme.Color(clrEventShortText), ColorBg, fontsml, min (w, x2 - xa03), lineHeightSml, taBottom | taLeft);
      if (WithTime)
         osd->DrawText(xa00 + Margin, y, cString::sprintf("-%s", *Event->GetEndTimeString()), Theme.Color(clrChannelFrameFg), Theme.Color(clrChannelFrameBg), font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
      }
@@ -1325,7 +1313,6 @@ void cLCARSNGDisplayMenu::DescriptionClear(void)
 
 void cLCARSNGDisplayMenu::SetTitle(const char *Title)
 {
-  const cFont *font = cFont::GetFont(fontOsd);
   currentTitle = NULL;
   switch (MenuCategory()) {
      case mcMain:
@@ -1356,7 +1343,6 @@ void cLCARSNGDisplayMenu::SetButtons(const char *Red, const char *Green, const c
   const char *lutText[] = { Red, Green, Yellow, Blue };
   tColor lutFg[] = { clrButtonRedFg, clrButtonGreenFg, clrButtonYellowFg, clrButtonBlueFg };
   tColor lutBg[] = { clrButtonRedBg, clrButtonGreenBg, clrButtonYellowBg, clrButtonBlueBg };
-  const cFont *font = cFont::GetFont(fontSml);
 /*  if ((viewmode == escaledvideosmall) && (zoom == 0)) {
      DrawMainButton(lutText[Setup.ColorKey0], xd04, xd05, xd06, xd07, yd12, yd11, Theme.Color(lutFg[Setup.ColorKey0]), Theme.Color(lutBg[Setup.ColorKey0]), font);
      DrawMainButton(lutText[Setup.ColorKey1], xd04, xd05, xd06, xd07, yd00, yd01, Theme.Color(lutFg[Setup.ColorKey1]), Theme.Color(lutBg[Setup.ColorKey1]), font);
@@ -1365,17 +1351,17 @@ void cLCARSNGDisplayMenu::SetButtons(const char *Red, const char *Green, const c
      }
   else*/
   if (viewmode != efullscreen || (MenuCategory() == mcMain) || (MenuCategory() == mcChannel && viewmode == esmalscreen)) {
-     DrawMainButton(lutText[Setup.ColorKey0], xd00, xd01, xd02, xd03, yd02, yd03, Theme.Color(lutFg[Setup.ColorKey0]), Theme.Color(lutBg[Setup.ColorKey0]), font);
-     DrawMainButton(lutText[Setup.ColorKey1], xd04, xd05, xd06, xd07, yd02, yd03, Theme.Color(lutFg[Setup.ColorKey1]), Theme.Color(lutBg[Setup.ColorKey1]), font);
-     DrawMainButton(lutText[Setup.ColorKey2], xd00, xd01, xd02, xd03, yd04, yd05, Theme.Color(lutFg[Setup.ColorKey2]), Theme.Color(lutBg[Setup.ColorKey2]), font);
-     DrawMainButton(lutText[Setup.ColorKey3], xd04, xd05, xd06, xd07, yd04, yd05, Theme.Color(lutFg[Setup.ColorKey3]), Theme.Color(lutBg[Setup.ColorKey3]), font);
+     DrawMainButton(lutText[Setup.ColorKey0], xd00, xd01, xd02, xd03, yd02, yd03, Theme.Color(lutFg[Setup.ColorKey0]), Theme.Color(lutBg[Setup.ColorKey0]), fontsml);
+     DrawMainButton(lutText[Setup.ColorKey1], xd04, xd05, xd06, xd07, yd02, yd03, Theme.Color(lutFg[Setup.ColorKey1]), Theme.Color(lutBg[Setup.ColorKey1]), fontsml);
+     DrawMainButton(lutText[Setup.ColorKey2], xd00, xd01, xd02, xd03, yd04, yd05, Theme.Color(lutFg[Setup.ColorKey2]), Theme.Color(lutBg[Setup.ColorKey2]), fontsml);
+     DrawMainButton(lutText[Setup.ColorKey3], xd04, xd05, xd06, xd07, yd04, yd05, Theme.Color(lutFg[Setup.ColorKey3]), Theme.Color(lutBg[Setup.ColorKey3]), fontsml);
      }
   else {
      int h = yb15 - yb14;
-     osd->DrawText(xb02, yb14, lutText[Setup.ColorKey0], Theme.Color(lutFg[Setup.ColorKey0]), Theme.Color(lutBg[Setup.ColorKey0]), font, xb03 - xb02, h, taLeft | taBorder);
-     osd->DrawText(xb06, yb14, lutText[Setup.ColorKey1], Theme.Color(lutFg[Setup.ColorKey1]), Theme.Color(lutBg[Setup.ColorKey1]), font, xb07 - xb06, h, taLeft | taBorder);
-     osd->DrawText(xb10, yb14, lutText[Setup.ColorKey2], Theme.Color(lutFg[Setup.ColorKey2]), Theme.Color(lutBg[Setup.ColorKey2]), font, xb11 - xb10, h, taLeft | taBorder);
-     osd->DrawText(xb14, yb14, lutText[Setup.ColorKey3], Theme.Color(lutFg[Setup.ColorKey3]), Theme.Color(lutBg[Setup.ColorKey3]), font, xb15 - xb14, h, taLeft | taBorder);
+     osd->DrawText(xb02, yb14, lutText[Setup.ColorKey0], Theme.Color(lutFg[Setup.ColorKey0]), Theme.Color(lutBg[Setup.ColorKey0]), fontsml, xb03 - xb02, h, taLeft | taBorder);
+     osd->DrawText(xb06, yb14, lutText[Setup.ColorKey1], Theme.Color(lutFg[Setup.ColorKey1]), Theme.Color(lutBg[Setup.ColorKey1]), fontsml, xb07 - xb06, h, taLeft | taBorder);
+     osd->DrawText(xb10, yb14, lutText[Setup.ColorKey2], Theme.Color(lutFg[Setup.ColorKey2]), Theme.Color(lutBg[Setup.ColorKey2]), fontsml, xb11 - xb10, h, taLeft | taBorder);
+     osd->DrawText(xb14, yb14, lutText[Setup.ColorKey3], Theme.Color(lutFg[Setup.ColorKey3]), Theme.Color(lutBg[Setup.ColorKey3]), fontsml, xb15 - xb14, h, taLeft | taBorder);
      }
 }
 
@@ -1486,7 +1472,6 @@ void cLCARSNGDisplayMenu::SetItem(const char *Text, int Index, bool Current, boo
      ColorBg = ((viewmode == escaledvideo) || (viewmode == escaledvideosmall)) ? Theme.Color(clrBackground) : textColorBg;
      osd->DrawRectangle(xi00, y, xi03 - 1, y + lineHeight - 1, Theme.Color(clrBackground));
      }
-  const cFont *font = cFont::GetFont(fontOsd);
   for (int i = 0; i < MaxTabs; i++) {
       const char *s = GetTabbedText(Text, i);
       if (s) {
@@ -1558,20 +1543,18 @@ void cLCARSNGDisplayMenu::SetEvent(const cEvent *Event)
   ts.Set(osd, xl, y, min(w, xi01 - xl), yi01 - y, t, font, Theme.Color(clrEventTime), ColorBg);
   if (Event->Vps() && Event->Vps() != Event->StartTime()) {
      cString buffer = cString::sprintf(" VPS: %s ", *Event->GetVpsString());
-     const cFont *font = cFont::GetFont(fontSml);
-     w = font->Width(buffer);
-     osd->DrawText(xi01 - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
-     int yb = y + font->Height();
+     w = fontsml->Width(buffer);
+     osd->DrawText(xi01 - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, fontsml, w);
+     int yb = y + lineHeightSml;
      osd->DrawRectangle(xi02, y, xi02 + lineHeight / 2 - 1, yb - 1, frameColorBg);
      osd->DrawEllipse  (xi02 + lineHeight / 2, y, xi03 - 1, yb - 1, frameColorBg, 5);
      }
   y += ts.Height();
   if (Event->ParentalRating()) {
      cString buffer = cString::sprintf(" %s ", *Event->GetParentalRatingString());
-     const cFont *font = cFont::GetFont(fontSml);
-     w = font->Width(buffer);
-     osd->DrawText(xi01 - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
-     int yb = y + font->Height();
+     w = fontsml->Width(buffer);
+     osd->DrawText(xi01 - w, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, fontsml, w);
+     int yb = y + lineHeightSml;
      osd->DrawRectangle(xi02, y, xi02 + lineHeight / 2 - 1, yb - 1, frameColorBg);
      osd->DrawEllipse  (xi02 + lineHeight / 2, y, xi03 - 1, yb - 1, frameColorBg, 5);
      }
@@ -1600,9 +1583,8 @@ void cLCARSNGDisplayMenu::SetEvent(const cEvent *Event)
   ts.Set(osd, xl, y, min(w, xt - xl), yi01 - y, Event->Title(), font, Theme.Color(clrEventTitle), ColorBg);
   y += ts.Height();
   if (!isempty(Event->ShortText())) {
-     const cFont *font = cFont::GetFont(fontSml);
-     w = font->Width(Event->ShortText()) + Gap;
-     ts.Set(osd, xl, y, min(w, xt - xl), yi01 - y, Event->ShortText(), font, Theme.Color(clrEventShortText), ColorBg);
+     w = fontsml->Width(Event->ShortText()) + Gap;
+     ts.Set(osd, xl, y, min(w, xt - xl), yi01 - y, Event->ShortText(), fontsml, Theme.Color(clrEventShortText), ColorBg);
      y += ts.Height();
      }
   y += font->Height();
@@ -1636,27 +1618,24 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
   int xt = xi01;
   if (Info->GetEvent()->ParentalRating()) {
      cString buffer = cString::sprintf(" %s ", *Info->GetEvent()->GetParentalRatingString());
-     const cFont *font = cFont::GetFont(fontSml);
-     int w = font->Width(buffer);
-     int yb = y + font->Height();
+     int w = fontsml->Width(buffer);
+     int yb = y + lineHeightSml;
      DrawRectangleOutline(osd, xt - w - 2 * Margin, y - Margin, xi01 - 1, yb + Margin - 1, frameColorBr, frameColorBg, 15);
-     osd->DrawText(xt - w - Margin, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
+     osd->DrawText(xt - w - Margin, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, fontsml, w);
      xt -= w + xi02 - xi01 + 2 * Margin;
      }
 #if (APIVERSNUM >= 20505)
   if (Info->Errors() >= (1 - Config.displayError0)) {
      cString buffer = cString::sprintf(" %d %s ", Info->Errors(), tr("errors"));
-     const cFont *font = cFont::GetFont(fontSml);
      int w = font->Width(buffer);
-     int yb = y + font->Height();
+     int yb = y + lineHeightSml;
      DrawRectangleOutline(osd, xt - w - 2 * Margin, y - Margin, xt - 1, yb + Margin - 1, frameColorBr, frameColorBg, 15);
-     osd->DrawText(xt - w - Margin, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, font, w);
+     osd->DrawText(xt - w - Margin, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, fontsml, w);
      xt -= w + xi02 - xi01 + 2 * Margin;
      }
 #endif
   if (xt != xi01) {
-     const cFont *font = cFont::GetFont(fontSml);
-     int yb = y + font->Height();
+     int yb = y + lineHeightSml;
      DrawRectangleOutline(osd, xi02, y - Margin, xi02 + lineHeight / 2 - 1, yb + Margin - 1, frameColorBr, frameColorBg, 11);
      osd->DrawEllipse  (xi02 + lineHeight / 2, y - Margin, xi03 - 1, yb + Margin - 1, frameColorBr, 5);
      osd->DrawEllipse  (xi02 + lineHeight / 2, y, xi03 - Margin - 1, yb - 1, frameColorBg, 5);
@@ -1688,8 +1667,7 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
   ts.Set(osd, xl, y, xt - xl, yi01 - y, Title, font, Theme.Color(clrEventTitle), ColorBg);
   y += ts.Height();
   if (!isempty(Info->ShortText())) {
-     const cFont *font = cFont::GetFont(fontSml);
-     ts.Set(osd, xl, y, xt - xl, yi01 - y, Info->ShortText(), font, Theme.Color(clrEventShortText), ColorBg);
+     ts.Set(osd, xl, y, xt - xl, yi01 - y, Info->ShortText(), fontsml, Theme.Color(clrEventShortText), ColorBg);
      y += ts.Height();
      }
   y += font->Height();
@@ -2020,7 +1998,8 @@ cDrawDescription::cDrawDescription(cOsd *osd, AnimatedInfo_t *animatedInfo) : cT
 {
   this->osd = osd;
   aI = animatedInfo;
-  lineHeight = cFont::GetFont(fontSml)->Height();
+  lineHeight = cFont::GetFont(fontOsd)->Height();
+  lineHeightSml = cFont::GetFont(fontSml)->Height();
 
   Start();
 }
@@ -2068,7 +2047,6 @@ void cDrawDescription::DrawBracket(void)
   BracketPixmap->SetAlpha(0);
   BracketPixmap->Fill(clrTransparent);
   tColor Color = Theme.Color(clrMenuMainBracket);
-  int lineHeight = cFont::GetFont(fontOsd)->Height();
   int x00, x01, x02, y00, y01, y02, y03, y04, y05;
   x00 = 0;
   x01 = x00 + lineHeight;
@@ -2118,7 +2096,8 @@ void cDrawDescription::Draw(void)
   const char *titel = NULL;
   const char *shortText = NULL;
   const char *s = NULL;
-  const cFont *font = cFont::GetFont(fontSml);
+  const cFont *font = cFont::GetFont(fontOsd);
+  const cFont *fontsml = cFont::GetFont(fontSml);
   cString parentalRating = "";
   BackgroundPixmap->SetAlpha(0);
   BracketPixmap->SetAlpha(0);
@@ -2139,64 +2118,70 @@ void cDrawDescription::Draw(void)
         parentalRating = Event->GetParentalRatingString();
      }
   
-  int x0 = aI->x0 + 1.5 * lineHeight;            // text left
-  int x1 = aI->x1;                               // text right
-  int y0 = aI->y0 + 1.3 * lineHeight;            // text top
-  int y1 = aI->y1 - 1.3 * lineHeight;            // text bottom
+  int x0 = aI->x0 + 1.5 * lineHeightSml;            // text left
+  int x1 = aI->x1;                                  // text right
+  int y0 = aI->y0 + 1.3 * lineHeightSml;            // text top
+  int y1 = aI->y1 - 1.3 * lineHeightSml;            // text bottom
 
   int rand = Config.Margin + Gap;
   int textwidth = x1 - x0 - rand;
-  int x00 = 1.5 * lineHeight + rand;
-  int y00 = 1.3 * lineHeight;
+  int x00 = 1.5 * lineHeightSml + rand;
+  int y00 = 1.3 * lineHeightSml;
 
   int w = 0;
   if (!isempty(parentalRating)) {
-      cString buffer = cString::sprintf(" %s ", *parentalRating);
-      w = font->Width(buffer);
-      BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00), buffer, Theme.Color(clrMenuMainBracket), textColorBg, font, w); // parental rating
-      }
-
-  if (!isempty(titel)) {
-     BracketPixmap->DrawText(cPoint(x00, y00), titel, aI->titleColorFg, textColorBg, font, textwidth - w); // title
-     y00 = y00 + 1.3 * lineHeight;
-     y0 = y0 + 1.3 * lineHeight;
+     cString buffer = cString::sprintf(" %s ", *parentalRating);
+     w = fontsml->Width(buffer);
+     BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00 + (lineHeight - lineHeightSml) / 2), buffer, Theme.Color(clrMenuMainBracket), textColorBg, fontsml, w); // parental rating
+     w += Gap;
      }
 
-  bool space = false;
+  if (!isempty(titel)) {
+     wrapper.Set(titel, font, textwidth - w);
+     int i = 0;
+     for (; i < wrapper.Lines(); i++) {
+        BracketPixmap->DrawText(cPoint(x00, y00 + i * lineHeight), wrapper.GetLine(i), aI->titleColorFg, textColorBg, font, textwidth - w); // title
+        }
+     y00 = y00 + i * lineHeight;
+     y0 = y0 + i * lineHeight;
+     }
+
+  int i = 0;
 #if (APIVERSNUM >= 20505)
   if (Recording && Info->Errors() >= (1 - Config.displayError0)) {
      cString buffer = cString::sprintf("%s %i ", tr("TS Errors:"), Info->Errors());
-     w = font->Width(buffer);
-     BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00), buffer, Theme.Color(clrMenuMainBracket), textColorBg, font, w); // error in recording
-     space = true;
+     w = fontsml->Width(buffer);
+     BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00), buffer, Theme.Color(clrMenuMainBracket), textColorBg, fontsml, w); // error in recording
+     i = 1;
      w += Gap;
      }
 #endif
 
   if (!isempty(shortText)) {
-     BracketPixmap->DrawText(cPoint(x00, y00), shortText, aI->shortTextColorFg, textColorBg, font, textwidth - w); // shorttext
-     space = true;
+     i = 0;
+     wrapper.Set(shortText, fontsml, textwidth - w);
+     for (; i < wrapper.Lines(); i++) {
+        BracketPixmap->DrawText(cPoint(x00, y00 + i * lineHeightSml), wrapper.GetLine(i), aI->shortTextColorFg, textColorBg, fontsml, textwidth - w); // shorttext
+        }
      }
 
-  if (space)
-     y0 = y0 + 1.3 * lineHeight;
-  y0 = y0 + 0.4 * lineHeight;
+  y0 += (i + 0.5) * lineHeightSml;
 
   if (!s || isempty(s))
      return;
 
-  wrapper.Set(s, font, textwidth - Gap);
-  int l0 = wrapper.Lines();                    // textlines
+  wrapper.Set(s, fontsml, textwidth - Gap);
+  int l0 = wrapper.Lines();                       // textlines
 
-  int height = y1 - y0;                        // max height
-  int lines = (int)(height / lineHeight);      // visible lines
+  int height = y1 - y0;                           // max height
+  int lines = (int)(height / lineHeightSml);      // visible lines
 
-  int l1 = min(l0, lines);                     // visible textlines -> scrollwindow
+  int l1 = min(l0, lines);                        // visible textlines -> scrollwindow
 
   int pixmapwidth = x1 - x0;
-  int pixmapHeigh = l1 * lineHeight;
+  int pixmapHeigh = l1 * lineHeightSml;
 
-  TextPixmap = osd->CreatePixmap(2, cRect(x0, y0, pixmapwidth, pixmapHeigh), cRect(0, 0, pixmapwidth, l0 * lineHeight));
+  TextPixmap = osd->CreatePixmap(2, cRect(x0, y0, pixmapwidth, pixmapHeigh), cRect(0, 0, pixmapwidth, l0 * lineHeightSml));
   if (!TextPixmap) {
      return;
      }
@@ -2205,7 +2190,7 @@ void cDrawDescription::Draw(void)
   TextPixmap->SetAlpha(0);
 
   for (int i = 0; i < l0; i++) {
-     TextPixmap->DrawText(cPoint(Config.Margin + Gap, i * lineHeight), wrapper.GetLine(i), aI->descriptionColorFg, textColorBg, font, textwidth); // description
+     TextPixmap->DrawText(cPoint(Config.Margin + Gap, i * lineHeightSml), wrapper.GetLine(i), aI->descriptionColorFg, textColorBg, fontsml, textwidth); // description
      }
 
 }

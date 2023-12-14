@@ -34,6 +34,7 @@ private:
   cOsd *osd;
   AnimatedInfo_t *aI;
   int lineHeight;
+  int lineHeightSml;
   cPixmap *BackgroundPixmap = NULL;
   cPixmap *BracketPixmap = NULL;
   cPixmap *TextPixmap = NULL;
@@ -71,8 +72,10 @@ private:
   int yd00, yd01, yd02, yd03, yd04, yd05;
   int xs; // starting column for signal display
   int lineHeight;
+  int lineHeightSml;
   cPixmap *PosterPixmap = NULL;
   const cFont *font;
+  const cFont *fontsml;
   const cFont *tinyFont;
   const cFont *tallFont;
   tColor frameColorFg;
