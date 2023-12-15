@@ -38,6 +38,7 @@ private:
   cPixmap *BackgroundPixmap = NULL;
   cPixmap *BracketPixmap = NULL;
   cPixmap *TextPixmap = NULL;
+  cPixmap *PosterPixmap = NULL;
   cTextWrapper wrapper;
   void SetLayer(bool show = false);
   void SetAlpha(int alpha = 255);

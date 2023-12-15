@@ -2007,6 +2007,8 @@ cDrawDescription::cDrawDescription(cOsd *osd, AnimatedInfo_t *animatedInfo) : cT
 cDrawDescription::~cDrawDescription()
 {
   Cancel(2);
+  if (PosterPixmap)
+     osd->DestroyPixmap(PosterPixmap);
   if (TextPixmap)
      osd->DestroyPixmap(TextPixmap);
   if (BracketPixmap)
@@ -2020,6 +2022,7 @@ void cDrawDescription::SetLayer(bool show)
   if (BackgroundPixmap) BackgroundPixmap->SetLayer(show ? 0 : -1);
   if (BracketPixmap)    BracketPixmap->SetLayer(show ? 1 : -1);
   if (TextPixmap)       TextPixmap->SetLayer(show ? 2 : -1);
+  if (PosterPixmap)     PosterPixmap->SetLayer(show ? 3 : -1);
 }
 
 void cDrawDescription::SetAlpha(int alpha)
@@ -2027,6 +2030,7 @@ void cDrawDescription::SetAlpha(int alpha)
   if (BackgroundPixmap) BackgroundPixmap->SetAlpha(alpha);
   if (BracketPixmap)    BracketPixmap->SetAlpha(alpha);
   if (TextPixmap)       TextPixmap->SetAlpha(alpha);
+  if (PosterPixmap)     PosterPixmap->SetAlpha(alpha);
 }
 
 void cDrawDescription::DrawBracket(void)
@@ -2118,29 +2122,29 @@ void cDrawDescription::Draw(void)
         parentalRating = Event->GetParentalRatingString();
      }
   
-  int x0 = aI->x0 + 1.5 * lineHeightSml;            // text left
-  int x1 = aI->x1;                                  // text right
-  int y0 = aI->y0 + 1.3 * lineHeightSml;            // text top
-  int y1 = aI->y1 - 1.3 * lineHeightSml;            // text bottom
-
   int rand = Config.Margin + Gap;
-  int textwidth = x1 - x0 - rand;
-  int x00 = 1.5 * lineHeightSml + rand;
-  int y00 = 1.3 * lineHeightSml;
+  int x0 = aI->x0 + 1.5 * lineHeight;           // text left
+  int x1 = aI->x1;                              // text right
+  int y0 = aI->y0 + lineHeight;                 // text top
+  int y1 = aI->y1 - lineHeight;                 // text bottom
+
+  int x00 = 1.5 * lineHeight;
+  int x01 = BracketPixmap->ViewPort().Width() - rand;
+  int y00 = lineHeight;
 
   int w = 0;
   if (!isempty(parentalRating)) {
      cString buffer = cString::sprintf(" %s ", *parentalRating);
      w = fontsml->Width(buffer);
-     BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00 + (lineHeight - lineHeightSml) / 2), buffer, Theme.Color(clrMenuMainBracket), textColorBg, fontsml, w); // parental rating
+     BracketPixmap->DrawText(cPoint(x01 - w, y00 + (lineHeight - lineHeightSml) / 2), buffer, Theme.Color(clrMenuMainBracket), textColorBg, fontsml, w); // parental rating
      w += Gap;
      }
 
   if (!isempty(titel)) {
-     wrapper.Set(titel, font, textwidth - w);
+     wrapper.Set(titel, font, x01 - x00 - w);
      int i = 0;
      for (; i < wrapper.Lines(); i++) {
-        BracketPixmap->DrawText(cPoint(x00, y00 + i * lineHeight), wrapper.GetLine(i), aI->titleColorFg, textColorBg, font, textwidth - w); // title
+        BracketPixmap->DrawText(cPoint(x00, y00 + i * lineHeight), wrapper.GetLine(i), aI->titleColorFg, textColorBg, font, x01 - x00 - w); // title
         }
      y00 = y00 + i * lineHeight;
      y0 = y0 + i * lineHeight;
@@ -2151,7 +2155,7 @@ void cDrawDescription::Draw(void)
   if (Recording && Info->Errors() >= (1 - Config.displayError0)) {
      cString buffer = cString::sprintf("%s %i ", tr("TS Errors:"), Info->Errors());
      w = fontsml->Width(buffer);
-     BracketPixmap->DrawText(cPoint(x00 + textwidth - w, y00), buffer, Theme.Color(clrMenuMainBracket), textColorBg, fontsml, w); // error in recording
+     BracketPixmap->DrawText(cPoint(x01 - w, y00), buffer, Theme.Color(clrMenuMainBracket), textColorBg, fontsml, w); // error in recording
      i = 1;
      w += Gap;
      }
@@ -2159,9 +2163,9 @@ void cDrawDescription::Draw(void)
 
   if (!isempty(shortText)) {
      i = 0;
-     wrapper.Set(shortText, fontsml, textwidth - w);
+     wrapper.Set(shortText, fontsml, x01 - x00 - w);
      for (; i < wrapper.Lines(); i++) {
-        BracketPixmap->DrawText(cPoint(x00, y00 + i * lineHeightSml), wrapper.GetLine(i), aI->shortTextColorFg, textColorBg, fontsml, textwidth - w); // shorttext
+        BracketPixmap->DrawText(cPoint(x00, y00 + i * lineHeightSml), wrapper.GetLine(i), aI->shortTextColorFg, textColorBg, fontsml, x01 - x00 - w); // shorttext
         }
      }
 
@@ -2170,7 +2174,27 @@ void cDrawDescription::Draw(void)
   if (!s || isempty(s))
      return;
 
-  wrapper.Set(s, fontsml, textwidth - Gap);
+  if (Config.displayScraperInfo && Config.displMenuPoster) {
+     DrawPoster_t dP;
+     dP.osd = osd;
+     dP.Event = Event;
+     dP.Recording = Recording;
+     dP.x = x1 - (x1 - x0) / 3;
+     dP.width = (x1 - x0) / 3;
+     dP.y = y0;
+     dP.height = y1 - y0;
+
+     PosterPixmap = DrawPoster(dP);
+     if (PosterPixmap) {
+        int posterX = PosterPixmap->ViewPort().Width();
+        x1  -= posterX + rand;
+        x01 -= posterX + rand;
+        }
+     }
+
+  int textpixmapwidth = x1 - x0 - rand;
+
+  wrapper.Set(s, fontsml, textpixmapwidth);
   int l0 = wrapper.Lines();                       // textlines
 
   int height = y1 - y0;                           // max height
@@ -2178,10 +2202,7 @@ void cDrawDescription::Draw(void)
 
   int l1 = min(l0, lines);                        // visible textlines -> scrollwindow
 
-  int pixmapwidth = x1 - x0;
-  int pixmapHeigh = l1 * lineHeightSml;
-
-  TextPixmap = osd->CreatePixmap(2, cRect(x0, y0, pixmapwidth, pixmapHeigh), cRect(0, 0, pixmapwidth, l0 * lineHeightSml));
+  TextPixmap = osd->CreatePixmap(2, cRect(x0, y0, textpixmapwidth, l1 * lineHeightSml), cRect(0, 0, textpixmapwidth, l0 * lineHeightSml));
   if (!TextPixmap) {
      return;
      }
@@ -2190,7 +2211,7 @@ void cDrawDescription::Draw(void)
   TextPixmap->SetAlpha(0);
 
   for (int i = 0; i < l0; i++) {
-     TextPixmap->DrawText(cPoint(Config.Margin + Gap, i * lineHeightSml), wrapper.GetLine(i), aI->descriptionColorFg, textColorBg, fontsml, textwidth); // description
+     TextPixmap->DrawText(cPoint(0, i * lineHeightSml), wrapper.GetLine(i), aI->descriptionColorFg, textColorBg, fontsml, textpixmapwidth); // description
      }
 
 }
