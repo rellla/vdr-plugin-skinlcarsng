@@ -28,6 +28,7 @@ public:
   int swapTimers;
   int displayErrorsInReplay;
   int displMenuPoster;
+  int displChPoster;
   int displReplayPoster;
   int mcUndefinedScaled;
   int mcUnknownScaled;

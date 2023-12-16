@@ -876,6 +876,7 @@ cDrawChannelDescription::cDrawChannelDescription(cOsd *osd, AnimatedChannelInfo_
 {
   this->osd = osd;
   aI = animatedInfo;
+  lineHeight = cFont::GetFont(fontOsd)->Height();
   Margin = Config.Margin;
 
   Draw();
@@ -885,14 +886,16 @@ cDrawChannelDescription::~cDrawChannelDescription()
 {
   if (TextPixmap) TextPixmap->SetAlpha(0);
   if (BracketPixmap) BracketPixmap->SetAlpha(0);
+  if (PosterPixmap) PosterPixmap->SetAlpha(0);
   osd->Flush();
+  if (PosterPixmap)
+     osd->DestroyPixmap(PosterPixmap);
   osd->DestroyPixmap(TextPixmap);
   osd->DestroyPixmap(BracketPixmap);
 }
 
 void cDrawChannelDescription::DrawBracket(int height)
 {
-  int lineHeight = cFont::GetFont(fontOsd)->Height();
   int xy = lineHeight + 2 * Margin;
   int yh = (xy - Gap) / 2; // lineHeight / 2 + 2 * Margin;
   int x0 = 0;              // rectangle left
@@ -902,7 +905,7 @@ void cDrawChannelDescription::DrawBracket(int height)
   int x4 = x5 - Gap;
   int x3 = x4 - ((aI.zoom > 1) ? 1.5 : 2) * aI.d;
   int x2 = x3 - Gap; 
-  int y0 = 0;              // rectangle top
+//  int y0 = 0;              // rectangle top
   int y1 = height;         // rectangle bottom
 
   BracketPixmap = osd->CreatePixmap(2, cRect(aI.x0, aI.y1 - height, aI.x1 - aI.x0, height));
@@ -958,19 +961,45 @@ void cDrawChannelDescription::Draw(void)
   const cFont *Font = cFont::GetFont(fontSml);
   const int smlLineHeight = Font->Height(s);
 
-  int lineHeight = cFont::GetFont(fontOsd)->Height();
-  int rand = lineHeight + 2 * Margin + Gap;            // Margin + Gap;
+  int rand = lineHeight + 2 * Margin + Gap;
+
+  int infoChanLines = Config.infoChanLines;
+  int posterWidth = 0;
   int x0 = aI.x0 + rand;                               // text left
   int x1 = aI.x1 - rand;                               // text right
 
   int textwidth = x1 - x0;
 
-  wrapper.Set(s, Font, textwidth - 2 * Gap);
-  int l0 = wrapper.Lines();                            // textlines
+  if (Config.displayScraperInfo && Config.displChPoster) {
+     wrapper.Set(s, Font, textwidth - 2 * Gap - aI.d);
+     if (wrapper.Lines() < infoChanLines)
+        infoChanLines = std::max(5, wrapper.Lines());
+
+     DrawPoster_t dP;
+     dP.osd = osd;
+     dP.Event = aI.Event;
+     dP.layer = 4;
+     dP.x = cOsd::OsdWidth() - rand  - aI.d;
+     dP.width = aI.d;
+     dP.y = aI.y1 - rand - infoChanLines * smlLineHeight;
+     dP.height = infoChanLines * smlLineHeight;
+
+     PosterPixmap = DrawPoster(dP);
+
+     if (PosterPixmap) {
+        PosterPixmap->SetAlpha(255);
+        posterWidth = PosterPixmap->ViewPort().Width();
+        }
+     }
+
+  wrapper.Set(s, Font, textwidth - 2 * Gap - posterWidth);
+  int l0 = wrapper.Lines();
   if (l0 == 0)
      return;
 
-  int l1 = std::min(l0, Config.infoChanLines);         // diplayed lines
+  if (PosterPixmap && l0 < 5)
+     l0 = 5;
+  int l1 = std::min(l0, infoChanLines);                // diplayed lines
 
   int viewportheight = l1 * smlLineHeight;
   while ((aI.y1 - viewportheight - 2 * rand) <= aI.y0) {

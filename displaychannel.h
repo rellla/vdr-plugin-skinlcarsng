@@ -16,11 +16,13 @@ class cDrawChannelDescription {
 private:
   cOsd *osd;
   AnimatedChannelInfo_t aI;
+  int lineHeight;
   int Margin;
   bool dowait = false;
   uint64_t StartTime = 0;
   cPixmap *BracketPixmap = NULL;
   cPixmap *TextPixmap = NULL;
+  cPixmap *PosterPixmap = NULL;
   cTextWrapper wrapper;
   void DrawBracket(int lines = 0);
   void Draw(void);

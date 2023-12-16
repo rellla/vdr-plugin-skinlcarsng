@@ -37,6 +37,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
 
   Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Display channel view:"),               osUnknown, false));
+  Add(new cMenuEditBoolItem(tr("Display poster"),             &tmpConfig.displChPoster));
   Add(new cMenuEditBoolItem(tr("Swap events and timers"),     &tmpConfig.swapTimers));
 
   Add(new cOsdItem("",                                        osUnknown, false));
@@ -51,7 +52,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
   Add(new cMenuEditBoolItem(tr("In menu recording"),          &tmpConfig.displInfoMenuRec));
   Add(new cMenuEditStraItem(tr("In display channel"),         &tmpConfig.displInfoChannel, i, infoChannel));
 //  if (tmpConfig.displInfoChannel)
-  Add(new cMenuEditIntItem(tr("Max. number of info lines"),   &tmpConfig.infoChanLines, 1, 20));
+  Add(new cMenuEditIntItem(tr("Max. number of info lines"),   &tmpConfig.infoChanLines, 5, 20));
   Add(new cMenuEditIntItem(tr("Waiting period Fade-in (ms)"), &tmpConfig.waitTimeFadein, 0, 5000, trVDR("off")));
   Add(new cMenuEditIntItem(tr("Fade-in time (ms)"),           &tmpConfig.fadeinTime, 0, 1000, trVDR("off")));
   Add(new cMenuEditIntItem(tr("Waiting period Scroll (ms)"),  &tmpConfig.waitTimeScroll, 0, 5000, trVDR("off")));
@@ -104,6 +105,7 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("SwapTimers",         Config.swapTimers);
   SetupStore("DisplayErrInRepl",   Config.displayErrorsInReplay);
   SetupStore("DisplMenuPoster",    Config.displMenuPoster);
+  SetupStore("DisplChPoster",      Config.displChPoster);
   SetupStore("DisplReplayPoster",  Config.displReplayPoster);
   SetupStore("MainMenue",          Config.mcMainScaled);
   SetupStore("ScheduleMenue",      Config.mcScheduleScaled);
