@@ -41,6 +41,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
 
   Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Display replay view:"),                osUnknown, false));
+  Add(new cMenuEditBoolItem(tr("Display poster"),             &tmpConfig.displReplayPoster));
   Add(new cMenuEditBoolItem(tr("Display error sign"),         &tmpConfig.displayErrorsInReplay));
 
   Add(new cOsdItem("",                                        osUnknown, false));
@@ -103,6 +104,7 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("SwapTimers",         Config.swapTimers);
   SetupStore("DisplayErrInRepl",   Config.displayErrorsInReplay);
   SetupStore("DisplMenuPoster",    Config.displMenuPoster);
+  SetupStore("DisplReplayPoster",  Config.displReplayPoster);
   SetupStore("MainMenue",          Config.mcMainScaled);
   SetupStore("ScheduleMenue",      Config.mcScheduleScaled);
   SetupStore("ChannelMenue",       Config.mcChannelScaled);

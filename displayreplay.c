@@ -68,16 +68,17 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS Dis
   xp04 = xp02 + d / 4;
   xp05 = xp02 + ((zoom > 1) ? 0.5 : 1) * d;
   xp06 = xp05 + Gap;
-  xp17 = cOsd::OsdWidth();                         // Right
-  xp16 = xp17 - lineHeight - 2 * Margin;
-  xp15 = xp16 - Gap;
-  xp14 = xp15 - ((zoom > 1) ? 1.5 : 2) * d;
+  xp18 = cOsd::OsdWidth();                         // Right
+  xp17 = xp18 - lineHeight - 2 * Margin;
+  xp16 = xp17 - Gap;
+  xp15 = xp16;
+  xp14 = xp16 - ((zoom > 1) ? 1.5 : 2) * d;
   xp13 = xp14 - Gap;
-  xp07 = (xp17 + xp00) / 2;
+  xp07 = (xp18 + xp00) / 2;
   xp08 = xp07 + Gap;
   xp09 = xp08 + lineHeight;
   xp10 = xp09 + Gap;
-  xp11 = (xp10 + xp15 + Gap) / 2;
+  xp11 = (xp10 + xp16 + Gap) / 2;
   xp12 = xp11 + Gap;
 
   int h = max(lineHeight, iconHeight);
@@ -98,18 +99,18 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS Dis
 
   // message and volume box
   xv00 = (modeOnly) ? xp00 : xp06;
-  xv01 = (modeOnly) ? xp17 : xp13;
+  xv01 = (modeOnly) ? xp18 : xp13;
   yv00 = yp00;
   yv01 = yp01;
 
   leftIcons = 0;
 
   int x0 = xp00;
-  int x1 = xp17;
+  int x1 = xp18;
   int y0 = yp00;
   int y1 = yp12;
 
-  osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop() + cOsd::OsdHeight() - yp12, xp00, yp00, xp17 - 1, yp12 - 1);
+  osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop() + cOsd::OsdHeight() - yp12, xp00, yp00, xp18 - 1, yp12 - 1);
   if (osd) {
      ReplayPixmap = osd->CreatePixmap(2, cRect(x0, y0, x1 - x0, y1 - y0));
      if (ReplayPixmap) {
@@ -130,7 +131,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS Dis
      }
 #endif
 
-  DrawRectangle(ReplayPixmap, xp00, yp00, xp17, yp12, modeOnly ? clrTransparent : Theme.Color(clrBackground));
+  DrawRectangle(ReplayPixmap, xp00, yp00, xp18, yp12, modeOnly ? clrTransparent : Theme.Color(clrBackground));
   // Rectangles:
   DrawRectangleOutline(ReplayPixmap, xp00, yp06, xp02, yp07, frameColorBr, frameColorBg, 15);
   if (!modeOnly) {
@@ -154,17 +155,14 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS Dis
      DrawRectangleOutline(ReplayPixmap, xp06, yp11, xp07, yp12, frameColorBr, frameColorBg, 15);
      DrawRectangleOutline(ReplayPixmap, xp08, yp11, xp09, yp12, frameColorBr, frameColorBg, 15);
      DrawRectangleOutline(ReplayPixmap, xp10, yp11, xp11, yp12, frameColorBr, frameColorBg, 15);
-     DrawRectangleOutline(ReplayPixmap, xp12, yp11, xp15, yp12, frameColorBr, frameColorBg, 15);
-     DrawRectangleOutline(ReplayPixmap, xp16, yp11, xp16 + lineHeight / 2 + Margin, yp12, frameColorBr, frameColorBg, 11);
-     DrawRectangle(ReplayPixmap, xp16 + lineHeight / 2 + Margin, yp11 + lineHeight / 2, xp17, yp12, clrTransparent);
-     DrawEllipseOutline(ReplayPixmap, xp16 + lineHeight / 2 + Margin, yp11, xp17, yp12, frameColorBr, frameColorBg, 5);
+     DrawRectangleOutline(ReplayPixmap, xp12, yp11, xp16, yp12, frameColorBr, frameColorBg, 15);
+     DrawRectangleOutline(ReplayPixmap, xp17, yp11, xp17 + lineHeight / 2 + Margin, yp12, frameColorBr, frameColorBg, 11);
+     DrawRectangle(ReplayPixmap, xp17 + lineHeight / 2 + Margin, yp11 + lineHeight / 2, xp18, yp12, clrTransparent);
+     DrawEllipseOutline(ReplayPixmap, xp17 + lineHeight / 2 + Margin, yp11, xp18, yp12, frameColorBr, frameColorBg, 5);
      // Upper Right:
-     DrawRectangleOutline(ReplayPixmap, xp16, yp00, xp16 + lineHeight / 2 + Margin, yp01, frameColorBr, frameColorBg, 11);
-     DrawRectangle(ReplayPixmap, xp16 + lineHeight / 2 + Margin, yp00, xp17, yp01 - lineHeight / 2, clrTransparent);
-     DrawEllipseOutline(ReplayPixmap, xp16 + lineHeight / 2 + Margin, yp00, xp17, yp01, frameColorBr, frameColorBg, 5);
-     // Progressbar
-     int pbHeight = lineHeight + ((lineHeight - 2 * Margin) % 3);
-     DrawRectangleOutline(ReplayPixmap, xp03, yp07 - pbHeight, xp15, yp07, frameColorBr, frameColorBg, 15);
+     DrawRectangleOutline(ReplayPixmap, xp17, yp00, xp17 + lineHeight / 2 + Margin, yp01, frameColorBr, frameColorBg, 11);
+     DrawRectangle(ReplayPixmap, xp17 + lineHeight / 2 + Margin, yp00, xp18, yp01 - lineHeight / 2, clrTransparent);
+     DrawEllipseOutline(ReplayPixmap, xp17 + lineHeight / 2 + Margin, yp00, xp18, yp01, frameColorBr, frameColorBg, 5);
      }
 }
 
@@ -180,7 +178,7 @@ void cLCARSNGDisplayReplay::DrawDate(void)
 {
   cString s = DayDateTime();
   if (!*lastDate || strcmp(s, lastDate)) {
-     DrawText(ReplayPixmap, xp14, yp00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, xp15 - xp14, yp01, taRight | taBorder);
+     DrawText(ReplayPixmap, xp14, yp00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, xp16 - xp14, yp01, taRight | taBorder);
      lastDate = s;
      }
 }
@@ -230,7 +228,7 @@ void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
      On = false;
      }
   if (initial || On != lastOn) { 
-     int x = xp15;
+     int x = xp16;
      x -= bmRecording.Width() + SymbolSpacing;
      DrawBitmap(ReplayPixmap, x, yp11 + (yp12 - yp11 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? On ? clrChannelSymbolRecFg : clrChannelSymbolOff : clrChannelSymbolOff), rec ? On ? Theme.Color(clrChannelSymbolRecBg) : frameColorBr : frameColorBr);
      lastOn = On;
@@ -241,6 +239,28 @@ void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
 void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
 {
   fps = Recording->FramesPerSecond();
+
+  if (PosterPixmap) {
+     osd->DestroyPixmap(PosterPixmap);
+     PosterPixmap = NULL;
+     }
+
+  if (Config.displayScraperInfo && Config.displReplayPoster) {
+     DrawPoster_t dP;
+     dP.osd = osd;
+     dP.Recording = Recording;
+     dP.x = xp16 - 5 * lineHeight;
+     dP.y = yp02;
+     dP.width = 5 * lineHeight;
+     dP.height = yp11 - lineHeight / 2 - yp02;
+
+     PosterPixmap = DrawPoster(dP);
+     if (PosterPixmap) {
+        PosterPixmap->SetAlpha(255);
+        xp15 = xp16 - PosterPixmap->ViewPort().Width() - lineHeight;
+        }
+     }
+
   const cRecordingInfo *RecordingInfo = Recording->Info();
   if (!RecordingInfo)
      return;
@@ -306,6 +326,12 @@ void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
      pbHeight += rest;
   int lH = pbHeight / 3;
 
+  if (pbinit) {
+     // Draw progressbar outline
+     int pH = pbHeight + 2 * Margin;
+     DrawRectangleOutline(ReplayPixmap, xp03, yp07 - pH, xp15, yp07, frameColorBr, frameColorBg, 15);
+     }
+
   if (timshiftMode) {
      cString tM = "TimeshiftMode";
      int w = osdFont->Width(tM) + 2 * textBorder;
@@ -314,25 +340,30 @@ void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
   if (isRecording) {
      int w = osdFont->Width(endTime) + 2 * textBorder;
      if (Total > framesTotal) {
-        DrawRectangle(ReplayPixmap, xp15 - w, yp05, xp15, yp07 - lineHeight, Theme.Color(clrBackground)); // Clear endTime
+        // Clear endTime
+        DrawRectangle(ReplayPixmap, xp15 - w, yp05, xp15, yp07 - lineHeight, Theme.Color(clrBackground));
         isRecording = false;
         x = 0;
      }
      else {
+        // Draw endTime
         double rest = ((double)framesTotal - (double)Total) / (double)framesTotal;
         x = (int)((xp15 - xp03) * rest);
         DrawText(ReplayPixmap, xp15 - w, yp05, *endTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, w, 0, taCenter | taBorder);
      }
      if (pbinit) {
+        // small middle rectangle
         int y1 = yp07 - lineHeight + Margin + lH;
         int y2 = yp07 - Margin - lH;
-        DrawRectangle(ReplayPixmap, xp03 + Margin, y1, xp15 - Margin, y2, frameColorBr); // small rectangle
-        pbinit = false;
+        DrawRectangle(ReplayPixmap, xp03 + Margin, y1, xp15 - Margin, y2, frameColorBr);
      }
   }
+  pbinit = false;
+
   if ((xp15 - xp03 - x - 5) > 0) {
+     // Draw progressbar
      cProgressBar pb(xp15 - xp03 - x - 2 * Margin, pbHeight, Current, Total, marks, Theme.Color(clrReplayProgressSeen), Theme.Color(clrReplayProgressRest), Theme.Color(clrReplayProgressSelected), Theme.Color(clrReplayProgressMark), Theme.Color(clrReplayProgressCurrent));
-     DrawBitmap(ReplayPixmap, xp03 + Margin, yp07 - lineHeight + Margin, pb); // Progressbar
+     DrawBitmap(ReplayPixmap, xp03 + Margin, yp07 - lineHeight + Margin, pb);
   }
 }
 
@@ -455,12 +486,12 @@ void cLCARSNGDisplayReplay::DrawGrid(void)
   tColor gridColor = 0xffff7700;
   int offset = lineHeight;
 
-//  int xp00, xp01, xp02, xp03, xp04, xp05, xp06, xp07, xp08, xp09, xp10, xp11, xp12, xp13, xp14, xp15, xp16, xp17;
+//  int xp00, xp01, xp02, xp03, xp04, xp05, xp06, xp07, xp08, xp09, xp10, xp11, xp12, xp13, xp14, xp16, xp17, xp18;
 //  int xv00, xv01, yv00, yv01;
-  int xp[18] = { xp00, xp01, xp02, xp03, xp04, xp05, xp06, xp07, xp08,
-                 xp09, xp10, xp11, xp12, xp13, xp14, xp15, xp16, xp17 };
-  char strxp[19][6] = { "xp00", "xp01", "xp02", "xp03", "xp04", "xp05", "xp06", "xp07", "xp08",
-                        "xp09", "xp10", "xp11", "xp12", "xp13", "xp14", "xp15", "xp16", "xp17", '\0' };
+  int xp[19] = { xp00, xp01, xp02, xp03, xp04, xp05, xp06, xp07, xp08,
+                 xp09, xp10, xp11, xp12, xp13, xp14, xp15, xp16, xp17, xp18 };
+  char strxp[20][6] = { "xp00", "xp01", "xp02", "xp03", "xp04", "xp05", "xp06", "xp07", "xp08",
+                        "xp09", "xp10", "xp11", "xp12", "xp13", "xp14", "xp15", "xp16", "xp17", "xp18", '\0' };
 
   for (int i = 0; strxp[i][0]; i++) {
      DrawRectangle(GridPixmap, xp[i], top, xp[i] + 1, bottom, gridColor);
@@ -480,7 +511,7 @@ void cLCARSNGDisplayReplay::DrawGrid(void)
 
   int d = 5 * lineHeight;
   for (int i = 0; stryp[i][0]; i++) {
-     DrawRectangle(GridPixmap, xp00, yp[i], xp14, yp[i] + 1, gridColor);
+     DrawRectangle(GridPixmap, xp00, yp[i], xp18, yp[i] + 1, gridColor);
      DrawText(GridPixmap, xp06 + (d / 2) + (2.5 * offset), yp[i], cString(stryp[i]), gridColor, clrTransparent, smlFont);
 
      offset = offset + lineHeight;
