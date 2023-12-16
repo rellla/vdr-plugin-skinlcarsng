@@ -89,7 +89,7 @@ cPixmap *DrawPoster(DrawPoster_t dP) {
   dP.x = dP.x + dP.width - logo.Width() - 2 * dP.border;
   dP.y = dP.y + (dP.height - logo.Height() - 2 * dP.border) / 2;
 
-  cPixmap *PosterPixmap = CreatePixmap(dP.osd, "PosterPixmap", 3,
+  cPixmap *PosterPixmap = CreatePixmap(dP.osd, "PosterPixmap", dP.layer,
                                        cRect(dP.x,
                                              dP.y,
                                              logo.Width() + 2 * dP.border,

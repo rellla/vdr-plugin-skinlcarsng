@@ -16,6 +16,7 @@ typedef struct {
   cOsd *osd = NULL;
   const cEvent *Event = NULL;
   const cRecording *Recording = NULL;
+  int layer = 3;
   int x = 0;
   int y = 0;
   int width = 0;
