@@ -23,6 +23,7 @@ cLCARSNGConfig::cLCARSNGConfig(void)
   displayErrorsInReplay = 0;
   displMenuPoster = 0;
   displChPoster = 0;
+  displReplayDateTime = 0;
   displReplayPoster = 0;
   mcUndefinedScaled = efullscreen;
   mcUnknownScaled = efullscreen;
@@ -83,6 +84,7 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "DisplayErrInRepl"))   displayErrorsInReplay = atoi(Value);
   else if (!strcasecmp(Name, "DisplMenuPoster"))    displMenuPoster    = atoi(Value);
   else if (!strcasecmp(Name, "DisplChPoster"))      displChPoster      = atoi(Value);
+  else if (!strcasecmp(Name, "DisplReplayDateTime")) displReplayDateTime = atoi(Value);
   else if (!strcasecmp(Name, "DisplReplayPoster"))  displReplayPoster  = atoi(Value);
   else if (!strcasecmp(Name, "MainMenue"))          mcMainScaled       = atoi(Value);
   else if (!strcasecmp(Name, "ScheduleMenue"))      mcScheduleScaled   = atoi(Value);

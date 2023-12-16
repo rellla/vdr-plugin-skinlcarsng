@@ -269,9 +269,13 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
   SetTitle(RecordingInfo->Title());
   int w = smlFont->Width(RecordingInfo->ShortText()) + 2 * textBorder;
   DrawText(ReplayPixmap, xp03, yp05 - lineHeight - Margin, RecordingInfo->ShortText(), Theme.Color(clrEventShortText), textColorBg, smlFont, min(xp15, (xp03 + w)) - xp03, lineHeight, taCenter | taBorder);
-  // must be (xp00 + Gap + Margin) to not interact with the ellipse
-  DrawText(ReplayPixmap, xp00 + Gap + Margin, yp02 + Margin, ShortDateString(Recording->Start()), frameColorFg, frameColorBg, osdFont, xp02 - xp00 - Gap - 2 * Margin, lineHeight, taTop | taRight | taBorder);
-  DrawText(ReplayPixmap, xp00 + Margin, yp05 - lineHeight - Margin, TimeString(Recording->Start()), frameColorFg, frameColorBg, osdFont, xp02 - xp00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
+  if (Config.displReplayDateTime) {
+     // ShortDateString
+     // must be (xp00 + Gap + Margin) to not interact with the ellipse
+     DrawText(ReplayPixmap, xp00 + Gap + Margin, yp02 + Margin, ShortDateString(Recording->Start()), frameColorFg, frameColorBg, osdFont, xp02 - xp00 - Gap - 2 * Margin, lineHeight, taTop | taRight | taBorder);
+     // TimeString
+     DrawText(ReplayPixmap, xp00 + Margin, yp05 - lineHeight - Margin, TimeString(Recording->Start()), frameColorFg, frameColorBg, osdFont, xp02 - xp00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
+     }
 
   //check for instant recording
   const char *recName = Recording->Name();

@@ -29,6 +29,7 @@ public:
   int displayErrorsInReplay;
   int displMenuPoster;
   int displChPoster;
+  int displReplayDateTime;
   int displReplayPoster;
   int mcUndefinedScaled;
   int mcUnknownScaled;

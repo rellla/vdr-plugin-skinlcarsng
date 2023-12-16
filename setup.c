@@ -42,6 +42,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
 
   Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Display replay view:"),                osUnknown, false));
+  Add(new cMenuEditBoolItem(tr("Display date and time of the recording"), &tmpConfig.displReplayDateTime));
   Add(new cMenuEditBoolItem(tr("Display poster"),             &tmpConfig.displReplayPoster));
   Add(new cMenuEditBoolItem(tr("Display error sign"),         &tmpConfig.displayErrorsInReplay));
 
@@ -106,6 +107,7 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("DisplayErrInRepl",   Config.displayErrorsInReplay);
   SetupStore("DisplMenuPoster",    Config.displMenuPoster);
   SetupStore("DisplChPoster",      Config.displChPoster);
+  SetupStore("DisplReplayDateTime", Config.displReplayDateTime);
   SetupStore("DisplReplayPoster",  Config.displReplayPoster);
   SetupStore("MainMenue",          Config.mcMainScaled);
   SetupStore("ScheduleMenue",      Config.mcScheduleScaled);
