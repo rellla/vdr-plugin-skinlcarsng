@@ -1,5 +1,18 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
+Version 0.5.0
+- Scale Video to Fullscreen is not needed
+- Add error sign to display replay if recording errors > 0
+- Update themes
+- Fix messagebox is not displayed correctly
+- Added wrapper for pixmaps to reuse them later
+- Update display replay
+- Update display channel
+- Correct progressbar height
+- Optimize some text length
+- Add Poster to various views
+- The display of the date and time of the recording in the blayback display can now be switched off
+
 Version 0.4.1
 - Fix not refreshing recordings list while pressung key pageup/pagedown
 
