@@ -1,5 +1,8 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
+Version 0.5.1
+- Add missing files
+
 Version 0.5.0
 - Scale Video to Fullscreen is not needed
 - Add error sign to display replay if recording errors > 0
