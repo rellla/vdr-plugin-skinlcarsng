@@ -1676,6 +1676,14 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
   if (!isempty(Info->Description())) {
      sstrInfo << Info->Description() << std::endl;
      }
+
+#if (APIVERSNUM >= 20605)
+  // Draw video format
+  if (!isempty(Info->FrameParams())) {
+     sstrInfo << std::endl << tr("Frame Parameters") << ": " << *Info->FrameParams();
+     }
+#endif
+
   const char *aux = NULL;
   aux = Info->Aux();
   if (aux) {

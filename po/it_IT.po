@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.4.0\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2023-12-16 15:00+0100\n"
+"POT-Creation-Date: 2024-01-01 12:31+0100\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: fiveten_59\n"
 "Language-Team: fiveten_59\n"
@@ -47,6 +47,9 @@ msgstr "PLAY"
 
 msgid "errors"
 msgstr "errori"
+
+msgid "Frame Parameters"
+msgstr "Parametri del fotogramma"
 
 msgid "Search timer:"
 msgstr "Ricerca timer:"

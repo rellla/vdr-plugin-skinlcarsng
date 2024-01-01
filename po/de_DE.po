@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.4.0\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2023-12-16 14:59+0100\n"
+"POT-Creation-Date: 2024-01-01 12:31+0100\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: Karl Melscher <vdr.kamel5@gmx.net>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -47,6 +47,9 @@ msgstr "WIEDERGABE"
 
 msgid "errors"
 msgstr "Fehler"
+
+msgid "Frame Parameters"
+msgstr "Bildeigenschaften"
 
 msgid "Search timer:"
 msgstr "Suchtimer:"
