@@ -43,6 +43,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS Dis
   volumeBox = NULL;
   lastVolume = statusMonitor->GetVolume();
   lastVolumeTime = time(NULL);
+  resolution = "";
   oldResolution = "";
 
   float hrel = cOsd::OsdHeight() / lineHeight;
@@ -195,7 +196,10 @@ void cLCARSNGDisplayReplay::DrawTrack(void)
 
 void cLCARSNGDisplayReplay::DrawScreenResolution(void)
 {
-  cString resolution = GetScreenResolutionIcon();
+  if (isempty(resolution))
+     resolution = GetScreenResolutionIcon();
+
+  // Draw video format
   if (!(strcmp(resolution, oldResolution) == 0)) {
      if (strcmp(resolution, "") == 0) {
         DrawRectangle(ReplayPixmap, xp11 + Margin, yp11 + Margin, leftIcons, yp12 - Margin, frameColorBg);
@@ -265,6 +269,13 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
   if (!RecordingInfo)
      return;
  
+#if (APIVERSNUM >= 20605)
+  // Get video format from info file
+  if (!isempty(RecordingInfo->FrameParams())) {
+     resolution = RecordingInfo->FrameParams();
+     }
+#endif
+
   recordingErrors = RecordingInfo->Errors();
   SetTitle(RecordingInfo->Title());
   int w = smlFont->Width(RecordingInfo->ShortText()) + 2 * textBorder;

@@ -36,6 +36,7 @@ private:
   time_t lastVolumeTime;
   cLCARSNGMessageBox *messageBox = NULL;
   cLCARSNGVolumeBox *volumeBox = NULL;
+  cString resolution;
   int leftIcons;
   bool message;
   bool isRecording;
