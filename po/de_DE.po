@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.4.0\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2024-01-01 12:31+0100\n"
+"POT-Creation-Date: 2024-03-16 13:21+0100\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: Karl Melscher <vdr.kamel5@gmx.net>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -125,6 +125,9 @@ msgstr "Datum und Zeit der Aufnahme anzeigen"
 
 msgid "Display error sign"
 msgstr "Fehlerzeichen anzeigen"
+
+msgid "Display video properties from info file"
+msgstr "Video Format aus der Info-Datei anzeigen"
 
 msgid "Display description:"
 msgstr "Beschreibung anzeigen:"

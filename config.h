@@ -31,6 +31,7 @@ public:
   int displChPoster;
   int displReplayDateTime;
   int displReplayPoster;
+  int displReplayVideoFormat;
   int mcUndefinedScaled;
   int mcUnknownScaled;
   int mcMainScaled;

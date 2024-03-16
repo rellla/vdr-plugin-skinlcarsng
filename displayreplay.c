@@ -272,7 +272,22 @@ void cLCARSNGDisplayReplay::SetRecording(const cRecording *Recording)
 #if (APIVERSNUM >= 20605)
   // Get video format from info file
   if (!isempty(RecordingInfo->FrameParams())) {
-     resolution = RecordingInfo->FrameParams();
+     if (Config.displReplayVideoFormat)
+        resolution = RecordingInfo->FrameParams();
+     else {
+        uint16_t frameHeight = RecordingInfo->FrameHeight();
+        if (frameHeight) {
+           if (frameHeight > 2000)
+              resolution = "UHD";
+           else if (frameHeight > 700)
+              resolution = "HD";
+           else
+              resolution = "SD";
+           resolution.Append(cString::sprintf("%d", (frameHeight)));
+           if (RecordingInfo->ScanType() != stUnknown)
+              resolution.Append(RecordingInfo->ScanTypeChar());
+           }
+        }
      }
 #endif
 
