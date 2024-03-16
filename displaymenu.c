@@ -57,6 +57,12 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   lastVolume = statusMonitor->GetVolume();
   lastVolumeTime = time(NULL);
 
+  animatedInfo.titleColorFg = Theme.Color(clrEventTitle);
+  animatedInfo.shortTextColorFg = Theme.Color(clrEventShortText);
+  animatedInfo.descriptionColorFg = Theme.Color(clrEventDescription);
+  animatedInfo.frameColorBr = frameColorBr;
+  animatedInfo.textColorBg = textColorBg;
+
   // The outer frame:
   d = 5 * lineHeight;
   xa09 = cOsd::OsdWidth();
@@ -96,6 +102,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   cLCARSNGDisplayMenu::SetCoordinateY(yt10);
 
   osd = CreateOsd(cOsd::OsdLeft(), cOsd::OsdTop(), xa00, yt00, xa09 - 1, yb15 - 1);
+  animatedInfo.osd = osd;
 }
 
 cLCARSNGDisplayMenu::~cLCARSNGDisplayMenu()
@@ -274,6 +281,7 @@ void cLCARSNGDisplayMenu::SetCoordinateY(int y)
 void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
 {
   if (initial || MenuCategory != cSkinDisplayMenu::MenuCategory()) {
+     DescriptionClear();
      cSkinDisplayMenu::SetMenuCategory(MenuCategory);
      initial = true;
      viewmode = efullscreen;
@@ -410,6 +418,12 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
         DrawMainBracket();
         }
      }
+
+  animatedInfo.x0 = xs00;
+  animatedInfo.x1 = xs11;
+  animatedInfo.y0 = yi00;
+  animatedInfo.y1 = yi00 + (int)((yi01 - yi00) / lineHeight) * lineHeight;
+  animatedInfo.viewmode = viewmode;
 }
 
 void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color, tColor ColorBg)
@@ -1292,18 +1306,19 @@ int cLCARSNGDisplayMenu::MaxItems(void)
 
 void cLCARSNGDisplayMenu::Clear(void)
 {
-  DescriptionClear();
   osd->DrawRectangle(xi00, yi00, xi03 - 1, yi01 - 1, Theme.Color(clrBackground));
+  if (drawDescription && drawDescription->IsRunning())
+     animatedInfo.doflash = false;
 }
 
 void cLCARSNGDisplayMenu::DescriptionClear(void)
 {
   DELETENULL(drawDescription);
-  animatedInfo.Fast = false;
   animatedInfo.Event = NULL;
   animatedInfo.Timer = NULL;
   animatedInfo.Recording = NULL;
   animatedInfo.Channel = NULL;
+  animatedInfo.doflash = true;
   textScroller.Reset();
   if (PosterPixmap) {
      osd->DestroyPixmap(PosterPixmap);
@@ -1386,9 +1401,9 @@ bool cLCARSNGDisplayMenu::SetItemEvent(const cEvent *Event, int Index, bool Curr
   if (!Config.displInfoMenuEPG)
      return false;
 
-  if ((animatedInfo.Event == Event) && !Current) {
+  if (Current && (animatedInfo.Event != Event))
      DescriptionClear();
-     }
+
   if (Current) {
      animatedInfo.Event = Event;
      animatedInfo.Index = Index;
@@ -1407,9 +1422,9 @@ bool cLCARSNGDisplayMenu::SetItemTimer(const cTimer *Timer, int Index, bool Curr
   if (!Config.displInfoMenuTimer)
      return false;
 
-  if ((animatedInfo.Timer == Timer) && !Current) {
+  if (Current && (animatedInfo.Timer != Timer))
      DescriptionClear();
-     }
+
   if (Current) {
      animatedInfo.Timer = Timer;
      animatedInfo.Index = Index;
@@ -1424,20 +1439,20 @@ bool cLCARSNGDisplayMenu::SetItemRecording(const cRecording *Recording, int Inde
   if (!Config.displInfoMenuRec)
      return false;
 
-  if ((animatedInfo.Recording == Recording) && !Current) {
-     DescriptionClear();
-     }
-  if (Level != animatedInfo.Level)
-     lastSetRecording = NULL;
+  // Delete drawDescription if the current item is a directory
   if (Current && Total)
-     lastSetRecording = NULL;
+     DescriptionClear();
+  // Delete drawDescription if the level has been changed
+  if (Level != animatedInfo.Level)
+     DescriptionClear();
+  // Delete drawDescription if the current recording has been chanded
+  if ((animatedInfo.Recording == Recording) && !Current)
+     DescriptionClear();
+  // Delete drawDescription if the current recording has been chanded
+  if (Current && (animatedInfo.Recording != Recording))
+     DescriptionClear();
+
   if (Current && !Total) {
-     animatedInfo.Fast = false;
-#if APIVERSNUM > 20700
-     if (!initial && (Recording == lastSetRecording))
-        animatedInfo.Fast = true;
-#endif
-     lastSetRecording = Recording;
      animatedInfo.Recording = Recording;
      animatedInfo.Index = Index;
      animatedInfo.Current = Current;
@@ -1489,6 +1504,8 @@ void cLCARSNGDisplayMenu::SetItem(const char *Text, int Index, bool Current, boo
          break;
       }
   SetEditableWidth(xi02 - xi00 - TextSpacing - Tab(1));
+  if (Index >= (MaxItems() - 1))
+     animatedInfo.doflash = true;
 }
 
 bool cLCARSNGDisplayMenu::DrawProgressBar(int x, int y, int width, const char *text, tColor ColorFg, tColor ColorBg) {
@@ -1810,9 +1827,9 @@ void cLCARSNGDisplayMenu::Flush(void)
   if (Config.displayGrid)
      DrawGrid();
 #endif
+  animatedInfo.doflash = true;
   if (!(drawDescription && drawDescription->IsRunning()))
-     if (!animatedInfo.Fast)
-        osd->Flush();
+     osd->Flush();
   if (initial) {
      cDevice::PrimaryDevice()->ScaleVideo(availableRect);
      }
@@ -1820,17 +1837,7 @@ void cLCARSNGDisplayMenu::Flush(void)
      if ((Config.displInfoMenuEPG && (MenuCategory() == mcSchedule || MenuCategory() == mcScheduleNow || MenuCategory() == mcScheduleNext) && animatedInfo.Event != NULL)
          || (Config.displInfoMenuTimer && MenuCategory() == mcTimer && animatedInfo.Timer != NULL)
          || (Config.displInfoMenuRec && MenuCategory() == mcRecording && animatedInfo.Recording != NULL)) {
-        animatedInfo.x0 = xs00;
-        animatedInfo.x1 = xs11;
-        animatedInfo.y0 = yi00;
-        animatedInfo.y1 = yi00 + (int)((yi01 - yi00) / lineHeight) * lineHeight;
-        animatedInfo.viewmode = viewmode;
-        animatedInfo.textColorBg = textColorBg;
-        animatedInfo.titleColorFg = Theme.Color(clrEventTitle);
-        animatedInfo.shortTextColorFg = Theme.Color(clrEventShortText);
-        animatedInfo.descriptionColorFg = Theme.Color(clrEventDescription);
-        animatedInfo.frameColorBr = frameColorBr;
-        drawDescription = new cDrawDescription(osd, &animatedInfo);
+        drawDescription = new cDrawDescription(&animatedInfo);
         }
      }
   initial = false;
@@ -2002,9 +2009,8 @@ void cLCARSNGDisplayMenu::DrawGrid(void)
 
 // --- cDrawDescription ----------------------------------------------------
 
-cDrawDescription::cDrawDescription(cOsd *osd, AnimatedInfo_t *animatedInfo) : cThread("LCARS DisplDesc")
+cDrawDescription::cDrawDescription(AnimatedInfo_t *animatedInfo) : cThread("LCARS DisplDesc")
 {
-  this->osd = osd;
   aI = animatedInfo;
   lineHeight = cFont::GetFont(fontOsd)->Height();
   lineHeightSml = cFont::GetFont(fontSml)->Height();
@@ -2016,13 +2022,13 @@ cDrawDescription::~cDrawDescription()
 {
   Cancel(2);
   if (PosterPixmap)
-     osd->DestroyPixmap(PosterPixmap);
+     aI->osd->DestroyPixmap(PosterPixmap);
   if (TextPixmap)
-     osd->DestroyPixmap(TextPixmap);
+     aI->osd->DestroyPixmap(TextPixmap);
   if (BracketPixmap)
-     osd->DestroyPixmap(BracketPixmap);
+     aI->osd->DestroyPixmap(BracketPixmap);
   if (BackgroundPixmap)
-     osd->DestroyPixmap(BackgroundPixmap);
+     aI->osd->DestroyPixmap(BackgroundPixmap);
 }
 
 void cDrawDescription::SetLayer(bool show)
@@ -2047,12 +2053,12 @@ void cDrawDescription::DrawBracket(void)
   int x1 = aI->x1;
   int y0 = aI->y0;
   int y1 = aI->y1;
-  if (BackgroundPixmap = osd->CreatePixmap(-1, cRect(x0, y0, x1 - x0, y1 - y0))) {
+  if (BackgroundPixmap = aI->osd->CreatePixmap(-1, cRect(x0, y0, x1 - x0, y1 - y0))) {
      BackgroundPixmap->SetAlpha(0);
      BackgroundPixmap->Fill(((aI->viewmode == escaledvideo) || (aI->viewmode == escaledvideosmall)) ? Theme.Color(clrBackground) : aI->textColorBg);
      }
 
-  BracketPixmap = osd->CreatePixmap(1, cRect(x0, y0, x1 - x0, y1 - y0));
+  BracketPixmap = aI->osd->CreatePixmap(1, cRect(x0, y0, x1 - x0, y1 - y0));
   if (!BracketPixmap)
      return;
 
@@ -2184,7 +2190,7 @@ void cDrawDescription::Draw(void)
 
   if (Config.displayScraperInfo && Config.displMenuPoster) {
      DrawPoster_t dP;
-     dP.osd = osd;
+     dP.osd = aI->osd;
      dP.Event = Event;
      dP.Recording = Recording;
      dP.x = x1 - (x1 - x0) / 3;
@@ -2210,7 +2216,7 @@ void cDrawDescription::Draw(void)
 
   int l1 = min(l0, lines);                        // visible textlines -> scrollwindow
 
-  TextPixmap = osd->CreatePixmap(2, cRect(x0, y0, textpixmapwidth, l1 * lineHeightSml), cRect(0, 0, textpixmapwidth, l0 * lineHeightSml));
+  TextPixmap = aI->osd->CreatePixmap(2, cRect(x0, y0, textpixmapwidth, l1 * lineHeightSml), cRect(0, 0, textpixmapwidth, l0 * lineHeightSml));
   if (!TextPixmap) {
      return;
      }
@@ -2224,13 +2230,12 @@ void cDrawDescription::Draw(void)
 
 }
 
-int cDrawDescription::DoSleep(int duration) {
+void cDrawDescription::DoSleep(int duration) {
   int sleepSlice = 10;
   while (Running() && (duration > 0)) {
      cCondWait::SleepMs(sleepSlice);
      duration -= sleepSlice;
      }
-  return (duration < 0) ? 0 : duration;
 }
 
 void cDrawDescription::Action(void)
@@ -2244,24 +2249,11 @@ void cDrawDescription::Action(void)
   int fadeinDelay = Config.waitTimeFadein;
   int scrollDelay = Config.waitTimeScroll;
 
-  if (aI->Fast) {
-     if (TextPixmap)
-        TextPixmap->SetDrawPortPoint(cPoint(0, aI->drawPortY));
-     SetAlpha(255);
-     SetLayer(true);
-     osd->Flush();
-     }
-  else {
-     aI->doSleep = false;
-     aI->delayScroll = scrollDelay;
-     aI->delayTop = scrollDelay;
-     aI->delayBottom = scrollDelay;
-     DoSleep(fadeinDelay);
-     SetLayer(true);
-     }
+  DoSleep(fadeinDelay);
+  SetLayer(true);
 
   //FadeIn
-  if (!aI->Fast && Config.fadeinTime) {
+  if (Config.fadeinTime) {
      int FadeTime = Config.fadeinTime;
      int FadeFrameTime = FadeTime / 10;
      uint64_t Start = cTimeMs::Now();
@@ -2269,11 +2261,9 @@ void cDrawDescription::Action(void)
         uint64_t Now = cTimeMs::Now();
         double t = std::min(double(Now - Start) / FadeTime, 1.0);
         int Alpha = t * ALPHA_OPAQUE;
-        cPixmap::Lock();
         SetAlpha(Alpha);
-        cPixmap::Unlock();
-        if (Running() && osd)
-           osd->Flush();
+        if (Running() && aI->osd && aI->doflash)
+           aI->osd->Flush();
         int Delta = cTimeMs::Now() - Now;
         if (Running() && (Delta < FadeFrameTime))
            cCondWait::SleepMs(FadeFrameTime - Delta);
@@ -2289,49 +2279,41 @@ void cDrawDescription::Action(void)
   if (maxY == 0)
      return;
 
-  if (aI->delayScroll > 0)
-     aI->delayScroll = DoSleep(aI->delayScroll);
+  DoSleep(scrollDelay);
 
   int FrameTime = (int)(1000 / Config.framesPerSecond);
+
+  bool doSleep = false;
+  int drawPortY = 0;
 
   // Scroll
   while (Running()) {
      uint64_t Now = cTimeMs::Now();
-     if (!aI->doSleep) {
-//        cPixmap::Lock();
+     if (!doSleep) {
         if (TextPixmap)
-           aI->drawPortY = TextPixmap->DrawPort().Y();
-//        cPixmap::Unlock();
-        if (std::abs(aI->drawPortY) > maxY) {
-           if (aI->delayBottom > 0) {
-              aI->delayBottom = DoSleep(aI->delayBottom);
-              }
-           else {
-              aI->drawPortY = 0;
-              aI->doSleep = true;
-              }
-           aI->delayTop = scrollDelay;
+           drawPortY = TextPixmap->DrawPort().Y();
+        if (std::abs(drawPortY) > maxY) {
+           DoSleep(scrollDelay);
+           drawPortY = 0;
+           doSleep = true;
            }
         else
-           aI->drawPortY -= Config.scrollPixel;
+           drawPortY -= Config.scrollPixel;
         cPixmap::Lock();
         if (Running() && TextPixmap)
-           TextPixmap->SetDrawPortPoint(cPoint(0, aI->drawPortY));
+           TextPixmap->SetDrawPortPoint(cPoint(0, drawPortY));
         cPixmap::Unlock();
-        if (Running() && osd) {
-           osd->Flush();
-           }
+        }
+     if (Running() && aI->osd && aI->doflash) {
+        aI->osd->Flush();
         }
      if (!Running())
         break;
-     if (aI->doSleep) {
-        if (aI->delayTop > 0) {
-           aI->delayTop = DoSleep(aI->delayTop);
-           }
+     if (doSleep) {
+        DoSleep(scrollDelay);
         if (!Running())
            break;
-	aI->doSleep = false;
-        aI->delayBottom = scrollDelay;
+	doSleep = false;
         }
      int Delta = cTimeMs::Now() - Now;
      if (Running() && (Delta < FrameTime))

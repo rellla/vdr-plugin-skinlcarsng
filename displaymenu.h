@@ -2,11 +2,11 @@
 #include "volumebox.h"
 
 typedef struct {
+  cOsd *osd = NULL;
   const cEvent *Event = NULL;
   const cTimer *Timer = NULL;
   const cRecording *Recording = NULL;
   const cChannel *Channel = NULL;
-  bool Fast = false;
   int Index = -1;
   bool Current = false;
   bool Selectable = false;
@@ -21,17 +21,12 @@ typedef struct {
   int y0 = 0;
   int y1 = 0;
   int viewmode = 0;
-  int drawPortY = 0;
-  int delayScroll = 0;
-  int delayTop = 0;
-  int delayBottom = 0;
-  bool doSleep = false;
+  bool doflash = true;
   tColor textColorBg, titleColorFg, shortTextColorFg, descriptionColorFg, frameColorBr;
 } AnimatedInfo_t;
 
 class cDrawDescription : public cThread {
 private:
-  cOsd *osd;
   AnimatedInfo_t *aI;
   int lineHeight;
   int lineHeightSml;
@@ -44,10 +39,10 @@ private:
   void SetAlpha(int alpha = 255);
   void DrawBracket(void);
   void Draw(void);
-  int DoSleep(int duration);
+  void DoSleep(int duration);
   void Action(void);
 public:
-  cDrawDescription(cOsd *osd, AnimatedInfo_t *animatedInfo);
+  cDrawDescription(AnimatedInfo_t *animatedInfo);
   virtual ~cDrawDescription();
   bool IsRunning(void) { return Running(); };
   };
@@ -117,7 +112,6 @@ private:
   bool lastLiveIndicatorTransferring;
   const cChannel *lastChannel;
   cString lastChannelName;
-  const cRecording *lastSetRecording = NULL;
   const cEvent *lastEvent;
   const cRecording *lastRecording;
   AnimatedInfo_t animatedInfo;
