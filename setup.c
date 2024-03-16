@@ -44,7 +44,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
   Add(new cOsdItem(tr("Display replay view:"),                osUnknown, false));
   Add(new cMenuEditBoolItem(tr("Display date and time of the recording"), &tmpConfig.displReplayDateTime));
   Add(new cMenuEditBoolItem(tr("Display poster"),             &tmpConfig.displReplayPoster));
-  Add(new cMenuEditBoolItem(tr("Display error sign"),         &tmpConfig.displayErrorsInReplay));
+  Add(new cMenuEditIntItem(tr("Display error sign from x errors"), &tmpConfig.displayErrorsInReplay, 0, 500, trVDR("off")));
 #if (APIVERSNUM >= 20605)
   Add(new cMenuEditBoolItem(tr("Display video properties from info file"), &tmpConfig.displReplayVideoFormat));
 #endif
