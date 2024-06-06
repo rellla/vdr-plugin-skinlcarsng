@@ -416,8 +416,13 @@ void cLCARSNGDisplayReplay::SetCurrent(const char *Current)
   // Display total time above progressbar
   if (isRecording && !(total > framesTotal))
      endTime = cString::sprintf("%s: %s / %s", tr("length"), *IndexToHMSF(total, false, fps), *IndexToHMSF(framesTotal, false, fps));
-  else
-     endTime = cString::sprintf("%s: %s", tr("length"), *IndexToHMSF(total, false, fps));
+  else {
+     if (Config.displEndtime) {
+        endTime = cString::sprintf("%s %s", tr("ends at"), *TimeString(time(0) - (rest / fps))); // minus because rest is negative
+        }
+     else
+        endTime = cString::sprintf("%s: %s", tr("length"), *IndexToHMSF(total, false, fps));
+     }
 
   int wT = osdFont->Width(*endTime) + 2 * textBorder;
   DrawText(ReplayPixmap, xp15 - wT, yp06, *endTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastTotalWidth, wT), 0, taCenter | taBorder);

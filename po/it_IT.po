@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.4.0\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2024-03-16 13:28+0100\n"
+"POT-Creation-Date: 2024-06-06 14:49+0200\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: fiveten_59\n"
 "Language-Team: fiveten_59\n"
@@ -69,6 +69,9 @@ msgstr "Errori TS:"
 msgid "length"
 msgstr "lunghezza"
 
+msgid "ends at"
+msgstr ""
+
 msgid "scaled video large"
 msgstr "Dimensione video largo"
 
@@ -121,6 +124,9 @@ msgid "Display replay view:"
 msgstr "Mostra vista riproduzione"
 
 msgid "Display date and time of the recording"
+msgstr ""
+
+msgid "Display endtime of replaying"
 msgstr ""
 
 msgid "Display error sign from x errors"

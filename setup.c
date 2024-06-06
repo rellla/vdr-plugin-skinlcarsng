@@ -43,6 +43,7 @@ cLCARSNGSetup::cLCARSNGSetup() {
   Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Display replay view:"),                osUnknown, false));
   Add(new cMenuEditBoolItem(tr("Display date and time of the recording"), &tmpConfig.displReplayDateTime));
+  Add(new cMenuEditBoolItem(tr("Display endtime of replaying"), &tmpConfig.displEndtime));
   Add(new cMenuEditBoolItem(tr("Display poster"),             &tmpConfig.displReplayPoster));
   Add(new cMenuEditIntItem(tr("Display error sign from x errors"), &tmpConfig.displayErrorsInReplay, 0, 500, trVDR("off")));
 #if (APIVERSNUM >= 20605)
@@ -111,6 +112,7 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("DisplMenuPoster",    Config.displMenuPoster);
   SetupStore("DisplChPoster",      Config.displChPoster);
   SetupStore("DisplReplayDateTime", Config.displReplayDateTime);
+  SetupStore("DisplEndtime",       Config.displEndtime);
   SetupStore("DisplReplayPoster",  Config.displReplayPoster);
   SetupStore("DisplReplayVideoFormat", Config.displReplayVideoFormat);
   SetupStore("MainMenue",          Config.mcMainScaled);

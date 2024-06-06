@@ -30,6 +30,7 @@ public:
   int displMenuPoster;
   int displChPoster;
   int displReplayDateTime;
+  int displEndtime;
   int displReplayPoster;
   int displReplayVideoFormat;
   int mcUndefinedScaled;

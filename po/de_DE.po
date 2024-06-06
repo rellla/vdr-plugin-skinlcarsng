@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.4.0\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2024-03-16 13:28+0100\n"
+"POT-Creation-Date: 2024-06-06 14:49+0200\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: Karl Melscher <vdr.kamel5@gmx.net>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -69,6 +69,9 @@ msgstr "TS Fehler:"
 msgid "length"
 msgstr "L‰nge"
 
+msgid "ends at"
+msgstr "Endet um"
+
 msgid "scaled video large"
 msgstr "Video im Fenster groﬂ"
 
@@ -122,6 +125,9 @@ msgstr "Wiedergabeanzeige"
 
 msgid "Display date and time of the recording"
 msgstr "Datum und Zeit der Aufnahme anzeigen"
+
+msgid "Display endtime of replaying"
+msgstr "Endezeit der Aufnahme anzeigen"
 
 msgid "Display error sign from x errors"
 msgstr "Fehlerzeichen ab x Fehler anzeigen"
