@@ -25,9 +25,6 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS Dis
   frameColorBr = (Theme.Color(clrReplayFrameBr) == CLR_BLACK) ? frameColorBg : Theme.Color(clrReplayFrameBr);
   textColorBg = Theme.Color(clrReplayTextBg);
   Margin = Config.Margin;
-  lastCurrentWidth = 0;
-  lastTotalWidth = 0;
-  lastRestWidth = 0;
   memset(&lastTrackId, 0, sizeof(lastTrackId));
   textBorder = lineHeight * TEXT_ALIGN_BORDER / 100;
   zoom = 0;
@@ -399,33 +396,83 @@ void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
 
 void cLCARSNGDisplayReplay::SetCurrent(const char *Current)
 {
+  int numFramesAfterEdit = -1;
+  int currentFramesAfterEdit = -1;
+
+  if (marks) {
+#if (APIVERSNUM >= 20608)
+     numFramesAfterEdit = marks->GetFrameAfterEdit(total, total);;
+     if (numFramesAfterEdit >= 0)
+        currentFramesAfterEdit = marks->GetFrameAfterEdit(current, total);
+#else
+     numFramesAfterEdit = GetFrameAfterEdit(marks, total, total);
+     if (numFramesAfterEdit >= 0)
+        currentFramesAfterEdit = GetFrameAfterEdit(marks, current, total);
+#endif
+     }
+
   // Display current time below progressbar
-  int w = osdFont->Width(Current) + 2 * textBorder;
-  DrawText(ReplayPixmap, xp03, yp08, Current, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastCurrentWidth, w), 0, taCenter | taBorder);
+  cString currentTime;
+  if (numFramesAfterEdit >= 0 && Config.displReplayCutted == 2)
+     currentTime = cString::sprintf("%s", *IndexToHMSF(currentFramesAfterEdit, false, fps));
+  else if (numFramesAfterEdit >= 0 && Config.displReplayCutted == 1)
+     currentTime = cString::sprintf("%s / %s", *IndexToHMSF(current, false, fps), *IndexToHMSF(currentFramesAfterEdit, false, fps));
+  else
+     currentTime = cString::sprintf("%s", *IndexToHMSF(current, false, fps));
+
+  int w = osdFont->Width(currentTime) + 2 * textBorder;
   if (lastCurrentWidth > w)
-     DrawRectangle(ReplayPixmap, xp03 + lastCurrentWidth - (lastCurrentWidth - w), yp08, xp03 + lastCurrentWidth, yp08 + lineHeight, Theme.Color(clrBackground));
+     DrawRectangle(ReplayPixmap, xp03, yp08, xp03 + lastCurrentWidth, yp08 + lineHeight, Theme.Color(clrBackground));
+
+  DrawText(ReplayPixmap, xp03, yp08, currentTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, w, 0, taCenter | taBorder);
   lastCurrentWidth = w;
 
   // Display remaining time below progressbar
-  int rest = current - total;
-  cString restTime = cString::sprintf("%s", *IndexToHMSF(rest, false, fps));
+  int restcutted = numFramesAfterEdit - currentFramesAfterEdit;
+  int rest = total - current;
+
+  cString restTime;
+  if (numFramesAfterEdit >= 0 && Config.displReplayCutted == 2)
+     restTime = cString::sprintf("-%s", *IndexToHMSF(restcutted, false, fps));
+  else if (numFramesAfterEdit >= 0 && Config.displReplayCutted == 1)
+     restTime = cString::sprintf("-%s / -%s", *IndexToHMSF(restcutted, false, fps), *IndexToHMSF(rest, false, fps));
+  else
+     restTime = cString::sprintf("-%s", *IndexToHMSF(rest, false, fps));
+
   int wR = osdFont->Width(*restTime) + 2 * textBorder;
-  DrawText(ReplayPixmap, xp15 - wR, yp08, *restTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastRestWidth, wR), 0, taCenter | taBorder);
+  if (lastRestWidth > wR)
+     DrawRectangle(ReplayPixmap, xp15 - lastRestWidth, yp08, xp15, yp08 + lineHeight, Theme.Color(clrBackground));
+
+  DrawText(ReplayPixmap, xp15 - wR, yp08, *restTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, wR, 0, taCenter | taBorder);
   lastRestWidth = wR;
 
   // Display total time above progressbar
   if (isRecording && !(total > framesTotal))
      endTime = cString::sprintf("%s: %s / %s", tr("length"), *IndexToHMSF(total, false, fps), *IndexToHMSF(framesTotal, false, fps));
   else {
-     if (Config.displEndtime) {
-        endTime = cString::sprintf("%s %s", tr("ends at"), *TimeString(time(0) - (rest / fps))); // minus because rest is negative
+     if (Config.displReplayEnd == 1) {
+        if (numFramesAfterEdit >= 0 && Config.displReplayCutted == 2)
+           endTime = cString::sprintf("%s %s", tr("ends at"), *TimeString(time(0) + (restcutted / fps)));
+        else if (numFramesAfterEdit >= 0 && Config.displReplayCutted == 1)
+           endTime = cString::sprintf("%s %s / %s", tr("ends at"), *TimeString(time(0) + (restcutted / fps)), *TimeString(time(0) + (rest / fps)));
+        else
+           endTime = cString::sprintf("%s %s", tr("ends at"), *TimeString(time(0) + (rest / fps)));
         }
-     else
-        endTime = cString::sprintf("%s: %s", tr("length"), *IndexToHMSF(total, false, fps));
+     else {
+        if (numFramesAfterEdit >= 0 && Config.displReplayCutted == 2)
+           endTime = cString::sprintf("%s: %s", tr("length"), *IndexToHMSF(numFramesAfterEdit, false, fps));
+        else if (numFramesAfterEdit >= 0 && Config.displReplayCutted == 1)
+           endTime = cString::sprintf("%s: %s / %s", tr("length"), *IndexToHMSF(numFramesAfterEdit, false, fps), *IndexToHMSF(total, false, fps));
+        else
+           endTime = cString::sprintf("%s: %s", tr("length"), *IndexToHMSF(total, false, fps));
+        }
      }
 
   int wT = osdFont->Width(*endTime) + 2 * textBorder;
-  DrawText(ReplayPixmap, xp15 - wT, yp06, *endTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, max(lastTotalWidth, wT), 0, taCenter | taBorder);
+  if (lastTotalWidth > wT)
+     DrawRectangle(ReplayPixmap, xp15 - lastTotalWidth, yp06, xp15, yp06 + lineHeight, Theme.Color(clrBackground));
+
+  DrawText(ReplayPixmap, xp15 - wT, yp06, *endTime, Theme.Color(clrReplayPosition), textColorBg, osdFont, wT, 0, taCenter | taBorder);
   lastTotalWidth = wT;
 
   // Display recording error

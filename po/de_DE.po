@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SkinLcarsng 0.4.0\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2024-06-06 14:49+0200\n"
+"POT-Creation-Date: 2024-06-10 14:21+0200\n"
 "PO-Revision-Date: 2017-10-18 12:01+0200\n"
 "Last-Translator: Karl Melscher <vdr.kamel5@gmx.net>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -99,6 +99,18 @@ msgstr "Autom. Anzeige"
 msgid "2nd OK"
 msgstr "2. OK"
 
+msgid "endtime"
+msgstr "Endezeit"
+
+msgid "uncutted"
+msgstr "ungeschnitten"
+
+msgid "uncutted and cutted"
+msgstr "geschnitten und ungeschnitten"
+
+msgid "cutted"
+msgstr "geschnitten"
+
 msgid "Margin"
 msgstr "Rand"
 
@@ -126,8 +138,11 @@ msgstr "Wiedergabeanzeige"
 msgid "Display date and time of the recording"
 msgstr "Datum und Zeit der Aufnahme anzeigen"
 
-msgid "Display endtime of replaying"
-msgstr "Endezeit der Aufnahme anzeigen"
+msgid "Display end of replaying"
+msgstr "Ende der Aufnahme"
+
+msgid "Display of the times of a recording"
+msgstr "Anzeige der Zeiten einer Aufzeichnung"
 
 msgid "Display error sign from x errors"
 msgstr "Fehlerzeichen ab x Fehler anzeigen"
@@ -206,6 +221,3 @@ msgstr ""
 
 msgid "Display grid"
 msgstr "Raster anzeigen"
-
-#~ msgid "Display error sign"
-#~ msgstr "Fehlerzeichen anzeigen"

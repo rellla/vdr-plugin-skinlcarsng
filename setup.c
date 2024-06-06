@@ -30,6 +30,13 @@ cLCARSNGSetup::cLCARSNGSetup() {
   infoChannel[1] = tr("auto display");
   infoChannel[2] = tr("2nd OK");
 
+  replayEnd[0] = tr("length");
+  replayEnd[1] = tr("endtime");
+
+  replayCutted[0] = tr("uncutted");
+  replayCutted[1] = tr("uncutted and cutted");
+  replayCutted[2] = tr("cutted");
+
   Add(new cMenuEditIntItem(tr("Margin"),                      &tmpConfig.Margin, 0, 5));
   Add(new cMenuEditBoolItem(tr("Display Error 0"),            &tmpConfig.displayError0));
   Add(new cMenuEditStraItem(tr("Volume bar style"),           &tmpConfig.volumeBarStyle, 3, volumeBar));
@@ -43,7 +50,8 @@ cLCARSNGSetup::cLCARSNGSetup() {
   Add(new cOsdItem("",                                        osUnknown, false));
   Add(new cOsdItem(tr("Display replay view:"),                osUnknown, false));
   Add(new cMenuEditBoolItem(tr("Display date and time of the recording"), &tmpConfig.displReplayDateTime));
-  Add(new cMenuEditBoolItem(tr("Display endtime of replaying"), &tmpConfig.displEndtime));
+  Add(new cMenuEditStraItem(tr("Display end of replaying"),   &tmpConfig.displReplayEnd, 2, replayEnd));
+  Add(new cMenuEditStraItem(tr("Display of the times of a recording"), &tmpConfig.displReplayCutted, 3, replayCutted));
   Add(new cMenuEditBoolItem(tr("Display poster"),             &tmpConfig.displReplayPoster));
   Add(new cMenuEditIntItem(tr("Display error sign from x errors"), &tmpConfig.displayErrorsInReplay, 0, 500, trVDR("off")));
 #if (APIVERSNUM >= 20605)
@@ -112,7 +120,8 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("DisplMenuPoster",    Config.displMenuPoster);
   SetupStore("DisplChPoster",      Config.displChPoster);
   SetupStore("DisplReplayDateTime", Config.displReplayDateTime);
-  SetupStore("DisplEndtime",       Config.displEndtime);
+  SetupStore("DisplReplayEnd",     Config.displReplayEnd);
+  SetupStore("DisplReplayCutted",  Config.displReplayCutted);
   SetupStore("DisplReplayPoster",  Config.displReplayPoster);
   SetupStore("DisplReplayVideoFormat", Config.displReplayVideoFormat);
   SetupStore("MainMenue",          Config.mcMainScaled);

@@ -543,6 +543,40 @@ void DrawProgressbar(cPixmap *p, int left, int top, int width, int height, int C
 //    p->DrawEllipse(cRect(x, top, height, height), clr);
 }
 
+int GetFrameAfterEdit(const cMarks *marks, int Frame, int LastFrame)
+{
+  if (LastFrame < 0 || Frame < 0 || Frame > LastFrame)
+     return -1;
+
+  int EditedFrame = 0;
+  int PrevPos = -1;
+  bool InEdit = false;
+  for (const cMark *mi = marks->First(); mi; mi = marks->Next(mi)) {
+      int p = mi->Position();
+      if (InEdit) {
+         EditedFrame += p - PrevPos;
+         InEdit = false;
+         if (Frame <= p) {
+            EditedFrame -= p - Frame;
+            return EditedFrame;
+            }
+         }
+      else {
+         if (Frame <= p) {
+            return EditedFrame;
+            }
+         PrevPos = p;
+         InEdit = true;
+         }
+      }
+  if (InEdit) {
+     EditedFrame += LastFrame - PrevPos; // the last sequence had no actual "end" mark
+     if (Frame < LastFrame)
+        EditedFrame -= LastFrame - Frame;
+     }
+  return EditedFrame;
+}
+
 static time_t lastDiskSpaceCheck = 0;
 static int lastFreeMB = -1;
 

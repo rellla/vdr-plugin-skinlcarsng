@@ -27,9 +27,9 @@ private:
   tColor textColorBg;
   int textBorder;
   cString oldResolution;
-  int lastCurrentWidth;
-  int lastTotalWidth;
-  int lastRestWidth;
+  int lastCurrentWidth = 0;
+  int lastTotalWidth = 0;
+  int lastRestWidth = 0;
   cString lastDate;
   tTrackId lastTrackId;
   int lastVolume;

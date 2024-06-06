@@ -5,6 +5,8 @@ private:
   const char *menuView[5];
   const char *volumeBar[3];
   const char *infoChannel[3];
+  const char *replayEnd[2];
+  const char *replayCutted[3];
 protected:
   virtual void Store(void);
 public:
