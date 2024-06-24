@@ -26,7 +26,7 @@ public:
   int framesPerSecond;
   int volumeBarStyle;
   int swapTimers;
-  int displayErrorsInReplay;
+  int displReplayErrors;
   int displMenuPoster;
   int displChPoster;
   int displReplayDateTime;

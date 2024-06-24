@@ -20,7 +20,7 @@ cLCARSNGConfig::cLCARSNGConfig(void)
   framesPerSecond = 25;
   volumeBarStyle = 0;
   swapTimers = 0;
-  displayErrorsInReplay = 0;
+  displReplayErrors = 0;
   displMenuPoster = 0;
   displChPoster = 0;
   displReplayDateTime = 0;
@@ -84,7 +84,7 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "FramesPerSecond"))    framesPerSecond    = atoi(Value);
   else if (!strcasecmp(Name, "VolumeBarStyle"))     volumeBarStyle     = atoi(Value);
   else if (!strcasecmp(Name, "SwapTimers"))         swapTimers         = atoi(Value);
-  else if (!strcasecmp(Name, "DisplayErrInRepl"))   displayErrorsInReplay = atoi(Value);
+  else if (!strcasecmp(Name, "DisplayErrInRepl"))   displReplayErrors  = atoi(Value);
   else if (!strcasecmp(Name, "DisplMenuPoster"))    displMenuPoster    = atoi(Value);
   else if (!strcasecmp(Name, "DisplChPoster"))      displChPoster      = atoi(Value);
   else if (!strcasecmp(Name, "DisplReplayDateTime")) displReplayDateTime = atoi(Value);

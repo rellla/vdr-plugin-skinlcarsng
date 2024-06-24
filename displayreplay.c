@@ -476,7 +476,7 @@ void cLCARSNGDisplayReplay::SetCurrent(const char *Current)
   lastTotalWidth = wT;
 
   // Display recording error
-  if (Config.displayErrorsInReplay && recordingErrors >= Config.displayErrorsInReplay)
+  if (Config.displReplayErrors && recordingErrors >= Config.displReplayErrors)
      DrawText(ReplayPixmap, xp08 + Margin, yp11 + Margin, "!", clrRed, frameColorBg, smlFont, xp09 - xp08 - 2 * Margin, yp12 - yp11 - 2 * Margin, taCenter);
 }
 
