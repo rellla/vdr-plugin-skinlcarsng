@@ -94,6 +94,7 @@ private:
   enum eCurrentMode { cmUnknown, cmLive, cmPlay };
   eCurrentMode lastMode;
   cString lastDate;
+  const char *actualpath = NULL;
   const char *currentTitle;
   const char *lastcurrentTitle;
   int lastDiskUsageState;

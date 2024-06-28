@@ -424,6 +424,7 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
   animatedInfo.y0 = yi00;
   animatedInfo.y1 = yi00 + (int)((yi01 - yi00) / lineHeight) * lineHeight;
   animatedInfo.viewmode = viewmode;
+  actualpath = NULL;
 }
 
 void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color, tColor ColorBg)
@@ -640,7 +641,6 @@ void cLCARSNGDisplayMenu::DrawLoad(void)
 void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
 {
 #if APIVERSNUM > 20301
-#ifdef NUMRECORDINGSINPATH
 #ifdef USE_UNDELETE
   if (cMenuRecordings::IsDelRecMenu()) {
      osd->DrawRectangle(xm04 + Margin, yc06 + Margin, xm08 - Margin - 1, yc07 - Margin - 1, frameColorBg);
@@ -652,14 +652,13 @@ void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
   int NumRecordingsInPath = 0;
   {
   LOCK_RECORDINGS_READ;
-  NumRecordingsInPath = Recordings->GetNumRecordingsInPath(cMenuRecordings::GetActualPath());
+  NumRecordingsInPath = Recordings->GetNumRecordingsInPath(actualpath);
   }
   if (NumRecordingsInPath > 0)
      if (initial || NumRecordingsInPath != lastNumRecordingsInPath) {
         osd->DrawText(xm04 + Margin, yc06 + Margin, cString::sprintf("%i", NumRecordingsInPath), frameColorFg, frameColorBg, font, xm08 - xm04 - 1 - 2 * Margin, lineHeight - Margin, taBottom | taRight | taBorder);
         lastNumRecordingsInPath = NumRecordingsInPath;
         }
-#endif
 #endif
 }
 
@@ -1436,6 +1435,21 @@ bool cLCARSNGDisplayMenu::SetItemTimer(const cTimer *Timer, int Index, bool Curr
 
 bool cLCARSNGDisplayMenu::SetItemRecording(const cRecording *Recording, int Index, bool Current, bool Selectable, int Level, int Total, int New)
 {
+  // Get the actual path
+  if (Level == 0)
+     actualpath = NULL;
+  else if (Index == 0) {
+     if (!Total)
+        actualpath = strdup(Recording->Folder());
+     else {
+        // Count the number of '~'
+        int count = strcountchr(Recording->Folder(), '~');
+        // Get string until before (count - (Level - 1)) occurrence of '~'
+        cString text = strgetbefore(Recording->Folder(), '~', count - (Level - 1));
+        actualpath = strdup(*text);
+        }
+     }
+
   if (!Config.displInfoMenuRec)
      return false;
 
