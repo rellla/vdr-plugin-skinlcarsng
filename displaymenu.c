@@ -1517,7 +1517,7 @@ void cLCARSNGDisplayMenu::SetItem(const char *Text, int Index, bool Current, boo
       if (!Tab(i + 1))
          break;
       }
-  SetEditableWidth(xi02 - xi00 - TextSpacing - Tab(1));
+  SetEditableWidth(xi01 - xi00 - 2 * TextSpacing - Tab(1));
   if (Index >= (MaxItems() - 1))
      animatedInfo.doflash = true;
 }
