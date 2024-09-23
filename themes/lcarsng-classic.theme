@@ -76,6 +76,7 @@ clrReplayProgressRest = FFCCCCCC
 clrReplayProgressSelected = FF990000
 clrReplayProgressMark = FF000000
 clrReplayProgressCurrent = FF990000
+clrReplayProgressError = FF000000
 clrTrackFrameFg = FF000000
 clrTrackFrameBg = FFFFCC66
 clrTrackFrameMg = FFFFFFFF

@@ -389,7 +389,11 @@ void cLCARSNGDisplayReplay::SetProgress(int Current, int Total)
 
   if ((xp15 - xp03 - x - 5) > 0) {
      // Draw progressbar
+#if APIVERSNUM >= 30004
+     cProgressBar pb(xp15 - xp03 - x - 2 * Margin, pbHeight, Current, Total, marks, errors, Theme.Color(clrReplayProgressSeen), Theme.Color(clrReplayProgressRest), Theme.Color(clrReplayProgressSelected), Theme.Color(clrReplayProgressMark), Theme.Color(clrReplayProgressCurrent), Theme.Color(clrReplayProgressError));
+#else
      cProgressBar pb(xp15 - xp03 - x - 2 * Margin, pbHeight, Current, Total, marks, Theme.Color(clrReplayProgressSeen), Theme.Color(clrReplayProgressRest), Theme.Color(clrReplayProgressSelected), Theme.Color(clrReplayProgressMark), Theme.Color(clrReplayProgressCurrent));
+#endif
      DrawBitmap(ReplayPixmap, xp03 + Margin, yp07 - lineHeight + Margin, pb);
   }
 }

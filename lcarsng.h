@@ -186,6 +186,7 @@ THEME_CLR(Theme, clrReplayProgressRest,     RgbShade(CLR_WHITE, -0.2));
 THEME_CLR(Theme, clrReplayProgressSelected, CLR_EXPOSED);
 THEME_CLR(Theme, clrReplayProgressMark,     CLR_BLACK);
 THEME_CLR(Theme, clrReplayProgressCurrent,  CLR_EXPOSED);
+THEME_CLR(Theme, clrReplayProgressError,    CLR_BLACK);
 
 // Track display:
 
