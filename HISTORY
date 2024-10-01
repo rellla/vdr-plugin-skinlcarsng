@@ -1,5 +1,8 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
+Version 0.5.3
+- Errors are now shown as diamond shaped markers in the replay progress display (VDR >= 2.7.2)
+
 Version 0.5.2
 - Added frame parameters (VDR >= 2.6.5) to the detailview
 - Use the frame parameter of the VDR (VDR >= 2.6.5), if available, in the display replay
