@@ -9,7 +9,7 @@
 #error "VDR-1.7.34 API version or greater is required!"
 #endif
 
-static const char *VERSION        = "0.5.3";
+static const char *VERSION        = "0.5.4";
 static const char *DESCRIPTION    = "skin lcarsng";
 
 class cPluginLCARSNG : public cPlugin {

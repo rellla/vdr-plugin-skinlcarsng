@@ -1,5 +1,19 @@
 VDR Plugin 'skinlcarsng' Revision History
 ---------------------------------------
+Version 0.5.4
+- Update Locking
+- Update drawDescription for faster scrolling in menus
+- Some cleanup
+- Merge DrawNumRecordingsInPath() and DrawCountRecordings()
+- Merge redundant code
+- Prevent a possible "invalid lock sequence report"
+- Update for VDR-2.8.1
+- Add MenuCategory "mcRecordingDel"
+- Fix "warning: [-Wnon-c-typedef-for-linkage]"
+- Use the default setup menu width
+- Update for VDR>=2.8.2
+- Simplify cSimpleDisplayMenu::SetMenuCategory()
+
 Version 0.5.3
 - Errors are now shown as diamond shaped markers in the replay progress display (VDR >= 2.7.2)
 
