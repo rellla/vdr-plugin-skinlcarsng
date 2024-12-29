@@ -6,15 +6,7 @@ typedef struct {
   const cEvent *Event = NULL;
   const cTimer *Timer = NULL;
   const cRecording *Recording = NULL;
-  const cChannel *Channel = NULL;
-  int Index = -1;
-  bool Current = false;
-  bool Selectable = false;
-  bool WithDate = false;
-  eTimerMatch TimerMatch = tmNone;
-  bool TimerActive = false;
   int Level = -1;
-  int Total = -1;
   int New = -1;
   int x0 = 0;
   int x1 = 0;
@@ -22,6 +14,7 @@ typedef struct {
   int y1 = 0;
   int viewmode = 0;
   bool doflash = true;
+  bool Init = true;
   tColor textColorBg, titleColorFg, shortTextColorFg, descriptionColorFg, frameColorBr;
 } AnimatedInfo_t;
 
@@ -30,20 +23,26 @@ private:
   AnimatedInfo_t *aI;
   int lineHeight;
   int lineHeightSml;
+  bool fadeIn = true;
+  bool init = true;
+  bool dowait = false;
+  uint64_t StartTime = 0;
+  uint64_t StartFadeIn = 0;
   cPixmap *BackgroundPixmap = NULL;
   cPixmap *BracketPixmap = NULL;
   cPixmap *TextPixmap = NULL;
   cPixmap *PosterPixmap = NULL;
   cTextWrapper wrapper;
-  void SetLayer(bool show = false);
   void SetAlpha(int alpha = 255);
   void DrawBracket(void);
   void Draw(void);
   void DoSleep(int duration);
+  int Animate(void);
   void Action(void);
 public:
   cDrawDescription(AnimatedInfo_t *animatedInfo);
   virtual ~cDrawDescription();
+  void SetLayer(bool show = false);
   bool IsRunning(void) { return Running(); };
   };
 
@@ -155,7 +154,7 @@ private:
   void DrawVolume(void);
   void DrawTextScrollbar(void);
   bool DrawProgressBar(int x, int y, int width, const char *text, tColor ColorFg, tColor ColorBg);
-  void DescriptionClear(void);
+  void DescriptionClear(bool clearAll = true);
 #ifdef DRAWGRID
   void DrawGrid(void);
 #endif

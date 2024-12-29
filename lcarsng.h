@@ -64,7 +64,7 @@ extern cTheme Theme;
 
 // Color domains:
 
-#define CLR_Clear           0x01000000
+#define CLR_CLEAR           0x01000000
 #define CLR_BACKGROUND      0x99000000
 #define CLR_MAIN_FRAME      0xFFFF9966
 #define CLR_CHANNEL_FRAME   0xFF8A9EC9

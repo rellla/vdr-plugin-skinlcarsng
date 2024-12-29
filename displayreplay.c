@@ -113,7 +113,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS Dis
      ReplayPixmap = osd->CreatePixmap(2, cRect(x0, y0, x1 - x0, y1 - y0));
      if (ReplayPixmap) {
         ReplayPixmap->SetAlpha(255);
-        ReplayPixmap->Fill(CLR_Clear);
+        ReplayPixmap->Fill(CLR_CLEAR);
         }
      }
   if (!ReplayPixmap)
