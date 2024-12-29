@@ -933,6 +933,7 @@ void cLCARSNGDisplayMenu::DrawTimers(void)
      int NumDevices = 0;
      int y = ys04;
      // Timers and recording devices:
+     LOCK_SCHEDULES_READ;
      while (1) {
            int NumTimers = 0;
            const cDevice *Device = NULL;
