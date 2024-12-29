@@ -1780,7 +1780,7 @@ void cLCARSNGDisplayMenu::DrawVolume(void)
             volumeBox = new cLCARSNGVolumeBox(osd, cRect(0, yb15 - lineHeight, xa09 - 1, lineHeight));
          volumeBox->SetVolume(volume, MAXVOLUME, volume ? false : true);
          lastVolumeTime = time(NULL);
-	 lastVolume = volume;
+         lastVolume = volume;
          }
       else {
          if (volumeBox && (time(NULL) - lastVolumeTime > 2))
