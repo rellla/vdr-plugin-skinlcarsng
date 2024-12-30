@@ -100,7 +100,7 @@ private:
   bool lastDiskAlert;
   double lastSystemLoad;
   int lastCountRecordings;
-  int lastNumRecordingsInPath;
+  int lastCountRecordingsInPath;
   int lastCountTimers;
 #if APIVERSNUM > 20300
   cStateKey timersStateKey;
@@ -136,7 +136,6 @@ private:
   void DrawDate(void);
   void DrawDisk(void);
   void DrawLoad(void);
-  void DrawNumRecordingsInPath(void);
   void DrawCountRecordings(void);
   void DrawCountTimers(void);
   void DrawFrameDisplay(void);

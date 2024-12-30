@@ -41,7 +41,7 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   lastDiskAlert = false;
   lastSystemLoad = -1;
   lastCountRecordings = -1;
-  lastNumRecordingsInPath = -1;
+  lastCountRecordingsInPath = -1;
   lastCountTimers = -1;
   frameColorFg = Theme.Color(clrMenuFrameFg);
   frameColorBg = Theme.Color(clrMenuFrameBg);
@@ -641,50 +641,49 @@ void cLCARSNGDisplayMenu::DrawLoad(void)
      }
 }
 
-void cLCARSNGDisplayMenu::DrawNumRecordingsInPath(void)
-{
-#if APIVERSNUM > 20301
-#ifdef USE_UNDELETE
-  if (cMenuRecordings::IsDelRecMenu()) {
-     osd->DrawRectangle(xm04 + Margin, yc06 + Margin, xm08 - Margin - 1, yc07 - Margin - 1, frameColorBg);
-     lastNumRecordingsInPath = -1;
-     return;
-     }
-
-#endif
-  int NumRecordingsInPath = 0;
-  {
-  LOCK_RECORDINGS_READ;
-  NumRecordingsInPath = Recordings->GetNumRecordingsInPath(actualpath);
-  }
-  if (NumRecordingsInPath > 0)
-     if (initial || NumRecordingsInPath != lastNumRecordingsInPath) {
-        osd->DrawText(xm04 + Margin, yc06 + Margin, cString::sprintf("%i", NumRecordingsInPath), frameColorFg, frameColorBg, font, xm08 - xm04 - 1 - 2 * Margin, lineHeight - Margin, taBottom | taRight | taBorder);
-        lastNumRecordingsInPath = NumRecordingsInPath;
-        }
-#endif
-}
-
 void cLCARSNGDisplayMenu::DrawCountRecordings(void)
 {
+  int CountRecordings = 0;
+  int CountRecordingsInPath = 0;
+  {
+#if APIVERSNUM > 20301
+  LOCK_RECORDINGS_READ;
+#endif
+  CountRecordings = Recordings->Count();
+  size_t substring_length = std::string::npos;
+  if (currentTitle) {
+     std::string my_string(currentTitle);
+     substring_length = my_string.find("Plex");
+     }
+#ifdef USE_UNDELETE
+  if (cMenuRecordings::IsDelRecMenu())
+     osd->DrawRectangle(xm04 + Margin, yc06 + Margin, xm08 - Margin - 1, yc07 - Margin - 1, frameColorBg);
+  if ((MenuCategory() == mcRecording) && (substring_length == std::string::npos) && !cMenuRecordings::IsDelRecMenu()) {
+#else
+  if ((MenuCategory() == mcRecording) && (substring_length == std::string::npos)) {
+#endif
+     CountRecordingsInPath = Recordings->GetNumRecordingsInPath(actualpath);
+     }
+  else
+     lastCountRecordingsInPath = -1;
+  }
+
   if (yb06) {
      tColor ColorFg = frameColorFg;
      tColor ColorBg = frameColorBg;
-     int CountRecordings = 0;
      if (initial) {
         DrawRectangleOutline(osd, xa00, yb06, xa02 - 1, yb07 - 1, frameColorBr, frameColorBg, 15);
         osd->DrawText(xa00 + Margin, yb06 + Margin, tr("RECORDINGS"), ColorFg, ColorBg, tinyFont, xa02 - xa00 - 2 * Margin, yb07 - yb06 - 2 * Margin, taTop | taLeft | taBorder);
         }
-     {
-#if APIVERSNUM > 20300
-     LOCK_RECORDINGS_READ;
-#endif
-     CountRecordings = Recordings->Count();
-     }
      if (initial || CountRecordings != lastCountRecordings) {
         osd->DrawText(xa00 + Margin, yb07 - lineHeight - Margin, cString::sprintf("%i", CountRecordings), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
         lastCountRecordings = CountRecordings;
         }
+     if ((MenuCategory() == mcRecording) && (viewmode != efullscreen) && (CountRecordingsInPath > 0) && !cMenuRecordings::IsDelRecMenu())
+        if (initial || CountRecordingsInPath != lastCountRecordingsInPath) {
+           osd->DrawText(xm04 + Margin, yc06 + Margin, cString::sprintf("%i", CountRecordingsInPath), frameColorFg, frameColorBg, font, xm08 - xm04 - 1 - 2 * Margin, lineHeight - Margin, taBottom | taRight | taBorder);
+           lastCountRecordingsInPath = CountRecordingsInPath;
+           }
      }
 }
 
@@ -797,8 +796,6 @@ void cLCARSNGDisplayMenu::DrawFrameDisplay(void)
   DrawLoad();
   DrawCountRecordings();
   DrawCountTimers();
-  if ((MenuCategory() == mcRecording) && viewmode != efullscreen)
-     DrawNumRecordingsInPath();
 }
 
 void cLCARSNGDisplayMenu::DrawScrollbar(int Total, int Offset, int Shown, bool CanScrollUp, bool CanScrollDown)
