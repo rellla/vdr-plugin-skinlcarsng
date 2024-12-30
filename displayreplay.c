@@ -40,6 +40,7 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS Dis
   volumeBox = NULL;
   lastVolume = statusMonitor->GetVolume();
   lastVolumeTime = time(NULL);
+  lastDate = "";
   resolution = "";
   oldResolution = "";
 
@@ -170,44 +171,6 @@ cLCARSNGDisplayReplay::~cLCARSNGDisplayReplay()
   delete messageBox;
   delete volumeBox;
   delete osd;
-}
-
-void cLCARSNGDisplayReplay::DrawDate(void)
-{
-  cString s = DayDateTime();
-  if (!*lastDate || strcmp(s, lastDate)) {
-     DrawText(ReplayPixmap, xp14, yp00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, xp16 - xp14, yp01, taRight | taBorder);
-     lastDate = s;
-     }
-}
-
-void cLCARSNGDisplayReplay::DrawTrack(void)
-{
-  cDevice *Device = cDevice::PrimaryDevice();
-  const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
-  if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
-     DrawText(ReplayPixmap, xp10 + Margin, yp11 + Margin, Track ? Track->description : "", Theme.Color(clrTrackName), clrTransparent, (zoom) ? smlFont : osdFont, xp11 - xp10 - textBorder - 2 * Margin, yp12 - yp11 - 2 * Margin, taCenter | taRight | taBorder);
-     strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
-     }
-}
-
-void cLCARSNGDisplayReplay::DrawScreenResolution(void)
-{
-  if (isempty(resolution))
-     resolution = GetScreenResolutionIcon();
-
-  // Draw video format
-  if (!(strcmp(resolution, oldResolution) == 0)) {
-     if (strcmp(resolution, "") == 0) {
-        DrawRectangle(ReplayPixmap, xp11 + Margin, yp11 + Margin, leftIcons, yp12 - Margin, frameColorBg);
-        }
-     const cFont *font = (zoom) ? smlFont : osdFont;
-     int w = font->Width(*resolution) + 2 * textBorder;
-     int x = leftIcons - w - SymbolSpacing;
-     int h = ((zoom) && (iconHeight < lineHeight)) ? (lineHeight - iconHeight) / 2 : 0;
-     DrawText(ReplayPixmap, x, yp11 + h + Margin, cString::sprintf("%s", *resolution), Theme.Color(clrChannelSymbolOn), frameColorBr, font, w, yp12 - yp11 - 2 * Margin - 2 * h, taCenter | taRight | taBorder);
-     oldResolution = resolution;
-     }
 }
 
 void cLCARSNGDisplayReplay::DrawBlinkingRec(void)
@@ -547,10 +510,10 @@ void cLCARSNGDisplayReplay::DrawVolume(void)
 void cLCARSNGDisplayReplay::Flush(void)
 {
   if (!modeOnly) {
-     DrawDate();
-     DrawTrack();
      DrawBlinkingRec();
-     DrawScreenResolution();
+     DrawDate(ReplayPixmap, xp14, yp00, xp16, yp01, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, &lastDate);
+     DrawTrack(ReplayPixmap, xp10 + Margin, yp11 + Margin, xp11 - textBorder - Margin, yp12 - Margin, Theme.Color(clrTrackName), clrTransparent, (zoom) ? smlFont : osdFont, &lastTrackId);
+     DrawScreenResolution(ReplayPixmap, xp12 + Margin, yp11 + Margin, leftIcons - SymbolSpacing - Margin, yp12 - Margin, Theme.Color(clrChannelSymbolOn), frameColorBr, (zoom) ? smlFont : osdFont, resolution, &oldResolution);
      }
   DrawVolume();
 #ifdef DRAWGRID

@@ -49,6 +49,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
   Margin = Config.Margin;
   lastVolume = statusMonitor->GetVolume();
   lastVolumeTime = time(NULL);
+  lastDate = "";
   oldResolution = "";
 
 #ifdef USE_ZAPCOCKPIT
@@ -95,7 +96,7 @@ cLCARSNGDisplayChannel::cLCARSNGDisplayChannel(bool WithInfo) : cThread("LCARS D
   xc21 = xc22 - ((zoom > 1) ? 1.5 : 2) * d;
   xc20 = xc21 - Gap;
   const cFont *font = (zoom) ? smlFont : osdFont;
-  int w = font->Width("HD720p") + 2 * textBorder + 2 * Gap;
+  int w = font->Width("HD1080p") + 2 * textBorder + 2 * Gap;
   xc19 = xc22 - 2 * Margin - (w + 5 * (bmTeletext.Width() + Gap));
   xc18 = xc19 - Gap;
   xc11 = (xc24 + xc00) / 2;
@@ -282,25 +283,6 @@ cLCARSNGDisplayChannel::~cLCARSNGDisplayChannel()
 #endif // USE_ZAPCOCKPIT
 }
 
-void cLCARSNGDisplayChannel::DrawDate(void)
-{
-  cString s = DayDateTime();
-  if (initial || !*lastDate || strcmp(s, lastDate)) {
-     osd->DrawText(xc21, yc00, s, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, xc22 - xc21 - 1, yc01 - yc00, taCenter | taRight | taBorder);
-     lastDate = s;
-     }
-}
-
-void cLCARSNGDisplayChannel::DrawTrack(void)
-{
-  cDevice *Device = cDevice::PrimaryDevice();
-  const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
-  if (Track ? strcmp(lastTrackId.description, Track->description) : *lastTrackId.description) {
-     osd->DrawText(xc14 + Margin, yc15 + Margin, Track ? Track->description : "", Theme.Color(clrTrackName), frameColorBg, (zoom) ? smlFont : osdFont, xc18 - xc14 - 1 - textBorder - 2 * Margin, yc16 - yc15 - 2 * Margin, taCenter | taRight | taBorder);
-     strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
-     }
-}
-
 int cLCARSNGDisplayChannel::GetLiveBuffer(void) {
   static cPlugin *pPermashift = cPluginManager::GetPlugin("permashift");
   if (pPermashift) {
@@ -374,22 +356,6 @@ void cLCARSNGDisplayChannel::DrawSignal(void)
   if (Now != lastSignalDisplay) {
      DrawDeviceSignal(osd, cDevice::ActualDevice(), xs + lineHeight / 2, yc15, xc09, yc16, lastSignalStrength, lastSignalQuality, initial);
      lastSignalDisplay = Now;
-     }
-}
-
-void cLCARSNGDisplayChannel::DrawScreenResolution(void)
-{
-  cString resolution = GetScreenResolutionIcon();
-  if (!(strcmp(resolution, oldResolution) == 0)) {
-     if (strcmp(resolution, "") == 0) {
-        osd->DrawRectangle(xc19 + Margin, yc15 + Margin, leftIcons, yc16 - Margin, frameColorBg);
-        }
-     const cFont *font = (zoom) ? smlFont : osdFont;
-     int w = font->Width(*resolution) + 2 * textBorder;
-     int x = leftIcons - w - SymbolSpacing;
-     int h = ((zoom) && (iconHeight < lineHeight)) ? (lineHeight - iconHeight) / 2 : 0;
-     osd->DrawText(x, yc15 + h + Margin, cString::sprintf("%s", *resolution), Theme.Color(clrChannelSymbolOn), frameColorBr, font, w, yc16 - yc15 - 2 * Margin - 2 * h, taCenter | taRight | taBorder);
-     oldResolution = resolution;
      }
 }
 
@@ -573,6 +539,7 @@ void cLCARSNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
         }
      }
   leftIcons = x;
+  oldResolution = "";
 
   cString ChNumber("");
   cString ChName("");
@@ -814,7 +781,7 @@ void cLCARSNGDisplayChannel::Flush(void)
 {
   if (withInfo) {
      if (!message) {
-        DrawDate();
+        DrawDate(osd, xc21 + Margin, yc00 + Margin, xc22 - textBorder - 2 * Margin, yc01 - 2 * Margin, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, &lastDate);
         DrawDevice();
         DrawSignal();
         DrawTimer();
@@ -827,9 +794,10 @@ void cLCARSNGDisplayChannel::Flush(void)
            Total = present->Duration();
            }
         DrawSeen(Current, Total);
-        DrawTrack();
-        DrawScreenResolution();
-        DrawEventRec(present, following);
+        DrawTrack(osd, xc14 + Margin, yc15 + Margin, xc18 - textBorder - 2 * Margin, yc16 - 2 * Margin,  Theme.Color(clrTrackName), frameColorBg, (zoom) ? smlFont : osdFont, &lastTrackId);
+        int x = leftIcons - SymbolSpacing;
+        DrawScreenResolution(osd, xc19 + Margin, yc15 + Margin, x - xc19 - 2 * Margin, yc16 - yc15 - 2 * Margin, Theme.Color(clrChannelSymbolOn), frameColorBr, (zoom) ? smlFont : osdFont, &oldResolution);
+	DrawEventRec(present, following);
         DrawBlinkingRec();
         }
      }

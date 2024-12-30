@@ -26,7 +26,6 @@ private:
   tColor frameColorBr;
   tColor textColorBg;
   int textBorder;
-  cString oldResolution;
   int lastCurrentWidth = 0;
   int lastTotalWidth = 0;
   int lastRestWidth = 0;
@@ -37,6 +36,7 @@ private:
   cLCARSNGMessageBox *messageBox = NULL;
   cLCARSNGVolumeBox *volumeBox = NULL;
   cString resolution;
+  cString oldResolution;
   int leftIcons;
   bool message;
   bool isRecording;
@@ -46,10 +46,7 @@ private:
   cString endTime;
   static cBitmap bmTeletext, bmRadio, bmAudio, bmDolbyDigital, bmEncrypted, bmRecording;
   void Action(void);
-  void DrawDate(void);
-  void DrawTrack(void);
   void DrawBlinkingRec(void);
-  void DrawScreenResolution(void);
   void DrawVolume(void);
 #ifdef DRAWGRID
   void DrawGrid(void);

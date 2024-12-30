@@ -49,6 +49,15 @@ int FreeMB(const char *Base, bool menurecording = false);
 std::string StripXmlTag(std::string &Line, const char *Tag);
 cString GetScreenResolutionIcon(void);
 cPlugin *GetScraperPlugin(void);
+int GetLiveBuffer(void);
+
+void DrawDate(cOsd *osd, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, cString *lastDate);
+void DrawDate(cPixmap *pixmap, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, cString *lastDate);
+void DrawTrack(cOsd *osd, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, tTrackId *lastTrackId);
+void DrawTrack(cPixmap *pixmap, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, tTrackId *lastTrackId);
+void DrawScreenResolution(cOsd *osd, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, cString *oldResolution);
+void DrawScreenResolution(cPixmap *pixmap, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, cString resolution, cString *oldResolution);
+
 std::string StrToLowerCase(std::string str);
 
 #endif //__SKINLCARSNG_TOOLS_H

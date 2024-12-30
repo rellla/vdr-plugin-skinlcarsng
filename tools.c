@@ -1,4 +1,7 @@
 #include "services/scraper2vdr.h"
+#ifdef USE_WAREAGLEICON
+#include <vdr/iconpatch.h>
+#endif
 #include "imageloader.h"
 #include <string>
 #include <sstream>
@@ -325,6 +328,12 @@ void DrawDevicePosition(cPixmap *Pixmap, const cPositioner *Positioner, int x0, 
 }
 #endif
 
+void PixmapSetLayer(cPixmap *Pixmap, int Layer)
+{
+  if (Pixmap)
+     Pixmap->SetLayer(Layer);
+}
+
 void PixmapSetAlpha(cPixmap *Pixmap, int Alpha)
 {
   if (Pixmap)
@@ -545,7 +554,7 @@ void DrawProgressbar(cPixmap *p, int left, int top, int width, int height, int C
 
 int GetFrameAfterEdit(const cMarks *marks, int Frame, int LastFrame)
 {
-  if (LastFrame < 0 || Frame < 0 || Frame > LastFrame)
+  if (marks->Count() < 1 || LastFrame < 0 || Frame < 0 || Frame > LastFrame)
      return -1;
 
   int EditedFrame = 0;
@@ -652,7 +661,9 @@ int FreeMB(const char *Base, bool menurecording)
   free(currentBase);
   if (lastFreeMB == 0)
      return cVideoDiskUsage::FreeMinutes();
+#if APIVERSNUM > 20301
   LOCK_RECORDINGS_READ;
+#endif
   double MBperMinute = Recordings->MBperMinute();
   return int(double(lastFreeMB) / (MBperMinute > 0 ? MBperMinute : MB_PER_MINUTE));
 }
@@ -720,6 +731,85 @@ cPlugin *GetScraperPlugin(void) {
     if (!pScraper ) // if it doesn't exit, try tvscraper
         pScraper = cPluginManager::GetPlugin("tvscraper");
     return pScraper;
+}
+
+int GetLiveBuffer(void) {
+  static cPlugin *pPermashift = cPluginManager::GetPlugin("permashift");
+  if (pPermashift) {
+     int buffer = 0;
+     if (pPermashift->Service("Permashift-GetUsedBufferSecs-v1", &buffer)) {
+        return buffer;
+     }
+  }
+  return -1;
+}
+
+void DrawDate(cOsd *osd, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, cString *lastDate)
+{
+  cString s = DayDateTime();
+  if (!**lastDate || strcmp(s, *lastDate)) {
+     osd->DrawText(x0, y0, s, colorfg, colorbg, font, x1 - x0, y1 - y0, taCenter | taRight | taBorder);
+     *lastDate = s;
+     }
+}
+
+void DrawDate(cPixmap *pixmap, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, cString *lastDate)
+{
+  cString s = DayDateTime();
+  if (!**lastDate || strcmp(s, *lastDate)) {
+     pixmap->DrawText(cPoint(x0, y0), s, colorfg, colorbg, font, x1 - x0, y1 - y0, taCenter | taRight | taBorder);
+     *lastDate = s;
+     }
+}
+
+void DrawTrack(cOsd *osd, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, tTrackId *lastTrackId)
+{
+  cDevice *Device = cDevice::PrimaryDevice();
+  const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
+  if (Track ? strcmp(lastTrackId->description, Track->description) : *lastTrackId->description) {
+     osd->DrawText(x0, y0, Track ? Track->description : "", colorfg, colorbg, font, x1 - x0, y1 - y0, taCenter | taRight | taBorder);
+     strn0cpy(lastTrackId->description, Track ? Track->description : "", sizeof(lastTrackId->description));
+     }
+}
+
+void DrawTrack(cPixmap *pixmap, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, tTrackId *lastTrackId)
+{
+  cDevice *Device = cDevice::PrimaryDevice();
+  const tTrackId *Track = Device->GetTrack(Device->GetCurrentAudioTrack());
+  if (Track ? strcmp(lastTrackId->description, Track->description) : *lastTrackId->description) {
+     int lineHeight = font->Height();
+     int textBorder = lineHeight * TEXT_ALIGN_BORDER / 100;
+     const char *text = Track ? Track->description : "";
+     int w = font->Width(text) + 2 * textBorder;
+     pixmap->DrawRectangle(cRect(x0, y0, x1 - x0, y1 - y0), Theme.Color(clrBackground));
+     pixmap->DrawText(cPoint(x0, y0), Track ? Track->description : "", colorfg, colorbg, font, w, y1 - y0, taLeft | taBorder);
+     strn0cpy(lastTrackId->description, Track ? Track->description : "", sizeof(lastTrackId->description));
+     }
+}
+
+void DrawScreenResolution(cOsd *osd, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, cString *oldResolution)
+{
+  cString resolution = GetScreenResolutionIcon();
+
+  // Draw video format
+  if (!(strcmp(resolution, *oldResolution) == 0)) {
+     esyslog ("skinlcarsng: %s %s %d %s\n", __FILE__, __func__,  __LINE__, *resolution);
+     esyslog ("skinlcarsng: %s %s %d %i %i\n", __FILE__, __func__,  __LINE__, x0, x1);
+     osd->DrawText(x0, y0, cString::sprintf("%s", *resolution), colorfg, colorbg, font, x1 - x0, y1 - y0, taCenter | taRight | taBorder);
+     *oldResolution = *resolution;
+     }
+}
+
+void DrawScreenResolution(cPixmap *pixmap, int x0, int y0, int x1, int y1, tColor colorfg, tColor colorbg, const cFont *font, cString resolution, cString *oldResolution)
+{
+  if (isempty(resolution))
+     resolution = GetScreenResolutionIcon();
+
+  // Draw video format
+  if (!(strcmp(resolution, *oldResolution) == 0)) {
+     pixmap->DrawText(cPoint(x0, y0), cString::sprintf("%s", *resolution), colorfg, colorbg, font, x1 - x0, y1 - y0, taCenter | taRight | taBorder);
+     *oldResolution = *resolution;
+     }
 }
 
 std::string StrToLowerCase(std::string str) {

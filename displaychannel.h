@@ -91,12 +91,9 @@ private:
   cTextWrapper wrapper;
   int GetLiveBuffer(void);
   void Action(void);
-  void DrawDate(void);
-  void DrawTrack(void);
   void DrawSeen(int Current, int Total);
   void DrawDevice(void);
   void DrawSignal(void);
-  void DrawScreenResolution(void);
   void DrawBlinkingRec(void);
   void DrawEventRec(const cEvent *Present, const cEvent *Following);
   void DrawTimer(void);
