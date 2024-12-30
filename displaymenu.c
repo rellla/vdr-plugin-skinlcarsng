@@ -1306,30 +1306,6 @@ int cLCARSNGDisplayMenu::MaxItems(void)
      }
 }
 
-void cLCARSNGDisplayMenu::Clear(void)
-{
-  animatedInfo.doflash = false;
-  osd->DrawRectangle(xi00, yi00, xi03 - 1, yi01 - 1, Theme.Color(clrBackground));
-}
-
-void cLCARSNGDisplayMenu::DescriptionClear(bool clearAll)
-{
-  if (clearAll) {
-     animatedInfo.Event = NULL;
-     animatedInfo.Timer = NULL;
-     animatedInfo.Recording = NULL;
-     }
-  textScroller.Reset();
-  // Destroy PosterPixmap from SetEvent() or SetRecording()
-  if (PosterPixmap) {
-     osd->DestroyPixmap(PosterPixmap);
-     PosterPixmap = NULL;
-     }
-  // Set drawDescription pixmap layer to -1
-  if (drawDescription)
-     drawDescription->SetLayer();
-}
-
 void cLCARSNGDisplayMenu::SetTitle(const char *Title)
 {
   currentTitle = NULL;
@@ -1362,13 +1338,7 @@ void cLCARSNGDisplayMenu::SetButtons(const char *Red, const char *Green, const c
   const char *lutText[] = { Red, Green, Yellow, Blue };
   tColor lutFg[] = { clrButtonRedFg, clrButtonGreenFg, clrButtonYellowFg, clrButtonBlueFg };
   tColor lutBg[] = { clrButtonRedBg, clrButtonGreenBg, clrButtonYellowBg, clrButtonBlueBg };
-/*  if ((viewmode == escaledvideosmall) && (zoom == 0)) {
-     DrawMainButton(lutText[Setup.ColorKey0], xd04, xd05, xd06, xd07, yd12, yd11, Theme.Color(lutFg[Setup.ColorKey0]), Theme.Color(lutBg[Setup.ColorKey0]), font);
-     DrawMainButton(lutText[Setup.ColorKey1], xd04, xd05, xd06, xd07, yd00, yd01, Theme.Color(lutFg[Setup.ColorKey1]), Theme.Color(lutBg[Setup.ColorKey1]), font);
-     DrawMainButton(lutText[Setup.ColorKey2], xd04, xd05, xd06, xd07, yd02, yd03, Theme.Color(lutFg[Setup.ColorKey2]), Theme.Color(lutBg[Setup.ColorKey2]), font);
-     DrawMainButton(lutText[Setup.ColorKey3], xd04, xd05, xd06, xd07, yd04, yd05, Theme.Color(lutFg[Setup.ColorKey3]), Theme.Color(lutBg[Setup.ColorKey3]), font);
-     }
-  else*/
+
   if (viewmode != efullscreen || (MenuCategory() == mcMain) || (MenuCategory() == mcChannel && viewmode == esmalscreen)) {
      DrawMainButton(lutText[Setup.ColorKey0], xd00, xd01, xd02, xd03, yd02, yd03, Theme.Color(lutFg[Setup.ColorKey0]), Theme.Color(lutBg[Setup.ColorKey0]), fontsml);
      DrawMainButton(lutText[Setup.ColorKey1], xd04, xd05, xd06, xd07, yd02, yd03, Theme.Color(lutFg[Setup.ColorKey1]), Theme.Color(lutBg[Setup.ColorKey1]), fontsml);
@@ -1402,6 +1372,30 @@ void cLCARSNGDisplayMenu::SetMessage(eMessageType Type, const char *Text)
      message = false;
      animatedInfo.Init = true;
      }
+}
+
+void cLCARSNGDisplayMenu::Clear(void)
+{
+  animatedInfo.doflash = false;
+  osd->DrawRectangle(xi00, yi00, xi03 - 1, yi01 - 1, Theme.Color(clrBackground));
+}
+
+void cLCARSNGDisplayMenu::DescriptionClear(bool clearAll)
+{
+  if (clearAll) {
+     animatedInfo.Event = NULL;
+     animatedInfo.Timer = NULL;
+     animatedInfo.Recording = NULL;
+     }
+  textScroller.Reset();
+  // Destroy PosterPixmap from SetEvent() or SetRecording()
+  if (PosterPixmap) {
+     osd->DestroyPixmap(PosterPixmap);
+     PosterPixmap = NULL;
+     }
+  // Set drawDescription pixmap layer to -1
+  if (drawDescription)
+     drawDescription->SetLayer();
 }
 
 bool cLCARSNGDisplayMenu::SetItemEvent(const cEvent *Event, int Index, bool Current, bool Selectable, const cChannel *Channel, bool WithDate, eTimerMatch TimerMatch, bool TimerActive)
@@ -1531,8 +1525,6 @@ void cLCARSNGDisplayMenu::SetItem(const char *Text, int Index, bool Current, boo
          break;
       }
   SetEditableWidth(xi01 - xi00 - 2 * TextSpacing - Tab(1));
-  if (Index >= (MaxItems() - 1))
-     animatedInfo.doflash = true;
 }
 
 bool cLCARSNGDisplayMenu::DrawProgressBar(int x, int y, int width, const char *text, tColor ColorFg, tColor ColorBg) {
@@ -1579,12 +1571,15 @@ void cLCARSNGDisplayMenu::SetEvent(const cEvent *Event)
   int xl = xi00;
   int y = yi00;
 
+  // Draw date time string
   cTextScroller ts;
   char t[32];
   tColor ColorBg = ((viewmode == escaledvideo) || (viewmode == escaledvideosmall)) ? Theme.Color(clrBackground) : textColorBg;
   snprintf(t, sizeof(t), "%s  %s - %s", *Event->GetDateString(), *Event->GetTimeString(), *Event->GetEndTimeString());
   int w = font->Width(t) + Gap;
   ts.Set(osd, xl, y, min(w, xi01 - xl), yi01 - y, t, font, Theme.Color(clrEventTime), ColorBg);
+
+  // Draw VPS
   if (Event->Vps() && Event->Vps() != Event->StartTime()) {
      cString buffer = cString::sprintf(" VPS: %s ", *Event->GetVpsString());
      w = fontsml->Width(buffer);
@@ -1594,6 +1589,8 @@ void cLCARSNGDisplayMenu::SetEvent(const cEvent *Event)
      osd->DrawEllipse  (xi02 + lineHeight / 2, y, xi03 - 1, yb - 1, frameColorBg, 5);
      }
   y += ts.Height();
+
+  // Draw parental rating
   if (Event->ParentalRating()) {
      cString buffer = cString::sprintf(" %s ", *Event->GetParentalRatingString());
      w = fontsml->Width(buffer);
@@ -1623,6 +1620,7 @@ void cLCARSNGDisplayMenu::SetEvent(const cEvent *Event)
         }
      }
 
+  // Draw event title
   w = font->Width(Event->Title()) + Gap;
   ts.Set(osd, xl, y, min(w, xt - xl), yi01 - y, Event->Title(), font, Theme.Color(clrEventTitle), ColorBg);
   y += ts.Height();
@@ -1655,14 +1653,19 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
      }
 
   const cRecordingInfo *Info = Recording->Info();
+
   int xl = xi00;
   int y = yi00;
+
+  // Draw date time string
   cTextScroller ts;
   tColor ColorBg = ((viewmode == escaledvideo) || (viewmode == escaledvideosmall)) ? Theme.Color(clrBackground) : textColorBg;
   cString t = cString::sprintf("%s  %s  %s", *DateString(Recording->Start()), *TimeString(Recording->Start()), Info->ChannelName() ? Info->ChannelName() : "");
   ts.Set(osd, xl, y, xi01 - xl, yi01 - y, t, font, Theme.Color(clrEventTime), ColorBg);
   y += ts.Height();
   int xt = xi01;
+
+  // Draw parental rating
   if (Info->GetEvent()->ParentalRating()) {
      cString buffer = cString::sprintf(" %s ", *Info->GetEvent()->GetParentalRatingString());
      int w = fontsml->Width(buffer);
@@ -1671,7 +1674,9 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
      osd->DrawText(xt - w - Margin, y, buffer, Theme.Color(clrMenuFrameFg), frameColorBg, fontsml, w);
      xt -= w + xi02 - xi01 + 2 * Margin;
      }
+
 #if (APIVERSNUM >= 20505)
+  // Draw recording errors
   if (Info->Errors() >= (1 - Config.displayError0)) {
      cString buffer = cString::sprintf(" %d %s ", Info->Errors(), tr("errors"));
      int w = font->Width(buffer);
@@ -1681,6 +1686,7 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
      xt -= w + xi02 - xi01 + 2 * Margin;
      }
 #endif
+
   if (xt != xi01) {
      int yb = y + lineHeightSml;
      DrawRectangleOutline(osd, xi02, y - Margin, xi02 + lineHeight / 2 - 1, yb + Margin - 1, frameColorBr, frameColorBg, 11);
@@ -1708,17 +1714,21 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
         }
      }
 
+  // Draw title
   const char *Title = Info->Title();
   if (isempty(Title))
      Title = Recording->Name();
   ts.Set(osd, xl, y, xt - xl, yi01 - y, Title, font, Theme.Color(clrEventTitle), ColorBg);
   y += ts.Height();
+
+  // Draw shorttext
   if (!isempty(Info->ShortText())) {
      ts.Set(osd, xl, y, xt - xl, yi01 - y, Info->ShortText(), fontsml, Theme.Color(clrEventShortText), ColorBg);
      y += ts.Height();
      }
   y += font->Height();
 
+  // Draw description
   std::stringstream sstrInfo;
   if (!isempty(Info->Description())) {
      sstrInfo << Info->Description() << std::endl;
@@ -1731,7 +1741,6 @@ void cLCARSNGDisplayMenu::SetRecording(const cRecording *Recording)
      }
 #endif
 
-  // Draw description
   const char *aux = NULL;
   aux = Info->Aux();
   if (aux) {
@@ -1808,19 +1817,15 @@ void cLCARSNGDisplayMenu::DrawVolume(void)
 
 void cLCARSNGDisplayMenu::Flush(void)
 {
-  int Width;
-  int Height;
-  double Aspect;
   cDevice *Device = cDevice::PrimaryDevice();
-  cDevice::PrimaryDevice()->GetOsdSize(Width, Height, Aspect);
   int x = (viewmode == escaledvideosmall) ? xs02 : xs00;
   int y = (viewmode == escaledvideosmall) ? yc04  - Gap : yc05;
   cRect videoWindowRect( cOsd::OsdLeft() + x, cOsd::OsdTop(), xs11 - x, y);
   if (initial) {
      if ((viewmode == escaledvideo) || (viewmode == escaledvideosmall))
-        availableRect = cDevice::PrimaryDevice()->CanScaleVideo(videoWindowRect);
+        availableRect = Device->CanScaleVideo(videoWindowRect);
      else
-        availableRect = cDevice::PrimaryDevice()->CanScaleVideo(cRect::Null);
+        availableRect = Device->CanScaleVideo(cRect::Null);
      }
   DrawFrameDisplay();
   switch (MenuCategory()) {
