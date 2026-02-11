@@ -698,6 +698,7 @@ void cLCARSNGDisplayMenu::DrawCountTimers(void)
         osd->DrawText(xa00 + Margin, yb08 + Margin, tr("TIMER"), ColorFg, ColorBg, tinyFont, xa02 - xa00 - 2 * Margin, yb081 - yb08 - 2 * Margin, taTop | taLeft | taBorder);
         }
 #if APIVERSNUM > 20300
+     {
      LOCK_TIMERS_READ;
      for (const cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer)) {
 #else
@@ -706,6 +707,9 @@ void cLCARSNGDisplayMenu::DrawCountTimers(void)
         if (Timer->HasFlags(tfActive))
            CountTimers++;
         }
+#if APIVERSNUM > 20300
+     } // LOCK_TIMERS_READ
+#endif
      if (initial || CountTimers != lastCountTimers) {
         osd->DrawText(xa00 + Margin, yb081 - lineHeight - Margin, itoa(CountTimers), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
         lastCountTimers = CountTimers;
