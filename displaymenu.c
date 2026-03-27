@@ -328,17 +328,12 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
               viewmode = Config.mcEventScaled;
               }
         case mcRecording:
-           if (MenuCategory == mcRecording) {
-              viewmode = Config.mcRecordingScaled;
-              }
+#if APIVERSNUM >= 30012
+        case mcRecordingDel:
+#endif
         case mcRecordingInfo:
-           if (MenuCategory == mcRecordingInfo) {
-              viewmode = Config.mcRecordingScaled;
-              }
         case mcRecordingEdit:
-           if (MenuCategory == mcRecordingEdit) {
               viewmode = Config.mcRecordingScaled;
-              }
         case mcTimer:
            if (MenuCategory == mcTimer) {
               viewmode = Config.mcTimerScaled;
@@ -510,7 +505,7 @@ void cLCARSNGDisplayMenu::DrawMainFrameLower(void)
   if (!viewmode == escaledvideo && (MenuCategory() == mcMain)) {
      DrawRectangleOutline(osd, xa06, yc06, xm08 - 1, yc07 - lineHeight / 2 - 1, frameColorBr, frameColorBg, 15);
      }
-  else if (viewmode == esplitscreen && !(MenuCategory() == mcRecording)) {
+  else if (viewmode == esplitscreen && !(MenuCategory() == mcRecording || MenuCategory() == mcRecordingDel)) {
      DrawRectangleOutline(osd, xa06, yc06, xm08 - 1, yc07 - lineHeight / 2 - 1, frameColorBr, frameColorBg, 15);
      }
   else {
@@ -609,7 +604,11 @@ void cLCARSNGDisplayMenu::DrawDisk(void)
         bool DiskAlert = DiskUsage > DISKUSAGEALERTLIMIT;
         tColor ColorFg = DiskAlert ? Theme.Color(clrAlertFg) : frameColorFg;
         tColor ColorBg = DiskAlert ? Theme.Color(clrAlertBg) : frameColorBg;
+#if APIVERSNUM >= 30012
+        int minutes = FreeMB(currentTitle, (MenuCategory() == mcRecording || MenuCategory() == mcRecordingDel));
+#else
         int minutes = FreeMB(currentTitle, (MenuCategory() == mcRecording));
+#endif
         lastcurrentTitle = currentTitle;
         if (initial || DiskAlert != lastDiskAlert) {
            DrawRectangleOutline(osd, xa00, yb02, xa02 - 1, yb03 - 1, frameColorBr, frameColorBg, 15);
@@ -1317,6 +1316,9 @@ void cLCARSNGDisplayMenu::SetTitle(const char *Title)
         if (viewmode == esmalscreen)
            break;
      case mcRecording:
+#if APIVERSNUM >= 30012
+     case mcRecordingDel:
+#endif
         currentTitle = Title;
      default:
         if (viewmode != efullscreen) {
@@ -1873,6 +1875,9 @@ void cLCARSNGDisplayMenu::Flush(void)
   if (!message && animatedInfo.Init && !drawDescription) {
      if ((Config.displInfoMenuEPG && (MenuCategory() == mcSchedule || MenuCategory() == mcScheduleNow || MenuCategory() == mcScheduleNext) && animatedInfo.Event != NULL)
          || (Config.displInfoMenuTimer && MenuCategory() == mcTimer && animatedInfo.Timer != NULL)
+#if APIVERSNUM >= 30012
+         || (Config.displInfoMenuRec && MenuCategory() == mcRecordingDel && animatedInfo.Recording != nullptr)
+#endif
          || (Config.displInfoMenuRec && MenuCategory() == mcRecording && animatedInfo.Recording != NULL)) {
         drawDescription = new cDrawDescription(&animatedInfo);
         if (drawDescription)
