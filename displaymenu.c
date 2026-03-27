@@ -655,18 +655,18 @@ void cLCARSNGDisplayMenu::DrawCountRecordings(void)
      std::string my_string(currentTitle);
      substring_length = my_string.find("Plex");
      }
-#ifdef USE_UNDELETE
-  if (cMenuRecordings::IsDelRecMenu())
-     osd->DrawRectangle(xm04 + Margin, yc06 + Margin, xm08 - Margin - 1, yc07 - Margin - 1, frameColorBg);
-  if ((MenuCategory() == mcRecording) && (substring_length == std::string::npos) && !cMenuRecordings::IsDelRecMenu()) {
-#else
-  if ((MenuCategory() == mcRecording) && (substring_length == std::string::npos)) {
-#endif
+  if ((MenuCategory() == mcRecording) && (substring_length == std::string::npos))
      CountRecordingsInPath = Recordings->GetNumRecordingsInPath(actualpath);
-     }
-  else
-     lastCountRecordingsInPath = -1;
   }
+#if APIVERSNUM < 30012
+#ifdef USE_UNDELETE
+  if (cMenuRecordings::IsDelRecMenu()) {
+     lastCountRecordingsInPath = -1;
+     CountRecordingsInPath = 0;
+     osd->DrawRectangle(xm04 + Margin, yc06 + Margin, xm08 - Margin - 1, yc07 - Margin - 1, frameColorBg);
+  }
+#endif
+#endif
 
   if (yb06) {
      tColor ColorFg = frameColorFg;
@@ -679,7 +679,7 @@ void cLCARSNGDisplayMenu::DrawCountRecordings(void)
         osd->DrawText(xa00 + Margin, yb07 - lineHeight - Margin, cString::sprintf("%i", CountRecordings), ColorFg, ColorBg, font, xa02 - xa00 - 2 * Margin, lineHeight, taBottom | taRight | taBorder);
         lastCountRecordings = CountRecordings;
         }
-     if ((MenuCategory() == mcRecording) && (viewmode != efullscreen) && (CountRecordingsInPath > 0) && !cMenuRecordings::IsDelRecMenu())
+     if (MenuCategory() == mcRecording && viewmode != efullscreen && CountRecordingsInPath > 0)
         if (initial || CountRecordingsInPath != lastCountRecordingsInPath) {
            osd->DrawText(xm04 + Margin, yc06 + Margin, cString::sprintf("%i", CountRecordingsInPath), frameColorFg, frameColorBg, font, xm08 - xm04 - 1 - 2 * Margin, lineHeight - Margin, taBottom | taRight | taBorder);
            lastCountRecordingsInPath = CountRecordingsInPath;
