@@ -1,7 +1,7 @@
 #include "messagebox.h"
 #include "volumebox.h"
 
-typedef struct {
+typedef struct AnimatedChannelInfo {
   const cEvent *Event = NULL;
   int x0 = 0;
   int x1 = 0;

@@ -12,7 +12,7 @@ enum eMarginUsage {
   muBottom   = 0x0008,
   };
 
-typedef struct {
+typedef struct DrawPoster {
   cOsd *osd = NULL;
   const cEvent *Event = NULL;
   const cRecording *Recording = NULL;

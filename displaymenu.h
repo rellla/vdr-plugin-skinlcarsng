@@ -1,7 +1,7 @@
 #include "messagebox.h"
 #include "volumebox.h"
 
-typedef struct {
+typedef struct AnimatedInfo {
   cOsd *osd = NULL;
   const cEvent *Event = NULL;
   const cTimer *Timer = NULL;
