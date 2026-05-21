@@ -8,8 +8,6 @@ cLCARSNGSetup::cLCARSNGSetup() {
 
   tmpConfig = Config;
 
-  SetCols(35);
-
   menuView[0] = tr("scaled video large");
   menuView[1] = tr("scaled video small");
   menuView[2] = tr("full screen");
