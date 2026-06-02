@@ -1511,12 +1511,12 @@ void cLCARSNGDisplayMenu::SetItem(const char *Text, int Index, bool Current, boo
      ColorBg = ((viewmode == escaledvideo) || (viewmode == escaledvideosmall)) ? Theme.Color(clrBackground) : textColorBg;
      osd->DrawRectangle(xi00, y, xi03 - 1, y + lineHeight - 1, Theme.Color(clrBackground));
      }
-  for (int i = 0; i < MaxTabs; i++) {
+  for (int i = 0; i < cSkinDisplayMenu::MaxTabs; i++) {
       const char *s = GetTabbedText(Text, i);
       if (s) {
          int xt = xi00 + 2 * TextSpacing + Tab(i);
          int tabWidth = 0; 
-         if (Tab(i + 1))  
+         if (Tab(i + 1) && (Tab(i + 1) > Tab(i)))  
             tabWidth = Tab(i + 1) - Tab(i);
          else 
             tabWidth = xi01 - xt;
