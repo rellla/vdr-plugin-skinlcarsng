@@ -291,60 +291,33 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
      osd->DrawRectangle(xa00, yt00, xa09 - 1, yb15 - 1, Theme.Color(clrBackground));
 
      switch (MenuCategory) {
-        case mcChannel:
-           if (MenuCategory == mcChannel) {
-              viewmode = Config.mcChannelScaled;
-              }
-//        case mcChannelEdit:
-//           if (MenuCategory == mcChannelEdit) {
-//              viewmode = Config.mcChannelScaled;
-//              }
-        case mcMain:
-           if (MenuCategory == mcMain) {
-              viewmode = Config.mcMainScaled;
-              }
-        case mcSetup:
-           if (MenuCategory == mcSetup) {
-              viewmode = Config.mcSetupScaled;
-              }
-        case mcCommand:
-           if (MenuCategory == mcCommand) {
-              viewmode = Config.mcCommandScaled;
-              }
+        case mcChannel:       viewmode = Config.mcChannelScaled;
+                              break;
+//        case mcChannelEdit:   viewmode = Config.mcChannelScaled;
+//                              break;
+        case mcMain:          viewmode = Config.mcMainScaled;
+                              break;
+        case mcSetup:         viewmode = Config.mcSetupScaled;
+                              break;
+        case mcCommand:       viewmode = Config.mcCommandScaled;
+                              break;
         case mcSchedule:
-           if (MenuCategory == mcSchedule) {
-              viewmode = Config.mcScheduleScaled;
-              }
         case mcScheduleNow:
-           if (MenuCategory == mcScheduleNow) {
-              viewmode = Config.mcScheduleScaled;
-              }
-        case mcScheduleNext:
-           if (MenuCategory == mcScheduleNext) {
-              viewmode = Config.mcScheduleScaled;
-              }
-        case mcEvent:
-           if (MenuCategory == mcEvent) {
-              viewmode = Config.mcEventScaled;
-              }
+        case mcScheduleNext:  viewmode = Config.mcScheduleScaled;
+                              break;
+        case mcEvent:         viewmode = Config.mcEventScaled;
+                              break;
         case mcRecording:
 #if APIVERSNUM >= 30012
         case mcRecordingDel:
 #endif
         case mcRecordingInfo:
-        case mcRecordingEdit:
-              viewmode = Config.mcRecordingScaled;
+        case mcRecordingEdit: viewmode = Config.mcRecordingScaled;
+                              break;
         case mcTimer:
-           if (MenuCategory == mcTimer) {
-              viewmode = Config.mcTimerScaled;
-              }
-        case mcTimerEdit:
-           if (MenuCategory == mcTimerEdit) {
-              viewmode = Config.mcTimerScaled;
-              }
-           break;
-        default:
-           viewmode = Config.mcDefaultScaled;
+        case mcTimerEdit:     viewmode = Config.mcTimerScaled;
+                              break;
+        default:              viewmode = Config.mcDefaultScaled;
         }
      if (MenuCategory == mcChannel && viewmode == esmalscreen) {
         SetCoordinateY(yt06);
