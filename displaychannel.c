@@ -781,7 +781,7 @@ void cLCARSNGDisplayChannel::Flush(void)
 {
   if (withInfo) {
      if (!message) {
-        DrawDate(osd, xc21 + Margin, yc00 + Margin, xc22 - textBorder - 2 * Margin, yc01 - 2 * Margin, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, &lastDate);
+        DrawDate(osd, xc21 + Margin, yc00 + Margin, xc22 - textBorder - Margin, yc01 - Margin, Theme.Color(clrDateFg), Theme.Color(clrDateBg), osdFont, &lastDate);
         DrawDevice();
         DrawSignal();
         DrawTimer();
@@ -794,9 +794,9 @@ void cLCARSNGDisplayChannel::Flush(void)
            Total = present->Duration();
            }
         DrawSeen(Current, Total);
-        DrawTrack(osd, xc14 + Margin, yc15 + Margin, xc18 - textBorder - 2 * Margin, yc16 - 2 * Margin,  Theme.Color(clrTrackName), frameColorBg, (zoom) ? smlFont : osdFont, &lastTrackId);
+        DrawTrack(osd, xc14 + Margin, yc15 + Margin, xc18 - textBorder - Margin, yc16 - Margin, Theme.Color(clrTrackName), frameColorBg, (zoom) ? smlFont : osdFont, &lastTrackId);
         int x = leftIcons - SymbolSpacing;
-        DrawScreenResolution(osd, xc19 + Margin, yc15 + Margin, x - xc19 - 2 * Margin, yc16 - yc15 - 2 * Margin, Theme.Color(clrChannelSymbolOn), frameColorBr, (zoom) ? smlFont : osdFont, &oldResolution);
+        DrawScreenResolution(osd, xc19 + Margin, yc15 + Margin, x - Margin, yc16 - Margin, Theme.Color(clrChannelSymbolOn), frameColorBr, (zoom) ? smlFont : osdFont, &oldResolution);
 	DrawEventRec(present, following);
         DrawBlinkingRec();
         }
