@@ -980,7 +980,7 @@ void cDrawChannelDescription::Draw(void)
   int drawportheight = l0 * smlLineHeight;
   int y1 = aI.y1 - viewportheight - rand;              // text bottom
 
-  if (TextPixmap = osd->CreatePixmap(3, cRect(x0, y1, pixmapwidth, viewportheight), cRect(0, 0, pixmapwidth, drawportheight))) {
+  if ((TextPixmap = osd->CreatePixmap(3, cRect(x0, y1, pixmapwidth, viewportheight), cRect(0, 0, pixmapwidth, drawportheight)))) {
      TextPixmap->Fill(aI.textColorBg);
      int y = 0;
      for (int i = 0; i < l0; i++) {

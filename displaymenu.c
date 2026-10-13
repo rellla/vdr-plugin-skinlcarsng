@@ -408,7 +408,7 @@ void cLCARSNGDisplayMenu::DrawMainFrameUpper(tColor Color, tColor ColorBg)
   // Top left rectangles:
   DrawRectangleOutline(osd, xa00, yt00, xa02 - 1, yt02 - 1, Color, ColorBg, 15);
   DrawRectangleOutline(osd, xa00, yt04, xa02 - 1, yt06 - 1, Color, ColorBg, 15);
-  if ((zoom < 1) || (zoom == 1) && (!(viewmode == esplitscreen)))
+  if ((zoom < 1) || ((zoom == 1) && (!(viewmode == esplitscreen))))
      DrawRectangleOutline(osd, xa00, yt07, xa02 - 1, yt08 - 1, Color, ColorBg, 15);
   if ((zoom < 1) && (!(viewmode == esplitscreen || (!((viewmode == escaledvideo)) && (MenuCategory() == mcMain)))))
      if (!(viewmode == escaledvideosmall))
@@ -2074,7 +2074,7 @@ void cDrawDescription::DrawBracket(void)
   int x1 = aI->x1;
   int y0 = aI->y0;
   int y1 = aI->y1;
-  if (BackgroundPixmap = aI->osd->CreatePixmap(-1, cRect(x0, y0, x1 - x0, y1 - y0))) {
+  if ((BackgroundPixmap = aI->osd->CreatePixmap(-1, cRect(x0, y0, x1 - x0, y1 - y0)))) {
      BackgroundPixmap->SetAlpha(0);
      BackgroundPixmap->Fill(((aI->viewmode == escaledvideo) || (aI->viewmode == escaledvideosmall)) ? Theme.Color(clrBackground) : aI->textColorBg);
      }
