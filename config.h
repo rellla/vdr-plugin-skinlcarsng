@@ -65,6 +65,7 @@ public:
   int mcFolderScaled;
   int mcCamScaled;
   int mcDefaultScaled;
+  int displZoomLevel;
   int displayGrid;
   bool SetupParse(const char *Name, const char *Value);
   cLCARSNGConfig(void);

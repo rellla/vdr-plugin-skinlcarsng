@@ -8,6 +8,7 @@ private:
   const char *infoChannel[3];
   const char *replayEnd[2];
   const char *replayCutted[3];
+  const char *zoomLevel[4];
   int oldcategorie = 0;
   int categorie = 0;
 protected:

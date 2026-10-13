@@ -86,17 +86,23 @@ cLCARSNGDisplayMenu::cLCARSNGDisplayMenu(void)
   int r = lineHeight;
   xd07 = xa09 - Gap;
   xd00 = xd07 - Gap - 16 * r;
-  if ((float)(xd07 - xd00) / (float)xa09 > 0.52) {
-     dsyslog ("skinlcarsng: Zoomfactor = 3");
-     zoom = 3;
+
+  if (Config.displZoomLevel == 0) {
+     if ((float)(xd07 - xd00) / (float)xa09 > 0.52) {
+        dsyslog ("skinlcarsng: Zoomfactor = 3");
+        zoom = 3;
+        }
+     else if ((float)(xd07 - xd00) / (float)xa09 > 0.4) {
+        dsyslog ("skinlcarsng: Zoomfactor = 2");
+        zoom = 2;
+        }
+     else if ((float)(xd07 - xd00) / (float)xa09 > 0.33) {
+        dsyslog ("skinlcarsng: Zoomfactor = 1");
+        zoom = 1;
+        }
      }
-  else if ((float)(xd07 - xd00) / (float)xa09 > 0.4) {
-     dsyslog ("skinlcarsng: Zoomfactor = 2");
-     zoom = 2;
-     }
-  else if ((float)(xd07 - xd00) / (float)xa09 > 0.33) {
-     dsyslog ("skinlcarsng: Zoomfactor = 1");
-     zoom = 1;
+  else {
+     zoom = Config.displZoomLevel;
      }
 
   cLCARSNGDisplayMenu::SetCoordinateY(yt10);

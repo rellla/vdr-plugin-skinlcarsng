@@ -29,6 +29,11 @@ cLCARSNGSetup::cLCARSNGSetup() {
   replayCutted[1] = tr("uncutted and cutted");
   replayCutted[2] = tr("cutted");
 
+  zoomLevel[0] = tr("Auto");
+  zoomLevel[1] = tr("Zoom Level 1");
+  zoomLevel[2] = tr("Zoom Level 2");
+  zoomLevel[3] = tr("Zoom Level 3");
+
   spacer = "   ";
 
   Set();
@@ -104,6 +109,7 @@ void cLCARSNGSetup::Set(void) {
 //     Add(new cMenuEditStraItem(cString::sprintf("%s%s", *spacer, tr("Folder menue")),                               &tmpConfig.mcFolderScaled));
 //     Add(new cMenuEditStraItem(cString::sprintf("%s%s", *spacer, tr("Cam menue")),                                  &tmpConfig.mcCamScaled));
      Add(new cMenuEditStraItem(cString::sprintf("%s%s", *spacer, tr("Default view")),                               &tmpConfig.mcDefaultScaled, 4, menuView));            
+     Add(new cMenuEditStraItem(cString::sprintf("%s%s", *spacer, tr("Zoom level")),                                 &tmpConfig.displZoomLevel, 4, zoomLevel));
      }
 
 #ifdef DRAWGRID
@@ -191,5 +197,6 @@ void cLCARSNGSetup::Store(void) {
 //  SetupStore("FolderMenue",        Config.mcFolderScaled);
 //  SetupStore("CamMenue",           Config.mcCamScaled);
   SetupStore("DefaultMenue",       Config.mcDefaultScaled);
+  SetupStore("DisplZoomLevel",     Config.displZoomLevel);
   SetupStore("DisplayGrid",        Config.displayGrid);
 }
