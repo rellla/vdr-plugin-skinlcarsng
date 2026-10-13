@@ -89,6 +89,7 @@ void cLCARSNGSetup::Set(void) {
      Add(new cMenuEditIntItem(cString::sprintf("%s%s", *spacer, tr("Waiting period Scroll (ms)")),                  &tmpConfig.waitTimeScroll, 0, 5000, trVDR("off")));
      Add(new cMenuEditIntItem(cString::sprintf("%s%s", *spacer, tr("ScrollPixel")),                                 &tmpConfig.scrollPixel, 1, 10));
      Add(new cMenuEditIntItem(cString::sprintf("%s%s", *spacer, tr("Refreshrate (Frames/s)")),                      &tmpConfig.framesPerSecond, 10, 60));
+     Add(new cMenuEditBoolItem(tr("Use alternate position"),                                                        &tmpConfig.displInfoAlt));
      Add(new cOsdItem("",                                                                                           osUnknown, false));
      }
 
@@ -174,6 +175,7 @@ void cLCARSNGSetup::Store(void) {
   SetupStore("FadeInTime",         Config.fadeinTime);
   SetupStore("ScrollPixel",        Config.scrollPixel);
   SetupStore("FramesPerSecond",    Config.framesPerSecond);
+  SetupStore("DisplInfoAlt",       Config.displInfoAlt);
   SetupStore("VolumeBarStyle",     Config.volumeBarStyle);
   SetupStore("SwapTimers",         Config.swapTimers);
   SetupStore("DisplayErrInRepl",   Config.displReplayErrors);

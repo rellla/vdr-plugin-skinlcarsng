@@ -24,6 +24,7 @@ public:
   int fadeinTime;
   int scrollPixel;
   int framesPerSecond;
+  int displInfoAlt;
   int volumeBarStyle;
   int swapTimers;
   int displReplayErrors;

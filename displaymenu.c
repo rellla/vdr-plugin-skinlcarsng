@@ -395,10 +395,19 @@ void cLCARSNGDisplayMenu::SetMenuCategory(eMenuCategory MenuCategory)
         }
      }
 
-  animatedInfo.x0 = xs00;
-  animatedInfo.x1 = xs11;
-  animatedInfo.y0 = yi00;
-  animatedInfo.y1 = yi00 + (int)((yi01 - yi00) / lineHeight) * lineHeight;
+  if (Config.displInfoAlt) {
+     animatedInfo.x0 = xd00;
+     animatedInfo.x1 = xs11;
+     animatedInfo.y0 = yt00;
+     animatedInfo.y1 = yt00 + (int)((yc07 - yt00) / lineHeight) * lineHeight;
+     }
+  else {
+     animatedInfo.x0 = xs00;
+     animatedInfo.x1 = xs11;
+     animatedInfo.y0 = yi00;
+     animatedInfo.y1 = yi00 + (int)((yi01 - yi00) / lineHeight) * lineHeight;
+     }
+
   animatedInfo.viewmode = viewmode;
   animatedInfo.Init = true;
   actualpath = NULL;

@@ -7,8 +7,8 @@ cLCARSNGConfig::cLCARSNGConfig(void)
 {
   Margin = 2;
   displayError0 = 0;
-  displInfoMenuEPG = 0;
   displayScraperInfo = 0;
+  displInfoMenuEPG = 0;
   displInfoMenuTimer = 0;
   displInfoMenuRec = 0;
   displInfoChannel = 0;
@@ -18,6 +18,7 @@ cLCARSNGConfig::cLCARSNGConfig(void)
   fadeinTime = 300;
   scrollPixel = 2;
   framesPerSecond = 25;
+  displInfoAlt = 0;
   volumeBarStyle = 0;
   swapTimers = 0;
   displReplayErrors = 0;
@@ -83,6 +84,7 @@ bool cLCARSNGConfig::SetupParse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "FadeInTime"))         fadeinTime         = atoi(Value);
   else if (!strcasecmp(Name, "ScrollPixel"))        scrollPixel        = atoi(Value);
   else if (!strcasecmp(Name, "FramesPerSecond"))    framesPerSecond    = atoi(Value);
+  else if (!strcasecmp(Name, "DisplInfoAlt"))       displInfoAlt       = atoi(Value);
   else if (!strcasecmp(Name, "VolumeBarStyle"))     volumeBarStyle     = atoi(Value);
   else if (!strcasecmp(Name, "SwapTimers"))         swapTimers         = atoi(Value);
   else if (!strcasecmp(Name, "DisplayErrInRepl"))   displReplayErrors  = atoi(Value);
