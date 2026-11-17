@@ -35,6 +35,15 @@ cLCARSNGDisplayReplay::cLCARSNGDisplayReplay(bool ModeOnly) : cThread("LCARS Dis
   isRecording = false;
   timshiftMode = false;
   fps = DEFAULTFRAMESPERSECOND;
+  {
+#if APIVERSNUM > 20402
+     cMutexLock ControlMutexLock;
+     if (cControl *Control = cControl::Control(ControlMutexLock, true))
+#else
+     if (cControl *Control = cControl::Control(true))
+#endif
+        fps = Control->FramesPerSecond();
+  }
   framesTotal = 0;
   pbinit = true;
   volumeBox = NULL;
